@@ -1,6 +1,6 @@
 #/bin/bash -e
 
-DOCKERVERSION=2.0.0
+DOCKERVERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
 DOCKERUSER=gabrieletassoni
 DOCKERTAG=$DOCKERUSER/vscode-devcontainers-thecore:$DOCKERVERSION
 
