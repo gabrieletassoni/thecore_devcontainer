@@ -40,7 +40,7 @@ fi
 if ! [[ $ENGINE_GEM_REPO =~ https?://.* ]]
 then
   echo "Error! Engine Gem Repo must be a valid URL"
-  exit 2
+  exit 4
 fi
 
 rails plugin new $ENGINE_NAME -fG --full
@@ -55,7 +55,7 @@ sed -i 's/^  spec.summary =.*/  spec.summary = "$ENGINE_SUMMARY"/' ${ENGINE_NAME
 sed -i 's/^  spec.description =.*/  spec.description = "$ENGINE_DESCRIPTION"/' ${ENGINE_NAME}.gemspec
 sed -i 's/^    spec.metadata\["allowed_push_host"\] =.*/    spec.metadata\["allowed_push_host"\] = "$ENGINE_GEM_REPO"/' ${ENGINE_NAME}.gemspec
 # Remove all spec.add_dependency "thecore_ui_rails_admin", "~> 2.0"
-# ASK for api only gem or UI dependent one and add a dependency on model_driven_api or thecore_ui_rails_admin respectively.
+# TODO: ASK for api only gem or UI dependent one and add a dependency on model_driven_api or thecore_ui_rails_admin respectively.
 
 thecoreize_engine.sh
 
