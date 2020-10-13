@@ -2,9 +2,13 @@
 ARG VARIANT=2
 FROM mcr.microsoft.com/vscode/devcontainers/ruby:0-${VARIANT}
 
+# Add to the container thecore specific scripts
+COPY scripts/ /usr/bin/
+
 # Installing the base thecore gems
 RUN gem install rails:'~> 6.0' \
     pg:'~> 1.2' \
+    geminabox \
     thecore_auth_commons:2.2.8 \
     thecore_backend_commons:2.3.0 \
     thecore_background_jobs:2.0.1 \
