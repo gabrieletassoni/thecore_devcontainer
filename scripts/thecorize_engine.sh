@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-ENGINE_NAME=$(cat *.gemspec|grep -e s.*.name|sed 's/^ *s.*.name *= *//'|sed 's/["]//g')
+ENGINE_NAME=$(cat *.gemspec|grep -e spec.name -e s.name|sed 's/^ *s.*.name *= *//'|sed 's/["]//g')
 ENGINE_NAME_PASCAL_CASE=(${uscore//_/ })
 
 mkdir -p db/migrate app/models/concerns/api app/models/concerns/rails_admin config/initializers config/locales
