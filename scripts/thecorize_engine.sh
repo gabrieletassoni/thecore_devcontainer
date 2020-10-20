@@ -38,10 +38,13 @@ EOL
 sed -i 's/^  VERSION =.*/  VERSION = "#{`git describe --tags $(git rev-list --tags --max-count=1)`}"/' lib/$ENGINE_NAME/version.rb
 
 # Adding after initialize
-cat > config/initializers/after_initialize_for_${ENGINE_NAME}.rb <<EOL
+cat > config/initializers/after_initialize_for_${ENGINE_NAME}.rb << EOL
 Rails.application.configure do
   config.after_initialize do
     # Good place for sending concerns about modules
+    # i.e.
+    # ModelName.send(:include, ModelNameConcern)
+    # - ModelNameConcern can be defined in config/initializers folder in order to be sure it's automatically loaded during engine bootstrap
   end
 end
 EOL
