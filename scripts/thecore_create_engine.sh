@@ -75,12 +75,12 @@ rails plugin new $ENGINE_NAME -fG --full
 cd $ENGINE_NAME
 
 # Setup the gemspec file
-sed -i 's/^  spec.authors =.*/  spec.authors = ["$ENGINE_AUTHOR"]/' ${ENGINE_NAME}.gemspec
-sed -i 's/^  spec.email =.*/  spec.email = ["$ENGINE_EMAIL"]/' ${ENGINE_NAME}.gemspec
-sed -i 's/^  spec.homepage =.*/  spec.homepage = "$ENGINE_HOMEPAGE"/' ${ENGINE_NAME}.gemspec
-sed -i 's/^  spec.summary =.*/  spec.summary = "$ENGINE_SUMMARY"/' ${ENGINE_NAME}.gemspec
-sed -i 's/^  spec.description =.*/  spec.description = "$ENGINE_DESCRIPTION"/' ${ENGINE_NAME}.gemspec
-sed -i 's/^    spec.metadata\["allowed_push_host"\] =.*/    spec.metadata\["allowed_push_host"\] = "$ENGINE_GEM_REPO"/' ${ENGINE_NAME}.gemspec
+sed -i "s/^ +spec.authors =.*/  spec.authors = [\"$ENGINE_AUTHOR\"]/" ${ENGINE_NAME}.gemspec
+sed -i "s/^ +spec.email =.*/  spec.email = [\"$ENGINE_EMAIL\"]/" ${ENGINE_NAME}.gemspec
+sed -i "s/^ +spec.homepage =.*/  spec.homepage = "$ENGINE_HOMEPAGE"/" ${ENGINE_NAME}.gemspec
+sed -i "s/^ +spec.summary =.*/  spec.summary = "$ENGINE_SUMMARY"/" ${ENGINE_NAME}.gemspec
+sed -i "s/^ +spec.description =.*/  spec.description = \"$ENGINE_DESCRIPTION\"/" ${ENGINE_NAME}.gemspec
+sed -i "s/^ +spec.metadata\[\"allowed_push_host\"\] =.*/    spec.metadata[\"allowed_push_host\"] = \"$ENGINE_GEM_REPO\"/" ${ENGINE_NAME}.gemspec
 # Remove all spec.add_dependency 
 sed -i '/add_dependency/d' ${ENGINE_NAME}.gemspec
 sed -i '/add_development_dependency/d' ${ENGINE_NAME}.gemspec
