@@ -1,5 +1,12 @@
 #!/bin/bash -e
 
+# Sanity Checks
+if ![ -f *.gemspec ]
+then
+  echo -e "\e[31mThis folder does NOT contain a gemspec file, please run this script INSIDE a rails engine project.\e[0m"
+  exit 1
+fi
+
 ENGINE_NAME=$(cat *.gemspec|grep -e spec.name -e s.name|sed 's/^ *s.*.name *= *//'|sed 's/["]//g')
 ENGINE_NAME_PASCAL_CASE=$(echo "${ENGINE_NAME}" | sed -r 's/(^|_)([a-z])/\U\2/g')
 
