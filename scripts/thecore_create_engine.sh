@@ -74,29 +74,11 @@ sed -i '/add_dependency/d' ${ENGINE_NAME}.gemspec
 sed -i '/add_development_dependency/d' ${ENGINE_NAME}.gemspec
 
 # ASK for api only gem or UI dependent one and add a dependency on model_driven_api or thecore_ui_rails_admin respectively.
-function prepare_for_dependency
-{
-  sed -i "/spec.files/a \ \ spec.add_dependency '${2}', '~> 2.0'" ${1}.gemspec
-  sed -i "/require .${2}./d" lib/${1}.rb
-  sed -i "1 s/^/require '${2}'\n/" lib/${1}.rb
-}
-select TYPE in "API" "GUI" "Both"
+select TYPE in API GUI Both
 do
   echo "Selected ${TYPE}"
-  case $TYPE in
-    "API")
-    prepare_for_dependency ${ENGINE_NAME} "model_driven_api"
-    ;;
-    "GUI")
-    prepare_for_dependency ${ENGINE_NAME} "thecore_ui_rails_admin"
-    ;;
-    "Both")
-    prepare_for_dependency ${ENGINE_NAME} "model_driven_api"
-    prepare_for_dependency ${ENGINE_NAME} "thecore_ui_rails_admin"
-    ;;
+  thecorize_engine.sh ${TYPE}
 done
-
-thecorize_engine.sh
 
 # GIT
 # Add gitignore

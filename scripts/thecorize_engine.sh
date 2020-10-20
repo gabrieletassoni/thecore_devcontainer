@@ -1,6 +1,20 @@
 #!/bin/bash -e
 
 # Sanity Checks
+contains() {
+    [[ $1 =~ (^|[[:space:]])$2($|[[:space:]]) ]] && exit(0) || exit(1)
+}
+if [ -z "$1" ]
+then
+  echo -e "\e[31mPlease run this script with one parameter.\e[0m"
+  exit 1
+else
+  if !contains "API Both GUI" $1
+  then
+    echo -e "\e[31mThe first parameter must be the string API or GUI or Both.\e[0m"
+    exit 1
+  fi
+fi
 if ![ -f *.gemspec ]
 then
   echo -e "\e[31mThis folder does NOT contain a gemspec file, please run this script INSIDE a rails engine project.\e[0m"
@@ -13,6 +27,25 @@ ENGINE_NAME_PASCAL_CASE=$(echo "${ENGINE_NAME}" | sed -r 's/(^|_)([a-z])/\U\2/g'
 mkdir -p db/migrate app/models/concerns/api app/models/concerns/rails_admin config/initializers config/locales
 
 touch db/migrate/.keep app/models/concerns/api/.keep app/models/concerns/rails_admin/.keep config/initializers/.keep config/locales/.keep
+
+function prepare_for_dependency
+{
+  sed -i "/spec.files/a \ \ spec.add_dependency '${2}', '~> 2.0'" ${1}.gemspec
+  sed -i "/require .${2}./d" lib/${1}.rb
+  sed -i "1 s/^/require '${2}'\n/" lib/${1}.rb
+}
+case $1 in
+  "API")
+  prepare_for_dependency ${ENGINE_NAME} "model_driven_api"
+  ;;
+  "GUI")
+  prepare_for_dependency ${ENGINE_NAME} "thecore_ui_rails_admin"
+  ;;
+  "Both")
+  prepare_for_dependency ${ENGINE_NAME} "model_driven_api"
+  prepare_for_dependency ${ENGINE_NAME} "thecore_ui_rails_admin"
+  ;;
+esac
 
 # Adding auto migrate to engine.rb
 cat > lib/${ENGINE_NAME}/engine.rb << EOL
