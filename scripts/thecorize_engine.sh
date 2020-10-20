@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 ENGINE_NAME=$(cat *.gemspec|grep -e spec.name -e s.name|sed 's/^ *s.*.name *= *//'|sed 's/["]//g')
-ENGINE_NAME_PASCAL_CASE=(${uscore//_/ })
+ENGINE_NAME_PASCAL_CASE=$(echo "${ENGINE_NAME}" | sed -r 's/(^|_)([a-z])/\U\2/g')
 
 mkdir -p db/migrate app/models/concerns/api app/models/concerns/rails_admin config/initializers config/locales
 
@@ -9,7 +9,7 @@ touch db/migrate/.keep app/models/concerns/api/.keep app/models/concerns/rails_a
 
 # Adding auto migrate to engine.rb
 cat > lib/${ENGINE_NAME}/engine.rb << EOL
-module $(ENGINE_NAME_PASCAL_CASE)
+module ${ENGINE_NAME_PASCAL_CASE}
   class Engine < ::Rails::Engine
     initializer "${ENGINE_NAME}.assets.precompile" do |app|    
       # Here you can place the assets provided by this engine in order for them to be precompiled in production and JIT 
