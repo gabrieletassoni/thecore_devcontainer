@@ -1,15 +1,12 @@
 #!/bin/bash -e
 
 # Sanity Checks
-contains() {
-    [[ $1 =~ (^|[[:space:]])$2($|[[:space:]]) ]] && exit(0) || exit(1)
-}
 if [ -z "$1" ]
 then
   echo -e "\e[31mPlease run this script with one parameter.\e[0m"
   exit 1
 else
-  if !contains "API Both GUI" $1
+  if ! [[ "API Both GUI" =~ "$1" ]]
   then
     echo -e "\e[31mThe first parameter must be the string API or GUI or Both.\e[0m"
     exit 1
