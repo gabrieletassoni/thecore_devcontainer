@@ -1,6 +1,7 @@
 #!/bin/bash -e
 
 # Sanity Checks
+echo "Parameter $1"
 if [ -z "$1" ]
 then
   echo -e "\e[31mPlease run this script with one parameter.\e[0m"

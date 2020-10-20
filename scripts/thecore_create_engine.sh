@@ -42,13 +42,13 @@ ask_for_name ENGINE_DESCRIPTION "Please provide Engine's Extended Description"
 ask_for_name ENGINE_GEM_REPO "Please provide Engine's GEM repository"
 # ASK for api only gem or UI dependent one and add a dependency on model_driven_api or thecore_ui_rails_admin respectively.
 PS3="Please select the type of engine you are creating, select it by specifying element's number from the list above:"
-TYPE=Both
-select T in API GUI Both
+TYPE="Both"
+select T in "API" "GUI" "Both"
 do
   echo "Selected ${T}"
-  if ! [ -z "$T" ]
+  if ! [ -z "${T}" ]
   then
-    TYPE=T
+    TYPE="$T"
     break
   fi
 done
@@ -92,6 +92,7 @@ sed -i "/spec.respond_to?(:metadata)/a \ \ \ \ spec.metadata[\"allowed_push_host
 sed -i '/add_dependency/d' ${ENGINE_NAME}.gemspec
 sed -i '/add_development_dependency/d' ${ENGINE_NAME}.gemspec
 
+echo "Thecorizing Engine of type $TYPE"
 thecorize_engine.sh ${TYPE}
 
 # GIT
@@ -110,7 +111,8 @@ then
     exit 0
 fi
 
-git remote add origin $URL
+git remote add origin $URI
+git push --set-upstream origin master
 
 cd ..
 
