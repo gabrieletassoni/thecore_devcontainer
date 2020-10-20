@@ -35,3 +35,6 @@ COPY scripts/ /usr/bin/
 
 # Add MOTD instructions for scripts provided within this image
 RUN echo "echo 'Create a Thecore Engine: please run \e[31mthecore_create_engine.sh\e[0m and answer to the questions.'" >> ~/.bashrc
+RUN echo "echo 'Turn a normal Rails engine into a Thecore one (API only): please run \e[31mthecorize_engine.sh API\e[0m.'" >> ~/.bashrc
+RUN echo "echo 'Turn a normal Rails engine into a Thecore one (GUI only): please run \e[31mthecorize_engine.sh GUI\e[0m.'" >> ~/.bashrc
+RUN echo "echo 'Turn a normal Rails engine into a Thecore one (API and GUI enabled): please run \e[31mthecorize_engine.sh Both\e[0m.'" >> ~/.bashrc
