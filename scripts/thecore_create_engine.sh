@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 # Sanity Checks
-if [ -f Gemfiles ]
+if [ -f Gemfile ]
 then
   echo "\e[31mThis folder contains a Gemfile, please run this script outside a rails app project.\e[0m"
   exit 1
