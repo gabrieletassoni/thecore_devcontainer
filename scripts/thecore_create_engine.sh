@@ -72,7 +72,7 @@ sed -i 's/^    spec.metadata\["allowed_push_host"\] =.*/    spec.metadata\["allo
 # Remove all spec.add_dependency "thecore_ui_rails_admin", "~> 2.0"
 # TODO: ASK for api only gem or UI dependent one and add a dependency on model_driven_api or thecore_ui_rails_admin respectively.
 
-thecoreize_engine.sh
+thecorize_engine.sh
 
 # GIT
 # Add gitignore
