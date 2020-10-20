@@ -40,6 +40,18 @@ ask_for_name ENGINE_HOMEPAGE "Please provide Engine's Homepage URL"
 ask_for_name ENGINE_SUMMARY "Please provide Engine's Summary"
 ask_for_name ENGINE_DESCRIPTION "Please provide Engine's Extended Description"
 ask_for_name ENGINE_GEM_REPO "Please provide Engine's GEM repository"
+# ASK for api only gem or UI dependent one and add a dependency on model_driven_api or thecore_ui_rails_admin respectively.
+PS3="Please select the type of engine you are creating, select it by specifying element's number from the list above:"
+TYPE=Both
+select T in API GUI Both
+do
+  echo "Selected ${T}"
+  if ! [ -z "$T" ]
+  then
+    TYPE=T
+    break
+  fi
+done
 # Sanity Checks on input variables
 EMAIL_REGEX="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z0-9]([a-z0-9-]*[a-z0-9])?\$"
 if ! [[ $ENGINE_EMAIL =~ $EMAIL_REGEX ]]
@@ -73,12 +85,7 @@ sed -i 's/^    spec.metadata\["allowed_push_host"\] =.*/    spec.metadata\["allo
 sed -i '/add_dependency/d' ${ENGINE_NAME}.gemspec
 sed -i '/add_development_dependency/d' ${ENGINE_NAME}.gemspec
 
-# ASK for api only gem or UI dependent one and add a dependency on model_driven_api or thecore_ui_rails_admin respectively.
-select TYPE in API GUI Both
-do
-  echo "Selected ${TYPE}"
-  thecorize_engine.sh ${TYPE}
-done
+thecorize_engine.sh ${TYPE}
 
 # GIT
 # Add gitignore
