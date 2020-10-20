@@ -75,12 +75,19 @@ rails plugin new $ENGINE_NAME -fG --full
 cd $ENGINE_NAME
 
 # Setup the gemspec file
-sed -i "s/^ +spec.authors =.*/  spec.authors = [\"$ENGINE_AUTHOR\"]/" ${ENGINE_NAME}.gemspec
-sed -i "s/^ +spec.email =.*/  spec.email = [\"$ENGINE_EMAIL\"]/" ${ENGINE_NAME}.gemspec
-sed -i "s/^ +spec.homepage =.*/  spec.homepage = "$ENGINE_HOMEPAGE"/" ${ENGINE_NAME}.gemspec
-sed -i "s/^ +spec.summary =.*/  spec.summary = "$ENGINE_SUMMARY"/" ${ENGINE_NAME}.gemspec
-sed -i "s/^ +spec.description =.*/  spec.description = \"$ENGINE_DESCRIPTION\"/" ${ENGINE_NAME}.gemspec
-sed -i "s/^ +spec.metadata\[\"allowed_push_host\"\] =.*/    spec.metadata[\"allowed_push_host\"] = \"$ENGINE_GEM_REPO\"/" ${ENGINE_NAME}.gemspec
+function edit_gem_info # KEY VALUE FILE
+{
+  sed -i "/spec.${1}/d" ${3}.gemspec
+  sed -i "/spec.version/a \ \ spec.${1} = $2" ${3}.gemspec
+}
+edit_gem_info homepage "\"$ENGINE_HOMEPAGE\"" $ENGINE_NAME
+edit_gem_info authors "[\"$ENGINE_AUTHOR\"]" $ENGINE_NAME
+edit_gem_info email "[\"$ENGINE_EMAIL\"]" $ENGINE_NAME
+edit_gem_info summary "\"$ENGINE_SUMMARY\"" $ENGINE_NAME
+edit_gem_info description "\"$ENGINE_DESCRIPTION\"" $ENGINE_NAME
+edit_gem_info metadata "\"$ENGINE_DESCRIPTION\"" $ENGINE_NAME
+sed -i "/spec.metadata/d" ${ENGINE_NAME}.gemspec
+sed -i "/spec.respond_to?(:metadata)/a \ \ \ \ spec.metadata[\"allowed_push_host\"] = \"$ENGINE_GEM_REPO\"" ${ENGINE_NAME}.gemspec
 # Remove all spec.add_dependency 
 sed -i '/add_dependency/d' ${ENGINE_NAME}.gemspec
 sed -i '/add_development_dependency/d' ${ENGINE_NAME}.gemspec
@@ -98,7 +105,8 @@ git add . -A
 git commit -a -m "Initial git"
 echo "Please add a git repository URI if you like (empty string to add nothing):"
 read URI
-if [ -z $URI ]; then
+if [ -z $URI ]
+then
     exit 0
 fi
 
