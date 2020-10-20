@@ -1,16 +1,14 @@
 #!/bin/bash -e
 
-ask_for_name() {
-    echo $1
-    read NAME
-    if [ -z $NAME ]; then
-        echo $2
-        exit 1
-    fi
-    echo $NAME
+function ask_for_name # VARNAME prompt
+{
+  while [ -z "${!1}" ]
+  do
+    read -p "$2: " $1
+  done
 }
 
-ENGINE_NAME=$(ask_for_name "Please provide an engine name in underscore notation:" "Error! No engine name given, bye!")
+ask_for_name ENGINE_NAME "Please provide an engine name in underscore notation"
 # Some sanity checks, allow only underscore names
 if [[ $ENGINE_NAME == *['!'@#\$%^\&*()\++]* ]]
 then
@@ -19,12 +17,12 @@ then
 fi
 
 # Asking for ENGINE specifications
-ENGINE_AUTHOR=$(ask_for_name "Please provide Engine's Author:" "Error! No engine Author given, bye!")
-ENGINE_EMAIL=$(ask_for_name "Please provide Engine's Author's Email:" "Error! No engine Email given, bye!")
-ENGINE_HOMEPAGE=$(ask_for_name "Please provide Engine's Homepage URL:" "Error! No engine Homepage given, bye!")
-ENGINE_SUMMARY=$(ask_for_name "Please provide Engine's Summary:" "Error! No engine Summary given, bye!")
-ENGINE_DESCRIPTION=$(ask_for_name "Please provide Engine's Extended Description:" "Error! No engine Description given, bye!")
-ENGINE_GEM_REPO=$(ask_for_name "Please provide Engine's GEM repository:" "Error! No engine Gem Repository given, bye!")
+ask_for_name ENGINE_AUTHOR "Please provide Engine's Author"
+ask_for_name ENGINE_EMAIL "Please provide Engine's Author's Email"
+ask_for_name ENGINE_HOMEPAGE "Please provide Engine's Homepage URL"
+ask_for_name ENGINE_SUMMARY "Please provide Engine's Summary"
+ask_for_name ENGINE_DESCRIPTION "Please provide Engine's Extended Description"
+ask_for_name ENGINE_GEM_REPO "Please provide Engine's GEM repository"
 # Sanity Checks on input variables
 EMAIL_REGEX="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z0-9]([a-z0-9-]*[a-z0-9])?\$"
 if ! [[ $ENGINE_EMAIL =~ $EMAIL_REGEX ]]
