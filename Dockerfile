@@ -33,4 +33,4 @@ RUN git clone https://github.com/gabrieletassoni/model_driven_api.git \
     && git clone https://github.com/gabrieletassoni/thecore_ui_commons.git \
     && git clone https://github.com/gabrieletassoni/thecore_ui_rails_admin.git
 
-RUN echo "echo 'Create a Thecore Engine: \e[31mthecore_create_engine.sh\e[0m and answer to the questions.'" >> ~/.bashrc
+RUN echo "echo 'Create a Thecore Engine: please run \e[31mthecore_create_engine.sh\e[0m and answer to the questions.'" >> ~/.bashrc

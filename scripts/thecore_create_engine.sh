@@ -1,5 +1,17 @@
 #!/bin/bash -e
 
+# Sanity Checks
+if [ -f Gemfiles ]
+then
+  echo "This folder contains a Gemfile, please run this script outside a rails app project."
+  exit 1
+fi
+if [ -f *.gemspec ]
+then
+  echo "This folder contains a gemspec file, please run this script outside a rails engine project."
+  exit 1
+fi
+
 function ask_for_name # VARNAME prompt
 {
   while [ -z "${!1}" ]
