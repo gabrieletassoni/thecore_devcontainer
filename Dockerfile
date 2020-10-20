@@ -2,9 +2,6 @@
 ARG VARIANT=2
 FROM mcr.microsoft.com/vscode/devcontainers/ruby:0-${VARIANT}
 
-# Add to the container thecore specific scripts
-COPY scripts/ /usr/bin/
-
 # Installing the base thecore gems
 RUN gem install rails:'~> 6.0' \
     pg:'~> 1.2' \
@@ -33,4 +30,8 @@ RUN git clone https://github.com/gabrieletassoni/model_driven_api.git \
     && git clone https://github.com/gabrieletassoni/thecore_ui_commons.git \
     && git clone https://github.com/gabrieletassoni/thecore_ui_rails_admin.git
 
+# Add to the container thecore specific scripts
+COPY scripts/ /usr/bin/
+
+# Add MOTD instructions for scripts provided within this image
 RUN echo "echo 'Create a Thecore Engine: please run \e[31mthecore_create_engine.sh\e[0m and answer to the questions.'" >> ~/.bashrc
