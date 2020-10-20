@@ -2,7 +2,7 @@
 FROM mcr.microsoft.com/vscode/devcontainers/base:buster
 
 # [Option] Install zsh
-ARG INSTALL_ZSH="false"
+ARG INSTALL_ZSH="true"
 # [Option] Upgrade OS packages to their latest versions
 ARG UPGRADE_PACKAGES="false"
 # [Option] Enable non-root Docker access in container
