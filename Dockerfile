@@ -2,6 +2,11 @@
 ARG VARIANT=2
 FROM mcr.microsoft.com/vscode/devcontainers/ruby:0-${VARIANT}
 
+RUN apt-get update \
+    && apt-get -y install freetds-dev \
+    # Clean up
+    && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts/
+
 # Installing the base thecore gems
 RUN gem install rails:6.0.3.4 \
     # Databases
