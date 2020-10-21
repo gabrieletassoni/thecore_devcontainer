@@ -59,4 +59,4 @@ RUN echo "echo 'Create a Thecore Engine: please run \e[31mthecore_create_engine.
 RUN echo "echo 'Turn a normal Rails engine into a Thecore one (API only): please run \e[31mthecorize_engine.sh API\e[0m.'" >> ~/.bashrc
 RUN echo "echo 'Turn a normal Rails engine into a Thecore one (GUI only): please run \e[31mthecorize_engine.sh GUI\e[0m.'" >> ~/.bashrc
 RUN echo "echo 'Turn a normal Rails engine into a Thecore one (API and GUI enabled): please run \e[31mthecorize_engine.sh Both\e[0m.'" >> ~/.bashrc
-RUN echo "echo 'Generate Models for your Engine: please run \e[31mthecore_add_model.sh and Loop-add all the needed models and fields\e[0m.'" >> ~/.bashrc
+RUN echo "echo 'Generate Models for your Engine: please run \e[31mthecore_add_model.sh\e[0m and Loop-add all the needed models and fields.'" >> ~/.bashrc
