@@ -41,7 +41,7 @@ class Thecore::Generate < Thor
       
       # Belongs to
       say "Completing Belongs To Associations", :green
-      gsub_file entry, /^(?!.*inverse_of.*)^[   ]*belongs_to.*$/ do |match|
+      gsub_file entry, /^(?!.*inverse_of.*)^ *belongs_to.*$/ do |match|
         match << ", inverse_of: :#{entry.split(".").first.split("/").last.pluralize}"
       end
       say "Add Has Many Through Associations", :green
@@ -49,7 +49,7 @@ class Thecore::Generate < Thor
       association_model = entry.split(".").first.split("/").last
       file = File.join(entry)
       # It must be an activerecord model class
-      model_with_belongs_to = File.readlines(file).grep(/^[   ]*belongs_to :.*$/)
+      model_with_belongs_to = File.readlines(file).grep(/^ *belongs_to :.*$/)
       if model_with_belongs_to.size == 2 && yes?("Is #{association_model} an association model for a has_many through relation?", :red)
         # getting both the belongs_to models, find their model files, and add the through to each other
         left_side = model_with_belongs_to.first[/:(.*?),/,1]
@@ -68,7 +68,7 @@ class Thecore::Generate < Thor
         # say "Looking for belongs_to in #{entry} and adding the relevant has_manies", :green
         
         # Polymorphic must be managed manually
-        File.readlines(file).grep(/^(?!.*polymorphic.*)^[   ]*belongs_to :(.*),.+/).each do |a|
+        File.readlines(file).grep(/^(?!.*polymorphic.*)^ *belongs_to :(.*),.+/).each do |a|
           this_model = a[/:(.*?),/,1]
           # look if the file identified by association .rb exists
           # associated_file = File.join("app/models","#{target_association}.rb")
@@ -85,7 +85,7 @@ class Thecore::Generate < Thor
     # say "MODEL FILES: #{@model_files.inspect} "
     # It must be an activerecord model class
     # belongs_to :rowable, polymorphic: true, inverse_of: :rows
-    polymorphics = File.readlines(file).grep(/^[   ]*belongs_to :.*polymorphic.*/)
+    polymorphics = File.readlines(file).grep(/^ *belongs_to :.*polymorphic.*/)
     polymorphics.each do |polymorphic_belongs_to|
       polymorphic_target_association = polymorphic_belongs_to[/:(.*?),/,1]
       # Just keeping the models that are not this model, and
@@ -100,7 +100,7 @@ class Thecore::Generate < Thor
       say "Detect orphaned Has Many", :green
       # It must be an activerecord model class
       # belongs_to :rowable, polymorphic: true, inverse_of: :rows
-      manies = File.readlines(file).grep(/^[   ]*has_many.*/)
+      manies = File.readlines(file).grep(/^ *has_many.*/)
       manies.each do |has_many|
         target_association = has_many[/:(.*?),/,1]
         associated_file = File.join("app", "models", "#{target_association.singularize}.rb")
