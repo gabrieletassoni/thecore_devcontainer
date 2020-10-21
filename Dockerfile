@@ -29,7 +29,9 @@ RUN gem install rails:6.0.3.4 \
     thecore_ui_rails_admin:2.2.1 \
     thecore_dataentry_commons:2.0.4
 
-# Creating the git clones of thecore gems
+# Creating the git clones of thecore gems.
+# Useful to have them already inside the dev environment if the need to customize them arises.
+# Otherwise the gem installed ones will suffice to the needs of thecore development.
 WORKDIR /workspaces
 RUN mkdir -p thecore
 RUN chown -R vscode /workspaces/thecore
