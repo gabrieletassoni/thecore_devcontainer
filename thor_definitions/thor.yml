@@ -1,0 +1,6 @@
+---
+    thecore_generate.thor:
+      :filename: a84ebaa152a909f88944fc7354130e94
+      :location: "/etc/thecore/thecore_generate.thor"
+      :namespaces:
+      - thecore_generate
