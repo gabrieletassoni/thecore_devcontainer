@@ -17,7 +17,9 @@
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
 		"ms-azuretools.vscode-docker",
-		"misogi.ruby-rubocop"
+		"misogi.ruby-rubocop",
+		"rogalmic.bash-debug",
+		"shakram02.bash-beautify"
 	],
 	"build": {
 		"args": {
