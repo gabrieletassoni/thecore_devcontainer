@@ -57,8 +57,8 @@ RUN cp /etc/thecore/thecore_generate.thor ~/.thor/a84ebaa152a909f88944fc7354130e
 RUN cp /etc/thecore/thor.yml ~/.thor/thor.yml
 
 # Add MOTD instructions for scripts provided within this image
-RUN echo "echo 'Create a Thecore Engine: please run \e[31mthecore_create_engine.sh\e[0m and answer to the questions.'" >> ~/.bashrc
-RUN echo "echo 'Turn a normal Rails engine into a Thecore one (API only): please run \e[31mthecorize_engine.sh API\e[0m.'" >> ~/.bashrc
-RUN echo "echo 'Turn a normal Rails engine into a Thecore one (GUI only): please run \e[31mthecorize_engine.sh GUI\e[0m.'" >> ~/.bashrc
-RUN echo "echo 'Turn a normal Rails engine into a Thecore one (API and GUI enabled): please run \e[31mthecorize_engine.sh Both\e[0m.'" >> ~/.bashrc
-RUN echo "echo 'Generate Models for your Engine: please run \e[31mthecore_add_model.sh\e[0m and Loop-add all the needed models and fields.'" >> ~/.bashrc
+RUN echo "echo -e '\e[1mTo create a Thecore Engine:\e[0m\n  1) please run \e[31mthecore_create_engine.sh\e[0m\n  2) please answer to the questions posed by the wizard'" >> ~/.bashrc
+RUN echo "echo -e '\e[1mTo turn an existing Rails engine into a Thecore one (API only):\e[0m\n  1) please cd into engine directory\n  2) please run \e[31mthecorize_engine.sh API\e[0m'" >> ~/.bashrc
+RUN echo "echo -e '\e[1mTo turn an existing Rails engine into a Thecore one (GUI only):\e[0m\n  1) please cd into engine directory\n  2) please run \e[31mthecorize_engine.sh GUI\e[0m'" >> ~/.bashrc
+RUN echo "echo -e '\e[1mTo turn an existing Rails engine into a Thecore one (API + GUI):\e[0m\n  1) please cd into engine directory\n  2) please run \e[31mthecorize_engine.sh Both\e[0m'" >> ~/.bashrc
+RUN echo "echo -e '\e[1mTo generate Models for your Engine:\e[0m\n  1) please cd into engine directory\n  2) please run \e[31mthecore_add_model.sh\e[0m\n  3) please follow the wizard adding all the needed models and fields.'" >> ~/.bashrc
