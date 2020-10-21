@@ -32,6 +32,7 @@ RUN git clone https://github.com/gabrieletassoni/model_driven_api.git \
 
 # Add to the container thecore specific scripts
 COPY scripts/ /usr/bin/
+COPY templates /etc/thecore/
 
 # Add MOTD instructions for scripts provided within this image
 RUN echo "echo 'Create a Thecore Engine: please run \e[31mthecore_create_engine.sh\e[0m and answer to the questions.'" >> ~/.bashrc
