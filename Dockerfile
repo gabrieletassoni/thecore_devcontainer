@@ -27,7 +27,8 @@ RUN gem install rails:6.0.3.4 \
     thecore_ftp_helpers:2.0.6 \
     thecore_ui_commons:2.2.0 \
     thecore_ui_rails_admin:2.2.1 \
-    thecore_dataentry_commons:2.0.4
+    thecore_dataentry_commons:2.0.4 \
+    thecore_print_with_template:2.0.0 \
 
 # Creating the git clones of thecore gems.
 # Useful to have them already inside the dev environment if the need to customize them arises.
@@ -38,6 +39,7 @@ RUN chown -R vscode /workspaces/thecore
 USER vscode
 WORKDIR /workspaces/thecore
 RUN git clone https://github.com/gabrieletassoni/model_driven_api.git \
+    && git clone https://github.com/gabrieletassoni/rails_admin_selectize.git \
     && git clone https://github.com/gabrieletassoni/thecore_auth_commons.git \
     && git clone https://github.com/gabrieletassoni/thecore_backend_commons.git \
     && git clone https://github.com/gabrieletassoni/thecore_background_jobs.git \
@@ -45,7 +47,9 @@ RUN git clone https://github.com/gabrieletassoni/model_driven_api.git \
     && git clone https://github.com/gabrieletassoni/thecore_download_documents.git \
     && git clone https://github.com/gabrieletassoni/thecore_ftp_helpers.git \
     && git clone https://github.com/gabrieletassoni/thecore_ui_commons.git \
-    && git clone https://github.com/gabrieletassoni/thecore_ui_rails_admin.git
+    && git clone https://github.com/gabrieletassoni/thecore_ui_rails_admin.git \
+    && git clone https://github.com/gabrieletassoni/thecore_print_commons.git \
+    && git clone https://github.com/gabrieletassoni/thecore_print_with_template.git
 
 # Add to the container thecore specific scripts
 COPY scripts/ /usr/bin/
