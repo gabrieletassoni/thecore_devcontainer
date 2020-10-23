@@ -29,6 +29,7 @@ RUN gem install rails:6.0.3.4 \
     thecore_ui_commons:2.2.0 \
     thecore_ui_rails_admin:2.2.1 \
     thecore_dataentry_commons:2.0.4 \
+    thecore_print_commons:2.0.1 \
     thecore_print_with_template:2.0.0
 
 # Creating the git clones of thecore gems.
