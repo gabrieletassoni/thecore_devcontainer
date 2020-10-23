@@ -4,7 +4,7 @@ FROM mcr.microsoft.com/vscode/devcontainers/ruby:0-${VARIANT}
 
 RUN apt-get update && apt-get -y install \
         freetds-dev \
-        libcupsys2-dev \
+        libcups2-dev \
     # Clean up
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts/
 
