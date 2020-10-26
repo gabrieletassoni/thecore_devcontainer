@@ -22,15 +22,18 @@ RUN gem install rails:6.0.3.4 \
     # General Use GEMs
     geminabox \
     # Thecore GEMs
+    model_driven_api:2.2.8.1 \
+    rails_admin_selectize:2.0.3 \
     thecore_auth_commons:2.2.8 \
     thecore_backend_commons:2.3.0 \
     thecore_background_jobs:2.0.1 \
-    thecore_ftp_helpers:2.0.6 \
-    thecore_ui_commons:2.2.0 \
-    thecore_ui_rails_admin:2.2.1 \
     thecore_dataentry_commons:2.0.4 \
+    thecore_download_documents:2.0.1 \
+    thecore_ftp_helpers:2.1.0 \
     thecore_print_commons:2.0.2 \
-    thecore_print_with_template:2.0.1
+    thecore_print_with_template:2.0.1 \
+    thecore_ui_commons:2.2.0 \
+    thecore_ui_rails_admin:2.2.1
 
 # Creating the git clones of thecore gems.
 # Useful to have them already inside the dev environment if the need to customize them arises.
