@@ -56,6 +56,10 @@ RUN git clone https://github.com/gabrieletassoni/model_driven_api.git \
     && git clone https://github.com/gabrieletassoni/thecore_print_commons.git \
     && git clone https://github.com/gabrieletassoni/thecore_print_with_template.git
 
+
+# Getting all the tags
+RUN for i in *; do if [ -d "$i" ]; then cd "$i"; echo "$i"; git fetch --all --tags --prune; cd ..; fi; done
+
 # Add to the container thecore specific scripts
 COPY scripts/ /usr/bin/
 COPY templates /etc/thecore/
