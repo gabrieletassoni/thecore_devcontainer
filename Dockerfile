@@ -34,7 +34,6 @@ RUN gem install model_driven_api:2.2.9 \
     thecore_print_with_template:2.0.1 \
     thecore_ui_commons:2.2.0 \
     thecore_ui_rails_admin:2.2.1
-RUN gem update --system
 
 # Creating the git clones of thecore gems.
 # Useful to have them already inside the dev environment if the need to customize them arises.
