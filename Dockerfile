@@ -20,6 +20,32 @@ RUN gem install rails:6.0.3.4 \
     activerecord-sqlserver-adapter \
     # End Databases
     # General Use GEMs
+    turbolinks-source \
+    turbolinks \
+    web-console \
+    webdrivers \
+    webpacker \
+    spring \
+    spring-watcher-listen \
+    sass-rails \
+    selenium-webdriver \
+    rack-proxy \
+    puma \
+    rb-fsevent \
+    rb-inotify \
+    listen \
+    jbuilder \
+    fugit \
+    regexp_parser \
+    xpath \
+    capybara \
+    childprocess \
+    byebug \
+    bindex \
+    msgpack \
+    bootsnap \
+    public_suffix \
+    addressable \
     geminabox
 # Thecore GEMs
 RUN gem install model_driven_api:2.2.9 \
