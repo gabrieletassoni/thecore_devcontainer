@@ -1,5 +1,12 @@
 #!/bin/bash -e
 
+if [ $1 == "--help" ]
+then
+echo -e '\e[1mTo turn an existing Rails engine into a Thecore one (API only):\e[0m\n  1) please cd into engine directory\n  2) please run \e[31mthecorize_engine.sh API\e[0m'
+echo -e '\e[1mTo turn an existing Rails engine into a Thecore one (GUI only):\e[0m\n  1) please cd into engine directory\n  2) please run \e[31mthecorize_engine.sh GUI\e[0m'
+echo -e '\e[1mTo turn an existing Rails engine into a Thecore one (API + GUI):\e[0m\n  1) please cd into engine directory\n  2) please run \e[31mthecorize_engine.sh Both\e[0m'
+exit 0
+fi
 # Sanity Checks
 echo "Parameter $1"
 if [ -z "$1" ]
