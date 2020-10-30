@@ -9,17 +9,18 @@ RUN apt-get update && apt-get -y install \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts/
 
 # Installing the base thecore gems
-RUN gem install rails:6.0.3.4 \
-    # Databases
+# Databases
+RUN gem install \
     pg \
     mysql2 \
     sqlite3 \
     mongoid \
     bson_ext \
     tiny_tds \
-    activerecord-sqlserver-adapter \
-    # End Databases
-    # General Use GEMs
+    activerecord-sqlserver-adapter
+# General Use GEMs
+RUN gem install \
+    rails:6.0.3.4 \
     turbolinks-source \
     turbolinks \
     web-console \
@@ -46,6 +47,7 @@ RUN gem install rails:6.0.3.4 \
     bootsnap \
     public_suffix \
     addressable \
+    zeitwerk \
     geminabox
 # Thecore GEMs
 RUN gem install model_driven_api:2.2.9 \
