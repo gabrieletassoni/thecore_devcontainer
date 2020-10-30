@@ -99,4 +99,4 @@ RUN cp /etc/thecore/thecore_generate.thor ~/.thor/a84ebaa152a909f88944fc7354130e
 RUN cp /etc/thecore/thor.yml ~/.thor/thor.yml
 
 # Add MOTD instructions for scripts provided within this image
-RUN echo "for i in /usr/bin/thecor*; do eval "$i --help"; done" >> ~/.bashrc
+RUN echo 'for i in /usr/bin/thecor*; do eval "$i --help"; done' >> ~/.bashrc
