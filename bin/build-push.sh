@@ -37,6 +37,8 @@ echo "New Version: $DOCKERVERSION"
 git add . -A
 git commit -a -m "New Version $DOCKERVERSION"
 git tag $DOCKERVERSION
+git push
+git push --tags
 DOCKERUSER=gabrieletassoni
 DOCKERTAG=$DOCKERUSER/vscode-devcontainers-thecore:$DOCKERVERSION
 
