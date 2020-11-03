@@ -103,6 +103,7 @@ en:
 EOL
 
 # Add CI CD Automation
+# GITLAB
 cat > .gitlab-ci.yml << EOL
 image: ruby:2.7.1
 
@@ -118,3 +119,44 @@ build_gem:
         - gem build *.gemspec
         - gem push
 EOL
+
+# GITHUB
+mkdir -p .github/workflows/
+cat > .github/workflows/gempush.yml << EOL
+name: Ruby Gem
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    name: Build + Publish
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        git fetch --unshallow --tags
+        echo $?
+        git tag --list
+    - name: Set up Ruby 2.6
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.6.x
+
+    - name: Publish to RubyGems
+      run: |
+        mkdir -p $HOME/.gem
+        touch $HOME/.gem/credentials
+        chmod 0600 $HOME/.gem/credentials
+        printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
+        gem build *.gemspec
+        gem push *.gem
+      env:
+        GEM_HOST_API_KEY: ${{secrets.RUBYGEMS_AUTH_TOKEN}}
+
+EOL
+
+exit 0

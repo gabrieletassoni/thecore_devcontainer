@@ -50,18 +50,20 @@ RUN gem install \
     zeitwerk \
     geminabox
 # Thecore GEMs
-RUN gem install model_driven_api:2.2.9 \
-    rails_admin_selectize:2.0.3 \
-    thecore_auth_commons:2.2.8 \
-    thecore_backend_commons:2.3.0 \
-    thecore_background_jobs:2.0.1 \
-    thecore_dataentry_commons:2.0.4 \
-    thecore_download_documents:2.0.1 \
-    thecore_ftp_helpers:2.1.1 \
-    thecore_print_commons:2.0.2 \
-    thecore_print_with_template:2.0.1 \
-    thecore_ui_commons:2.2.0 \
-    thecore_ui_rails_admin:2.2.1
+RUN gem install \
+    model_driven_api:2.3.1 \
+    rails_admin_selectize:2.0.4 \
+    thecore_auth_commons:2.2.9 \
+    thecore_backend_commons:2.3.1 \
+    thecore_background_jobs:2.0.2 \
+    thecore_dataentry_commons:2.0.5 \
+    thecore_download_documents:2.0.2 \
+    thecore_ftp_helpers:2.1.2 \
+    thecore_print_commons:2.0.3 \
+    thecore_print_with_template:2.0.2 \
+    thecore_ui_commons:2.2.1 \
+    thecore_ui_rails_admin:2.2.2 \
+    thecore_mssql_importer_commmon:2.0.0
 RUN gem update
 
 # Creating the git clones of thecore gems.
@@ -83,7 +85,8 @@ RUN git clone https://github.com/gabrieletassoni/model_driven_api.git \
     && git clone https://github.com/gabrieletassoni/thecore_ui_commons.git \
     && git clone https://github.com/gabrieletassoni/thecore_ui_rails_admin.git \
     && git clone https://github.com/gabrieletassoni/thecore_print_commons.git \
-    && git clone https://github.com/gabrieletassoni/thecore_print_with_template.git
+    && git clone https://github.com/gabrieletassoni/thecore_print_with_template.git \
+    && git clone https://github.com/gabrieletassoni/thecore_mssql_importer_commmon.git
 
 
 # Getting all the tags
