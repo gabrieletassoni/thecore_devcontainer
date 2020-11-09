@@ -1,5 +1,5 @@
 # Build Arguments
-ARG VARIANT=2
+ARG VARIANT=2.7.1
 FROM mcr.microsoft.com/vscode/devcontainers/ruby:0-${VARIANT}
 
 RUN apt-get update && apt-get -y install \
