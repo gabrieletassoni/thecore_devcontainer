@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-if [ $1 == "--help" ]
+if [[ $1 == "--help" ]]
 then
 echo -e '\e[1mTo create a Thecore APP:\e[0m\n  1) please run \e[31mthecore_create_app.sh\e[0m\n  2) please answer to the questions posed by the wizard'
 exit 0
@@ -27,7 +27,7 @@ read -r FULLNAME
 if [[ "$FULLNAME" =~ ^[a-z0-9_]+$ ]]
 then
     echo "Creating a generic app" 
-    if [ -e "$FULLNAME" ]
+    if [[ -e "$FULLNAME" ]]
     then
         echo "ERROR! The directory already exists, please think about another name and re-run this script." 
         exit 1

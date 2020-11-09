@@ -1,22 +1,22 @@
 #!/bin/bash -e
 
-if [ $1 == "--help" ]
+if [[ $1 == "--help" ]]
 then
 echo -e '\e[1mTo create a Thecore Engine:\e[0m\n  1) please run \e[31mthecore_create_engine.sh\e[0m\n  2) please answer to the questions posed by the wizard'
 exit 0
 fi
 # Sanity Checks
-if [ -d .git ]
+if [[ -d .git ]]
 then
   echo -e "\e[31mThis folder contains a GIT setup, please run this script outside a project.\e[0m"
   exit 1
 fi
-if [ -f Gemfile ]
+if [[ -f Gemfile ]]
 then
   echo -e "\e[31mThis folder contains a Gemfile, please run this script outside a rails app project.\e[0m"
   exit 1
 fi
-if [ -f *.gemspec ]
+if [[ -f *.gemspec ]]
 then
   echo -e "\e[31mThis folder contains a gemspec file, please run this script outside a rails engine project.\e[0m"
   exit 1
@@ -51,7 +51,7 @@ TYPE="Both"
 select T in "API" "GUI" "Both"
 do
   echo "Selected ${T}"
-  if ! [ -z "${T}" ]
+  if ! [[ -z "${T}" ]]
   then
     TYPE="$T"
     break
@@ -111,7 +111,7 @@ git add . -A
 git commit -a -m "Initial git"
 echo "Please add a git repository URI if you like (empty string to add nothing):"
 read URI
-if [ -z $URI ]
+if [[ -z $URI ]]
 then
     exit 0
 fi
