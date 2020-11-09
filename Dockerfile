@@ -62,7 +62,7 @@ RUN gem install \
     thecore_print_commons:2.0.3 \
     thecore_print_with_template:2.0.2 \
     thecore_ui_commons:2.2.1 \
-    thecore_ui_rails_admin:2.2.2 \
+    thecore_ui_rails_admin:2.2.4 \
     thecore_mssql_importer_common:2.0.1
 RUN gem update
 
