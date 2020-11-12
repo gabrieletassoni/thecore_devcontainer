@@ -3,7 +3,6 @@
 # FROM mcr.microsoft.com/vscode/devcontainers/ruby:0-${VARIANT}
 FROM ruby:2.7.2
 
-RUN echo “deb https://dl.yarnpkg.com/debian/ stable main” >> /etc/apt/sources.list.d/yarn.list
 RUN apt-get update && apt-get -y install \
         freetds-dev \
         libcups2-dev \
@@ -69,6 +68,9 @@ RUN gem install \
     thecore_ui_rails_admin:2.2.4 \
     thecore_mssql_importer_common:2.0.1
 RUN gem update
+
+# Install yarn
+RUN npm install --global yarn
 
 # Creating the git clones of thecore gems.
 # Useful to have them already inside the dev environment if the need to customize them arises.
