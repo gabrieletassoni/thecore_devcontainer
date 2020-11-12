@@ -20,9 +20,9 @@ else
     exit 1
   fi
 fi
-if ! [[ -f *.gemspec ]]
+if ! [ -f *.gemspec ]
 then
-  echo -e "\e[31mThis folder does NOT contain a gemspec file, please run this script INSIDE a rails engine project.\e[0m"
+  echo -e "\e[31mThe Folder $(pwd) does NOT contain a gemspec file, please run this script INSIDE a rails engine project.\e[0m"
   exit 1
 fi
 
