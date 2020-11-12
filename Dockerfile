@@ -70,10 +70,10 @@ RUN gem update
 # Creating the git clones of thecore gems.
 # Useful to have them already inside the dev environment if the need to customize them arises.
 # Otherwise the gem installed ones will suffice to the needs of thecore development.
-WORKDIR /workspaces
-RUN mkdir -p thecore
-RUN chown -R vscode /workspaces/thecore
-USER vscode
+# WORKDIR /workspaces
+RUN mkdir -p /workspaces/thecore
+# RUN chown -R vscode /workspaces/thecore
+# USER vscode
 WORKDIR /workspaces/thecore
 RUN git clone https://github.com/gabrieletassoni/model_driven_api.git \
     && git clone https://github.com/gabrieletassoni/rails_admin_selectize.git \
