@@ -77,8 +77,9 @@ RUN npm install --global yarn
 # Otherwise the gem installed ones will suffice to the needs of thecore development.
 # WORKDIR /workspaces
 RUN mkdir -p /workspaces/thecore
-# RUN chown -R vscode /workspaces/thecore
-# USER vscode
+RUN useradd -ms /bin/bash vscode
+RUN chown -R vscode /workspaces/thecore
+USER vscode
 WORKDIR /workspaces/thecore
 RUN git clone https://github.com/gabrieletassoni/model_driven_api.git \
     && git clone https://github.com/gabrieletassoni/rails_admin_selectize.git \
