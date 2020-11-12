@@ -139,7 +139,7 @@ jobs:
     - uses: actions/checkout@v2
     - run: |
         git fetch --unshallow --tags
-        echo $?
+        echo \$?
         git tag --list
     - name: Set up Ruby 2.6
       uses: actions/setup-ruby@v1
@@ -148,14 +148,14 @@ jobs:
 
     - name: Publish to RubyGems
       run: |
-        mkdir -p $HOME/.gem
-        touch $HOME/.gem/credentials
-        chmod 0600 $HOME/.gem/credentials
-        printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
+        mkdir -p \$HOME/.gem
+        touch \$HOME/.gem/credentials
+        chmod 0600 \$HOME/.gem/credentials
+        printf -- "---\n:rubygems_api_key: \${GEM_HOST_API_KEY}\n" > \$HOME/.gem/credentials
         gem build *.gemspec
         gem push *.gem
       env:
-        GEM_HOST_API_KEY: ${{secrets.RUBYGEMS_AUTH_TOKEN}}
+        GEM_HOST_API_KEY: \${{secrets.RUBYGEMS_AUTH_TOKEN}}
 
 EOL
 
