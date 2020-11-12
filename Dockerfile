@@ -1,6 +1,7 @@
 # Build Arguments
-ARG VARIANT=2
-FROM mcr.microsoft.com/vscode/devcontainers/ruby:0-${VARIANT}
+# ARG VARIANT=2
+# FROM mcr.microsoft.com/vscode/devcontainers/ruby:0-${VARIANT}
+FROM ruby:2.7.2
 
 RUN apt-get update && apt-get -y install \
         freetds-dev \
