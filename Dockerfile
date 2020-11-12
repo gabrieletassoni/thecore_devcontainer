@@ -3,6 +3,7 @@
 # FROM mcr.microsoft.com/vscode/devcontainers/ruby:0-${VARIANT}
 FROM ruby:2.7.2
 
+RUN echo “deb https://dl.yarnpkg.com/debian/ stable main” >> /etc/apt/sources.list.d/yarn.list
 RUN apt-get update && apt-get -y install \
         freetds-dev \
         libcups2-dev \
