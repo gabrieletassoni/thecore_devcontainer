@@ -22,36 +22,21 @@ yesno () {
     choose
 }
 
-echo "Please enter app's name:" 
-read -r FULLNAME
-if [[ "$FULLNAME" =~ ^[a-z0-9_]+$ ]]
+FULLNAME="$(basename $(pwd))"
+yesno "The WebApp will be called $FULLNAME, is this ok?"
+[[ $CHOICE == "no" ]] && read -p "Please provide an alternative name: " -r FULLNAME
+pattern='^[a-z0-9_-]+$'
+if [[ "$FULLNAME" =~ $pattern ]]
 then
-    # echo "Creating a generic app" 
-    # if [[ -e "$FULLNAME" ]]
-    # then
-    #     echo "ERROR! The directory already exists, please think about another name and re-run this script." 
-    #     exit 1
-    # fi
-
-    # TODO: Check on template necessity can this wizard be completely driven only 
-    # by this shell script?
-    #  -m 'https://raw.githubusercontent.com/gabrieletassoni/thecore_setup_templates/master/new_thecore_app.rb' 
-
     # Create arguments (optional and mandatory)
     args=( )
     # Ask for type of database needed
-    echo "Which database will be used by the app?"
+    echo "Which database adapter will be used by the app?"
     echo -e "\e[31mBe sure to have the correct libraries (drivers/clients) installed in the Operative System.\e[0m"
-    OPTIONS=("mysql" "postgresql" "sqlite3" "oracle" "frontbase" "ibm_db" "sqlserver" "jdbcmysql" "jdbcsqlite3" "jdbcpostgresql" "jdbc")
+    OPTIONS=("mysql2" "postgres" "sqlite3" "oracle" "frontbase" "ibm_db" "sqlserver" "jdbcmysql" "jdbcsqlite3" "jdbcpostgresql" "jdbc")
     choose
     DB_TYPE=$CHOICE
     args+=( --database "$DB_TYPE" )
-
-    # Ask for local or remote DB
-    echo "Is the database local or remote to this server?"
-    OPTIONS=("local" "remote")
-    choose
-    DB_LOCATION=$CHOICE
 
     # Ask for type of aplication needed
     echo "Which kind of Thecore App would you like to create?"
@@ -64,53 +49,46 @@ then
     fi
 
     # Actually run the selected Thecore application type
-    rails new "$FULLNAME" "${args[@]}"
+    rails new . "${args[@]}"
 
-    yesno "Is the Database already existing?"
-    if [[ $CHOICE == "yes" ]]
-    then
-        echo "Please provide the connection string for the existing Database."
-        echo "The format may look like these:"
-        echo "- postgres://localhost/thecore_db?pool=5"
-        echo "- mysql2://root:password@127.0.0.1/thecore_db?pool=5"
-        echo "- sqlite3::memory:"
-        echo -e "\e[31mThe database must be already up and running and reachable by this installation.\e[0m"
-        STOPLOOP=false
-        while $STOPLOOP
-        do
-            read -r
-            yesno "Is the connection string $REPLY correct?"
-            if [[ $CHOICE == "yes" ]]
-            then
-                DB_CONNECTION_STRING_TEST="${REPLY}"
-                DB_CONNECTION_STRING_DEV="${REPLY}"
-                DB_CONNECTION_STRING_PROD="${REPLY}"
-                STOPLOOP=true
-            fi
-        done
-    else
-        echo "For local postgresql Databases I can try to setup the DB for you. Otherwise you need to create it by yourself and provide the connection string restarting this installation script again."
-        if [[ $DB_LOCATION == "local" ]] && [[ $DB_TYPE == "postgresql" ]]
-        then
-            echo "Please provide sudo password."
-            sudo id
-            # CLEANUPS
-            sudo -u postgres -- dropdb --if-exists "${FULLNAME}_development" # Dev
-            sudo -u postgres -- dropdb --if-exists "${FULLNAME}_test" # Test
-            sudo -u postgres -- dropdb --if-exists "${FULLNAME}" # Prod
-            sudo -u postgres -- dropuser --if-exists "${FULLNAME}"
-            # CREATIONS
-            sudo -u postgres createuser -d "${FULLNAME}"
-            sudo -u postgres psql -c "alter user ${FULLNAME} with encrypted password '${FULLNAME}';"
-            sudo -u postgres createdb -O "${FULLNAME}" "${FULLNAME}" 
-            sudo -u postgres createdb -O "${FULLNAME}" "${FULLNAME}_development" 
-            sudo -u postgres createdb -O "${FULLNAME}" "${FULLNAME}_test"
+    [[ "$DB_TYPE" == "sqlite3" ]] && {
+        DB_CONNECTION_STRING_TEST="sqlite3:${FULLNAME}_test"
+        DB_CONNECTION_STRING_DEV="sqlite3:${FULLNAME}_dev"
+        DB_CONNECTION_STRING_PROD="sqlite3:${FULLNAME}_prod"
+    }
 
-            DB_CONNECTION_STRING_TEST="postgres://${FULLNAME}:${FULLNAME}@localhost/${FULLNAME}_test?pool=5"
-            DB_CONNECTION_STRING_DEV="postgres://${FULLNAME}:${FULLNAME}@localhost/${FULLNAME}_development?pool=5"
-            DB_CONNECTION_STRING_PROD="postgres://${FULLNAME}:${FULLNAME}@localhost/${FULLNAME}?pool=5"     
-        fi
-    fi
+    STOPLOOP=true
+    while $STOPLOOP
+    do
+        read -p "Please provide the ADDRESS of the DB: " -r ADDRESS
+        yesno "Is the ADDRESS $ADDRESS correct?"
+        [[ $CHOICE == "yes" ]] && STOPLOOP=false
+    done
+    STOPLOOP=true
+    while $STOPLOOP
+    do
+        read -p "Please provide the PORT of the DB: " -r PORT
+        yesno "Is the ADDRESS $PORT correct?"
+        [[ $CHOICE == "yes" ]] && STOPLOOP=false
+    done
+    STOPLOOP=true
+    while $STOPLOOP
+    do
+        read -p "Please provide the USER of the DB: " -r USER
+        yesno "Is the ADDRESS $USER correct?"
+        [[ $CHOICE == "yes" ]] && STOPLOOP=false
+    done
+    STOPLOOP=true
+    while $STOPLOOP
+    do
+        read -p "Please provide the PASS of the DB: " -r PASS
+        yesno "Is the ADDRESS $PASS correct?"
+        [[ $CHOICE == "yes" ]] && STOPLOOP=false
+    done
+
+    DB_CONNECTION_STRING_TEST="${DB_TYPE}://${USER}:${PASS}@${ADDRESS}:${PORT}/${FULLNAME}_test?pool=5"
+    DB_CONNECTION_STRING_DEV="${DB_TYPE}://${USER}:${PASS}@${ADDRESS}:${PORT}/${FULLNAME}_dev?pool=5"
+    DB_CONNECTION_STRING_PROD="${DB_TYPE}://${USER}:${PASS}@${ADDRESS}:${PORT}/${FULLNAME}_prod?pool=5"
 
     cat <<EOF | tee "${FULLNAME}/config/database.yml"
 development:
@@ -123,6 +101,33 @@ production:
   url: ${DB_CONNECTION_STRING_PROD}
 EOF
   
+    cat <<EOF | tee "${FULLNAME}/app/assets/stylesheets/overrides.scss"
+// Please remove this file if you'd like to override it in an engine.
+// You can override these UI settings:
+
+// $primary: #1f4068 !default;
+
+// $background: lighten($primary, 51%) !default;
+// $shadows: darken($primary, 10%) !default;
+
+// $text: darken($primary, 40%) !default;
+// $text-highlight: lighten($text, 80%) !default;
+
+// $link: $text !default;
+// $link-highlight: lighten($link, 10%) !default;
+
+// $element: $primary !default;
+// $element-text: lighten($element, 40%) !default;
+// $element-text-highlight: lighten($element-text, 10%) !default;
+// $element-border: darken($element, 10%) !default;
+
+// $neutral: #706f6f !default;
+// $success: #37BC9B !default;
+// $info: #3BAFDA !default;
+// $danger: #E9573F !default;
+// $warning: #F6BB42 !default;
+EOF
+
     echo "${FULLNAME}" > "${FULLNAME}/.ruby-gemset"
     cd "$FULLNAME"
 
@@ -223,6 +228,7 @@ EOF
     rails active_storage:install
     rails action_text:install
     yarn install
+    rails db:exists || rails db:create
     rails db:migrate
     
     # Add gitignore

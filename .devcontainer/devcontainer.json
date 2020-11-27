@@ -19,7 +19,8 @@
 		"ms-azuretools.vscode-docker",
 		"misogi.ruby-rubocop",
 		"rogalmic.bash-debug",
-		"shakram02.bash-beautify"
+		"shakram02.bash-beautify",
+		"foxundermoon.shell-format"
 	],
 	"build": {
 		"args": {
