@@ -35,7 +35,7 @@ RUN gem install \
     sass-rails \
     selenium-webdriver \
     rack-proxy \
-    puma:4.1 \
+    puma:4.3.6 \
     rb-fsevent \
     rb-inotify \
     listen \
