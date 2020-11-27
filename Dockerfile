@@ -119,3 +119,4 @@ EXPOSE 3000
 RUN echo '/usr/bin/thecore_help.sh' >> ~/.bashrc
 RUN echo 'export APPBIN=$(find /workspaces/*/ -maxdepth 1 -mindepth 1 -name bin)'  >> ~/.bashrc
 RUN echo "export PATH=$PATH:$APPBIN" >> ~/.bashrc
+RUN tail ~/.bashrc
