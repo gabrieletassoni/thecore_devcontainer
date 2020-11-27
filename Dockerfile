@@ -117,3 +117,5 @@ EXPOSE 3000
 
 # Add MOTD instructions for scripts provided within this image
 RUN echo '/usr/bin/thecore_help.sh' >> ~/.bashrc
+RUN echo 'export APPBIN=$(find /workspaces/*/ -maxdepth 1 -mindepth 1 -name bin)'  >> ~/.bashrc
+RUN echo "export PATH=$PATH:$APPBIN" >> ~/.bashrc

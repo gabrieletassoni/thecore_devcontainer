@@ -24,7 +24,7 @@ yesno () {
 
 FULLNAME="$(basename $(pwd))"
 yesno "The WebApp will be called $FULLNAME, is this ok?"
-[[ $CHOICE == "no" ]] && read -p "Please provide an alternative name: " -r FULLNAME
+[[ $CHOICE == "no" ]] && read -p "Please provide an alternative name: " -r FULLNAME && OTHERNAME=true
 pattern='^[a-z0-9_-]+$'
 if [[ "$FULLNAME" =~ $pattern ]]
 then
