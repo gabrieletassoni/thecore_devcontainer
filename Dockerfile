@@ -30,7 +30,7 @@ RUN gem install \
     turbolinks \
     web-console \
     webdrivers \
-    webpacker \
+    webpacker:4.3.0 \
     spring \
     spring-watcher-listen \
     sass-rails \
@@ -112,6 +112,8 @@ COPY thor_definitions/ /etc/thecore/
 RUN mkdir ~/.thor
 RUN cp /etc/thecore/thecore_generate.thor ~/.thor/a84ebaa152a909f88944fc7354130e94
 RUN cp /etc/thecore/thor.yml ~/.thor/thor.yml
+
+EXPOSE 3000
 
 # Add MOTD instructions for scripts provided within this image
 RUN echo '/usr/bin/thecore_help.sh' >> ~/.bashrc
