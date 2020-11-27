@@ -24,6 +24,7 @@ RUN gem install \
 # General Use GEMs
 RUN gem install \
     rails:6.0.3.4 \
+    erubi:1.10.0 \
     turbolinks-source \
     turbolinks \
     web-console \
@@ -34,7 +35,7 @@ RUN gem install \
     sass-rails \
     selenium-webdriver \
     rack-proxy \
-    puma \
+    puma:4.1 \
     rb-fsevent \
     rb-inotify \
     listen \
