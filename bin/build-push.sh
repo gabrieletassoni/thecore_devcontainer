@@ -1,4 +1,8 @@
 #/bin/bash -e
 
 bin/build.sh
-docker push $DOCKERTAG
+echo "Login to docker hub"
+docker login
+[[ -n "$DOCKERTAG" ]] && docker push $DOCKERTAG
+
+exit 0

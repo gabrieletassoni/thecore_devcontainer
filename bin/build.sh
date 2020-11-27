@@ -40,8 +40,6 @@ git push --tags
 DOCKERUSER=gabrieletassoni
 DOCKERTAG=$DOCKERUSER/vscode-devcontainers-thecore:$DOCKERVERSION
 
-echo "Login to docker hub"
-docker login
 docker build -t $DOCKERTAG .
 export DOCKERTAG=$DOCKERTAG
 exit 0
