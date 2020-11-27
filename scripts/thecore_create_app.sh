@@ -26,12 +26,12 @@ echo "Please enter app's name:"
 read -r FULLNAME
 if [[ "$FULLNAME" =~ ^[a-z0-9_]+$ ]]
 then
-    echo "Creating a generic app" 
-    if [[ -e "$FULLNAME" ]]
-    then
-        echo "ERROR! The directory already exists, please think about another name and re-run this script." 
-        exit 1
-    fi
+    # echo "Creating a generic app" 
+    # if [[ -e "$FULLNAME" ]]
+    # then
+    #     echo "ERROR! The directory already exists, please think about another name and re-run this script." 
+    #     exit 1
+    # fi
 
     # TODO: Check on template necessity can this wizard be completely driven only 
     # by this shell script?
