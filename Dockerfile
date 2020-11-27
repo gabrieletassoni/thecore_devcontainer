@@ -8,6 +8,7 @@ RUN apt-get update && apt-get -y install \
         libcups2-dev \
         nodejs \
         npm \
+        sudo \
     # Clean up
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts/
 
@@ -79,6 +80,7 @@ RUN npm install --global yarn
 # WORKDIR /workspaces
 RUN mkdir -p /workspaces/thecore
 RUN useradd -ms /bin/bash vscode
+RUN usermod -aG sudo vscode
 RUN chown -R vscode /workspaces/thecore
 USER vscode
 WORKDIR /workspaces/thecore
