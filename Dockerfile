@@ -79,8 +79,10 @@ RUN npm install --global yarn
 # Otherwise the gem installed ones will suffice to the needs of thecore development.
 # WORKDIR /workspaces
 RUN mkdir -p /workspaces/thecore
+
 RUN useradd -ms /bin/bash vscode
 RUN usermod -aG sudo vscode
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 RUN chown -R vscode /workspaces/thecore
 USER vscode
 WORKDIR /workspaces/thecore
