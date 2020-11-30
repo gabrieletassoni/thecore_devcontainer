@@ -225,6 +225,7 @@ EOF
     fi
 
     bundle install
+    rails webpacker:install
     rails active_storage:install
     rails action_text:install
     yarn install
