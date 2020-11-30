@@ -9,8 +9,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive && apt-get -y instal
         build-essential \
         freetds-dev \
         libcups2-dev \
-        nodejs \
-        npm \
+        yarn \
         sudo \
         apt-utils \
         git \
@@ -112,9 +111,6 @@ RUN gem install \
     thecore_ui_rails_admin:2.2.4 \
     thecore_mssql_importer_common:2.0.1
 RUN gem update
-
-# Install yarn
-RUN npm install --global yarn
 
 # Creating the git clones of thecore gems.
 # Useful to have them already inside the dev environment if the need to customize them arises.
