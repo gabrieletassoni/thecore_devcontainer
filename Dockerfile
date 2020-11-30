@@ -2,15 +2,57 @@
 # ARG VARIANT=2
 # FROM mcr.microsoft.com/vscode/devcontainers/ruby:0-${VARIANT}
 FROM ruby:2.7.2
+# FROM mcr.microsoft.com/vscode/devcontainers/base:buster
 
-RUN apt-get update && apt-get -y install \
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive && apt-get -y install \
+        software-properties-common \
+        build-essential \
         freetds-dev \
         libcups2-dev \
         nodejs \
         npm \
         sudo \
+        apt-utils \
+        git \
+        openssh-client \
+        gnupg2 \
+        iproute2 \
+        procps \
+        lsof \
+        htop \
+        net-tools \
+        psmisc \
+        curl \
+        wget \
+        rsync \
+        ca-certificates \
+        unzip \
+        zip \
+        nano \
+        vim-tiny \
+        less \
+        jq \
+        lsb-release \
+        apt-transport-https \
+        dialog \
+        libc6 \
+        libgcc1 \
+        libgssapi-krb5-2 \
+        libicu[0-9][0-9] \
+        liblttng-ust0 \
+        libstdc++6 \
+        zlib1g \
+        locales \
+        sudo \
+        ncdu \
+        man-db \
+        strace \
+        libssl1.1 \
+    # Update
+    && apt-get -y dist-upgrade --no-install-recommends \
     # Clean up
-    && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts/
+    && apt-get purge -y imagemagick imagemagick-6-common \
+    && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Installing the base thecore gems
 # Databases
