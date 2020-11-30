@@ -94,7 +94,8 @@ RUN gem install \
     public_suffix \
     addressable \
     zeitwerk \
-    geminabox
+    geminabox \
+    thor
 # Thecore GEMs
 RUN gem install \
     model_driven_api:2.3.1 \
@@ -140,7 +141,6 @@ RUN git clone https://github.com/gabrieletassoni/model_driven_api.git \
     && git clone https://github.com/gabrieletassoni/thecore_print_commons.git \
     && git clone https://github.com/gabrieletassoni/thecore_print_with_template.git \
     && git clone https://github.com/gabrieletassoni/thecore_mssql_importer_commmon.git
-
 
 # Getting all the tags
 RUN for i in *; do if [ -d "$i" ]; then cd "$i"; echo "$i"; git fetch --all --tags --prune; cd ..; fi; done
