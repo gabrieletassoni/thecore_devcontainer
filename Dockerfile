@@ -51,7 +51,6 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive && apt-get -y instal
     # Update
     && apt-get -y dist-upgrade --no-install-recommends \
     # Clean up
-    && apt-get purge -y imagemagick imagemagick-6-common \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Installing the base thecore gems
