@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'rails/all'
+require 'active_support/inflector'
 require 'fileutils'
 
 class ThecoreGenerate < Thor
