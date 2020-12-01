@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-require 'railties'
+
+require 'rails/all'
 require 'fileutils'
 
 class ThecoreGenerate < Rails::Command::Base
