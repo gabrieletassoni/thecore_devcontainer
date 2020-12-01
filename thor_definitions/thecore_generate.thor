@@ -2,7 +2,7 @@
 
 require 'fileutils'
 
-class ThecoreGenerate
+class ThecoreGenerate < Thor
   desc "models", 'Thecorize the Model applying all the sane defaults proved efficient during the years of development using Thecore in production'
   def models
     loop do
