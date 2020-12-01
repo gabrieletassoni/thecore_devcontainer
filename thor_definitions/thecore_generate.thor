@@ -1,8 +1,8 @@
 # frozen_string_literal: true
-
+require 'railties'
 require 'fileutils'
 
-class ThecoreGenerate < Thor
+class ThecoreGenerate < Rails::Command::Base
   desc "models", 'Thecorize the Model applying all the sane defaults proved efficient during the years of development using Thecore in production'
   def models
     loop do
