@@ -11,7 +11,7 @@ class ThecoreGenerate < Thor
       model_declaration = ask("Please enter a model declaration or NONE if you don't need new models\n(i.e. ModelName title:string:index active:boolean due_at:datetime):\n", :green, :bold)
       break if model_declaration.casecmp('NONE').zero?
       # generate(:model, model_declaration)
-      system("rails g model #{model_declaration} -s -q")
+      system(`rails g model #{model_declaration} -s -q -f`)
       say 'Replace ActiveRecord::Base with ApplicationRecord', :green
       say "Add rails_admin declaration only in files which are ActiveRecords and don't already have that declaration", :green
       say 'Thecorize the Model and completing Belongs To Associations', :green
@@ -19,6 +19,8 @@ class ThecoreGenerate < Thor
       filename = entry.split('/').last
       m = entry.split('.').first.split('/').last.camelize
       # Download this entry's template for api and railsadmin
+      FileUtils.mkdir_p "app/models/concerns/api/#{filename}"
+      FileUtils.mkdir_p "app/models/concerns/rails_admin/#{filename}"
       # API
       FileUtils.copy '/etc/thecore/templates/model_api_concern.tt', "app/models/concerns/api/#{filename}" unless File.exist?("app/models/concerns/api/#{filename}")
       FileUtils.copy '/etc/thecore/templates/model_rails_admin_concern.tt', "app/models/concerns/rails_admin/#{filename}" unless File.exist?("app/models/concerns/rails_admin/#{filename}")
