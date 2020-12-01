@@ -144,7 +144,8 @@ RUN for i in *; do if [ -d "$i" ]; then cd "$i"; echo "$i"; git fetch --all --ta
 
 # Add to the container thecore specific scripts
 COPY scripts/ /usr/bin/
-COPY templates /etc/thecore/
+RUN mkdir -p /etc/thecore/templates
+COPY templates /etc/thecore/templates
 COPY thor_definitions/ /etc/thecore/
 
 RUN mkdir ~/.thor
