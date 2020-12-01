@@ -160,3 +160,6 @@ RUN echo 'export PATH=$PATH:$APPBIN' >> ~/.bashrc
 RUN tail ~/.bashrc
 
 WORKDIR /workspaces
+
+# Testing Thor executable presence
+RUN which thor
