@@ -113,17 +113,21 @@ RUN gem install \
     thecore_mssql_importer_common:2.0.1
 RUN gem update
 
+# Add to the container thecore specific scripts
+COPY scripts/ /usr/bin/
+RUN mkdir -p /etc/thecore/templates
+COPY templates /etc/thecore/templates
+COPY thor_definitions/ /etc/thecore/
+
 # Creating the git clones of thecore gems.
 # Useful to have them already inside the dev environment if the need to customize them arises.
 # Otherwise the gem installed ones will suffice to the needs of thecore development.
 # WORKDIR /workspaces
-RUN mkdir -p /workspaces/thecore
-
 RUN useradd -ms /bin/bash vscode
 RUN usermod -aG sudo vscode
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-RUN chown -R vscode /workspaces/thecore
 USER vscode
+RUN mkdir -p /workspaces/thecore
 WORKDIR /workspaces/thecore
 RUN git clone https://github.com/gabrieletassoni/model_driven_api.git \
     && git clone https://github.com/gabrieletassoni/rails_admin_selectize.git \
@@ -141,12 +145,6 @@ RUN git clone https://github.com/gabrieletassoni/model_driven_api.git \
 
 # Getting all the tags
 RUN for i in *; do if [ -d "$i" ]; then cd "$i"; echo "$i"; git fetch --all --tags --prune; cd ..; fi; done
-
-# Add to the container thecore specific scripts
-COPY scripts/ /usr/bin/
-RUN mkdir -p /etc/thecore/templates
-COPY templates /etc/thecore/templates
-COPY thor_definitions/ /etc/thecore/
 
 RUN mkdir ~/.thor
 RUN cp /etc/thecore/thecore_generate.thor ~/.thor/a84ebaa152a909f88944fc7354130e94
