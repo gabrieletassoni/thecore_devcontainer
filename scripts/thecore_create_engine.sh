@@ -32,9 +32,10 @@ function ask_for_name # VARNAME prompt
 
 ask_for_name ENGINE_NAME "Please provide an engine name in underscore notation"
 # Some sanity checks, allow only underscore names
-if [[ $ENGINE_NAME == *['!'@#\$%^\&*()\++]* ]]
+pattern='^[a-z0-9_-]+$'
+if [[ "$ENGINE_NAME" =~ $pattern ]]
 then
-  echo -e "\e[31mError! Engine Name cannot contain special characters other than _\e[0m"
+  echo -e "\e[31mError! Engine Name cannot contain special characters other than downcase letters, numbers, _ and -\e[0m"
   exit 2
 fi
 
@@ -77,7 +78,7 @@ fi
 
 rails plugin new $ENGINE_NAME -fG --full
 
-cd $ENGINE_NAME
+cd "$ENGINE_NAME"
 
 # Setup the gemspec file
 function edit_gem_info # KEY VALUE FILE
