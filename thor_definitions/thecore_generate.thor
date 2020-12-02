@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
-require 'rails/all'
 require 'active_support/inflector'
+require 'thor/actions/file_manipulation'
 require 'fileutils'
 
 class ThecoreGenerate < Thor
+  include Thor::Actions
+  
   desc "models", 'Thecorize the Model applying all the sane defaults proved efficient during the years of development using Thecore in production'
   def models
     loop do
@@ -19,8 +21,8 @@ class ThecoreGenerate < Thor
       filename = entry.split('/').last
       m = entry.split('.').first.split('/').last.camelize
       # Download this entry's template for api and railsadmin
-      FileUtils.mkdir_p "app/models/concerns/api/#{filename}"
-      FileUtils.mkdir_p "app/models/concerns/rails_admin/#{filename}"
+      FileUtils.mkdir_p "app/models/concerns/api/"
+      FileUtils.mkdir_p "app/models/concerns/rails_admin/"
       # API
       FileUtils.copy '/etc/thecore/templates/model_api_concern.tt', "app/models/concerns/api/#{filename}" unless File.exist?("app/models/concerns/api/#{filename}")
       FileUtils.copy '/etc/thecore/templates/model_rails_admin_concern.tt', "app/models/concerns/rails_admin/#{filename}" unless File.exist?("app/models/concerns/rails_admin/#{filename}")
