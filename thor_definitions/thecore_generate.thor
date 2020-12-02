@@ -9,6 +9,7 @@ class ThecoreGenerate < Thor
 
   desc "models", 'Thecorize the Model applying all the sane defaults proved efficient during the years of development using Thecore in production'
   def models
+    name = Dir["*.gemspec"].first.split(".").first
     loop do
       model_declaration = ask("Please enter a model declaration or NONE if you don't need new models\n(i.e. ModelName title:string:index active:boolean due_at:datetime):\n", :green, :bold)
       break if model_declaration.casecmp('NONE').zero?
