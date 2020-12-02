@@ -129,7 +129,7 @@ RUN useradd -ms /bin/bash vscode
 RUN usermod -aG sudo vscode
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 RUN mkdir -p /workspaces/thecore
-RUN chown -R vscode /workspaces/thecore
+RUN chown -R vscode /workspaces
 USER vscode
 WORKDIR /workspaces/thecore
 RUN git clone https://github.com/gabrieletassoni/model_driven_api.git \
