@@ -16,11 +16,14 @@ then
   echo -e "\e[31mThis folder contains a Gemfile, please run this script outside a rails app project.\e[0m"
   exit 1
 fi
-if [[ -f *.gemspec ]]
-then
-  echo -e "\e[31mThis folder contains a gemspec file, please run this script outside a rails engine project.\e[0m"
-  exit 1
-fi
+for i in *.gemspec
+do
+  if [[ -f "$i" ]]
+  then
+    echo -e "\e[31mThis folder contains a gemspec file, please run this script outside a rails engine project.\e[0m"
+    exit 1
+  fi
+done
 
 function ask_for_name # VARNAME prompt
 {
@@ -33,7 +36,7 @@ function ask_for_name # VARNAME prompt
 ask_for_name ENGINE_NAME "Please provide an engine name in underscore notation"
 # Some sanity checks, allow only underscore names
 pattern='^[a-z0-9_-]+$'
-if [[ "$ENGINE_NAME" =~ $pattern ]]
+if ! [[ "$ENGINE_NAME" =~ $pattern ]]
 then
   echo -e "\e[31mError! Engine Name cannot contain special characters other than downcase letters, numbers, _ and -\e[0m"
   exit 2
