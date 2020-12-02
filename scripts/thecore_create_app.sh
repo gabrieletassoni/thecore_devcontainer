@@ -228,7 +228,7 @@ EOF
     rails db:migrate
     
     # Add gitignore
-    curl https://www.toptal.com/developers/gitignore/api/osx,macos,ruby,linux,rails,windows,sublimetext,visualstudio,visualstudiocode > .gitignore
+    curl https://www.toptal.com/developers/gitignore/api/osx,macos,ruby,linux,rails,windows > .gitignore
     echo ".passwords" >> .gitignore
 
     mkdir -p vendor/gems

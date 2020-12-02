@@ -6,13 +6,13 @@ require 'fileutils'
 
 class ThecoreGenerate < Thor
   include Thor::Actions
-  
+
   desc "models", 'Thecorize the Model applying all the sane defaults proved efficient during the years of development using Thecore in production'
   def models
     loop do
       model_declaration = ask("Please enter a model declaration or NONE if you don't need new models\n(i.e. ModelName title:string:index active:boolean due_at:datetime):\n", :green, :bold)
       break if model_declaration.casecmp('NONE').zero?
-      # generate(:model, model_declaration)
+      # generate(:model, model_declaration, )
       system(`rails g model #{model_declaration} -s -q -f`)
       say 'Replace ActiveRecord::Base with ApplicationRecord', :green
       say "Add rails_admin declaration only in files which are ActiveRecords and don't already have that declaration", :green

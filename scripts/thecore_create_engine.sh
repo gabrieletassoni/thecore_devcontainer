@@ -98,13 +98,14 @@ thecorize_engine.sh ${TYPE}
 
 # GIT
 # Add gitignore
-curl https://www.toptal.com/developers/gitignore/api/osx,macos,ruby,linux,rails,windows,sublimetext,visualstudio,visualstudiocode > .gitignore
+curl https://www.toptal.com/developers/gitignore/api/osx,macos,ruby,linux,rails,windows > .gitignore
 # And manage working copy
 git init
 git config user.name "$ENGINE_AUTHOR"
 git config user.email "$ENGINE_EMAIL"
 git add . -A
 git commit -a -m "Initial git"
+git tag 0.1.0
 echo "Please add a git repository URI if you like (empty string to add nothing):"
 read -r URI
 if [[ -z $URI ]]
@@ -114,6 +115,7 @@ fi
 
 git remote add origin "$URI"
 git push --set-upstream origin master
+git push --tags
 
 cd ../../..
 
