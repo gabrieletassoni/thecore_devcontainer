@@ -33,7 +33,7 @@ then
     # Ask for type of database needed
     echo "Which database adapter will be used by the app?"
     echo -e "\e[31mBe sure to have the correct libraries (drivers/clients) installed in the Operative System.\e[0m"
-    OPTIONS=("mysql2" "postgres" "sqlite3" "oracle" "frontbase" "ibm_db" "sqlserver" "jdbcmysql" "jdbcsqlite3" "jdbcpostgresql" "jdbc")
+    OPTIONS=(mysql postgresql sqlite3 oracle frontbase ibm_db sqlserver jdbcmysql jdbcsqlite3 jdbcpostgresql jdbc)
     choose
     DB_TYPE=$CHOICE
     args+=( --database "$DB_TYPE" )
@@ -51,45 +51,53 @@ then
     # Actually run the selected Thecore application type
     rails new . "${args[@]}"
 
-    [[ "$DB_TYPE" == "sqlite3" ]] && {
-        DB_CONNECTION_STRING_TEST="sqlite3:${FULLNAME}_test"
-        DB_CONNECTION_STRING_DEV="sqlite3:${FULLNAME}_dev"
-        DB_CONNECTION_STRING_PROD="sqlite3:${FULLNAME}_prod"
-    }
+    if [[ "$DB_TYPE" == "sqlite3" ]]
+    then
+        DB_CONNECTION_STRING_TEST="${DB_TYPE}:${FULLNAME}_test"
+        DB_CONNECTION_STRING_DEV="${DB_TYPE}:${FULLNAME}_dev"
+        DB_CONNECTION_STRING_PROD="${DB_TYPE}:${FULLNAME}_prod"
+    else
+        case $DB_TYPE in
+            mysql)
+                DB_TYPE=mysql2
+                ;;
+            postgresql)
+                DB_TYPE=postgres
+                ;;
+        esac
+        STOPLOOP=true
+        while $STOPLOOP
+        do
+            read -p "Please provide the ADDRESS of the DB: " -r ADDRESS
+            yesno "Is the ADDRESS $ADDRESS correct?"
+            [[ $CHOICE == "yes" ]] && STOPLOOP=false
+        done
+        STOPLOOP=true
+        while $STOPLOOP
+        do
+            read -p "Please provide the PORT of the DB: " -r PORT
+            yesno "Is the ADDRESS $PORT correct?"
+            [[ $CHOICE == "yes" ]] && STOPLOOP=false
+        done
+        STOPLOOP=true
+        while $STOPLOOP
+        do
+            read -p "Please provide the USER of the DB: " -r USER
+            yesno "Is the ADDRESS $USER correct?"
+            [[ $CHOICE == "yes" ]] && STOPLOOP=false
+        done
+        STOPLOOP=true
+        while $STOPLOOP
+        do
+            read -p "Please provide the PASS of the DB: " -r PASS
+            yesno "Is the ADDRESS $PASS correct?"
+            [[ $CHOICE == "yes" ]] && STOPLOOP=false
+        done
 
-    STOPLOOP=true
-    while $STOPLOOP
-    do
-        read -p "Please provide the ADDRESS of the DB: " -r ADDRESS
-        yesno "Is the ADDRESS $ADDRESS correct?"
-        [[ $CHOICE == "yes" ]] && STOPLOOP=false
-    done
-    STOPLOOP=true
-    while $STOPLOOP
-    do
-        read -p "Please provide the PORT of the DB: " -r PORT
-        yesno "Is the ADDRESS $PORT correct?"
-        [[ $CHOICE == "yes" ]] && STOPLOOP=false
-    done
-    STOPLOOP=true
-    while $STOPLOOP
-    do
-        read -p "Please provide the USER of the DB: " -r USER
-        yesno "Is the ADDRESS $USER correct?"
-        [[ $CHOICE == "yes" ]] && STOPLOOP=false
-    done
-    STOPLOOP=true
-    while $STOPLOOP
-    do
-        read -p "Please provide the PASS of the DB: " -r PASS
-        yesno "Is the ADDRESS $PASS correct?"
-        [[ $CHOICE == "yes" ]] && STOPLOOP=false
-    done
-
-    DB_CONNECTION_STRING_TEST="${DB_TYPE}://${USER}:${PASS}@${ADDRESS}:${PORT}/${FULLNAME}_test?pool=5"
-    DB_CONNECTION_STRING_DEV="${DB_TYPE}://${USER}:${PASS}@${ADDRESS}:${PORT}/${FULLNAME}_dev?pool=5"
-    DB_CONNECTION_STRING_PROD="${DB_TYPE}://${USER}:${PASS}@${ADDRESS}:${PORT}/${FULLNAME}_prod?pool=5"
-
+        DB_CONNECTION_STRING_TEST="${DB_TYPE}://${USER}:${PASS}@${ADDRESS}:${PORT}/${FULLNAME}_test?pool=5"
+        DB_CONNECTION_STRING_DEV="${DB_TYPE}://${USER}:${PASS}@${ADDRESS}:${PORT}/${FULLNAME}_dev?pool=5"
+        DB_CONNECTION_STRING_PROD="${DB_TYPE}://${USER}:${PASS}@${ADDRESS}:${PORT}/${FULLNAME}_prod?pool=5"
+    fi
     cat <<EOF | tee "${FULLNAME}/config/database.yml"
 development:
   url: ${DB_CONNECTION_STRING_DEV}
