@@ -230,6 +230,7 @@ EOF
     # Add gitignore
     curl https://www.toptal.com/developers/gitignore/api/osx,macos,ruby,linux,rails,windows > .gitignore
     echo ".passwords" >> .gitignore
+    echo "vendor/gems/" >> .gitignore
 
     mkdir -p vendor/gems
     touch vendor/gems/.keep

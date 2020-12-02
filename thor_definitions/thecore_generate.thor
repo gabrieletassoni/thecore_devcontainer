@@ -41,8 +41,8 @@ class ThecoreGenerate < Thor
 
       # Concerns
       inject_into_file(entry, after: " < ApplicationRecord\n") { "  # Concerns\n" }
-      inject_into_file(entry, after: "  # Concerns\n") { "  include RailsAdmin::#{m}\n" } if is_gui_app? entry
-      inject_into_file(entry, after: "  # Concerns\n") { "  include Api::#{m}\n" } if is_api_app? entry
+      inject_into_file(entry, after: "  # Concerns\n") { "  include RailsAdmin::#{m}\n" } if is_gui_app?
+      inject_into_file(entry, after: "  # Concerns\n") { "  include Api::#{m}\n" } if is_api_app?
 
       # Belongs to
       say 'Completing Belongs To Associations', :green
@@ -163,18 +163,18 @@ class ThecoreGenerate < Thor
       false
     end
   
-    def is_api_app?(file)
+    def is_api_app?
       # Must be not commented out so the ^  part
   
-      !File.readlines(file).grep(/^  spec.add_dependency 'model_driven_api'/).empty?
+      !File.readlines(Dir["*.gemspec"].first).grep(/^  spec.add_dependency 'model_driven_api'/).empty?
     rescue StandardError
       false
     end
   
-    def is_gui_app?(file)
+    def is_gui_app?
       # Must be not commented out so the ^  part
   
-      !File.readlines(file).grep(/^  spec.add_dependency 'thecore_ui_rails_admin'/).empty?
+      !File.readlines(Dir["*.gemspec"].first).grep(/^  spec.add_dependency 'thecore_ui_rails_admin'/).empty?
     rescue StandardError
       false
     end
