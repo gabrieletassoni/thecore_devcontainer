@@ -5,17 +5,7 @@ then
 echo -e '\e[1mTo create a Thecore Engine:\e[0m\n  1) please run \e[31mthecore_create_engine.sh\e[0m\n  2) please answer to the questions posed by the wizard'
 exit 0
 fi
-# Sanity Checks
-if [[ -d .git ]]
-then
-  echo -e "\e[31mThis folder contains a GIT setup, please run this script outside a project.\e[0m"
-  exit 1
-fi
-if [[ -f Gemfile ]]
-then
-  echo -e "\e[31mThis folder contains a Gemfile, please run this script outside a rails app project.\e[0m"
-  exit 1
-fi
+
 for i in *.gemspec
 do
   if [[ -f "$i" ]]
@@ -79,6 +69,8 @@ then
   exit 4
 fi
 
+cd vendor/gems
+
 rails plugin new "$ENGINE_NAME" -fG --full
 
 cd "$ENGINE_NAME"
@@ -123,6 +115,6 @@ fi
 git remote add origin "$URI"
 git push --set-upstream origin master
 
-cd ..
+cd ../../..
 
 exit 0

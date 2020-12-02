@@ -231,6 +231,9 @@ EOF
     curl https://www.toptal.com/developers/gitignore/api/osx,macos,ruby,linux,rails,windows,sublimetext,visualstudio,visualstudiocode > .gitignore
     echo ".passwords" >> .gitignore
 
+    mkdir -p vendor/gems
+    touch vendor/gems/.keep
+
     git init
     git add . -A
     git commit -a -m "Initial Git"
