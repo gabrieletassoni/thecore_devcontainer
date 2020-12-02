@@ -105,6 +105,9 @@ en:
     attributes:
 EOL
 
+# For generating models and the likes, in the local, from gem perspective, add sqlite as dependency
+grep sqlite3 Gemfile || echo "gem 'sqlite3'" >> Gemfile
+
 # Add CI CD Automation
 # GITLAB
 cat > .gitlab-ci.yml << EOL
