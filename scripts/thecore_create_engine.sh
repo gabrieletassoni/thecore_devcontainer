@@ -29,16 +29,16 @@ function ask_for_name # VARNAME prompt
 {
   while [ -z "${!1}" ]
   do
-    read -p "$2: " $1
+    read -r -p "$2: " "$1"
   done
 }
 
 ask_for_name ENGINE_NAME "Please provide an engine name in underscore notation"
 # Some sanity checks, allow only underscore names
-pattern='^[a-z0-9_-]+$'
+pattern='^[a-z0-9_]+$'
 if ! [[ "$ENGINE_NAME" =~ $pattern ]]
 then
-  echo -e "\e[31mError! Engine Name cannot contain special characters other than downcase letters, numbers, _ and -\e[0m"
+  echo -e "\e[31mError! Engine Name cannot contain special characters other than downcase letters, numbers and _\e[0m"
   exit 2
 fi
 
@@ -55,7 +55,7 @@ TYPE="Both"
 select T in "API" "GUI" "Both"
 do
   echo "Selected ${T}"
-  if ! [[ -z "${T}" ]]
+  if [[ -n "${T}" ]]
   then
     TYPE="$T"
     break
@@ -79,27 +79,27 @@ then
   exit 4
 fi
 
-rails plugin new $ENGINE_NAME -fG --full
+rails plugin new "$ENGINE_NAME" -fG --full
 
 cd "$ENGINE_NAME"
 
 # Setup the gemspec file
 function edit_gem_info # KEY VALUE FILE
 {
-  sed -i "/spec.${1}/d" ${3}.gemspec
-  sed -i "/spec.version/a \ \ spec.${1} = $2" ${3}.gemspec
+  sed -i "/spec.${1}/d" "${3}".gemspec
+  sed -i "/spec.version/a \ \ spec.${1} = $2" "${3}".gemspec
 }
-edit_gem_info homepage "\"$ENGINE_HOMEPAGE\"" $ENGINE_NAME
-edit_gem_info authors "[\"$ENGINE_AUTHOR\"]" $ENGINE_NAME
-edit_gem_info email "[\"$ENGINE_EMAIL\"]" $ENGINE_NAME
-edit_gem_info summary "\"$ENGINE_SUMMARY\"" $ENGINE_NAME
-edit_gem_info description "\"$ENGINE_DESCRIPTION\"" $ENGINE_NAME
-edit_gem_info metadata "\"$ENGINE_DESCRIPTION\"" $ENGINE_NAME
-sed -i "/spec.metadata/d" ${ENGINE_NAME}.gemspec
-sed -i "/spec.respond_to?(:metadata)/a \ \ \ \ spec.metadata[\"allowed_push_host\"] = \"$ENGINE_GEM_REPO\"" ${ENGINE_NAME}.gemspec
+edit_gem_info homepage "\"$ENGINE_HOMEPAGE\"" "$ENGINE_NAME"
+edit_gem_info authors "[\"$ENGINE_AUTHOR\"]" "$ENGINE_NAME"
+edit_gem_info email "[\"$ENGINE_EMAIL\"]" "$ENGINE_NAME"
+edit_gem_info summary "\"$ENGINE_SUMMARY\"" "$ENGINE_NAME"
+edit_gem_info description "\"$ENGINE_DESCRIPTION\"" "$ENGINE_NAME"
+edit_gem_info metadata "\"$ENGINE_DESCRIPTION\"" "$ENGINE_NAME"
+sed -i "/spec.metadata/d" "${ENGINE_NAME}".gemspec
+sed -i "/spec.respond_to?(:metadata)/a \ \ \ \ spec.metadata[\"allowed_push_host\"] = \"$ENGINE_GEM_REPO\"" "${ENGINE_NAME}".gemspec
 # Remove all spec.add_dependency 
-sed -i '/add_dependency/d' ${ENGINE_NAME}.gemspec
-sed -i '/add_development_dependency/d' ${ENGINE_NAME}.gemspec
+sed -i '/add_dependency/d' "${ENGINE_NAME}".gemspec
+sed -i '/add_development_dependency/d' "${ENGINE_NAME}".gemspec
 
 echo "Thecorizing Engine of type $TYPE"
 thecorize_engine.sh ${TYPE}
@@ -114,13 +114,13 @@ git config user.email "$ENGINE_EMAIL"
 git add . -A
 git commit -a -m "Initial git"
 echo "Please add a git repository URI if you like (empty string to add nothing):"
-read URI
+read -r URI
 if [[ -z $URI ]]
 then
     exit 0
 fi
 
-git remote add origin $URI
+git remote add origin "$URI"
 git push --set-upstream origin master
 
 cd ..
