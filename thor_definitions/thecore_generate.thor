@@ -3,6 +3,8 @@
 require 'active_support/inflector'
 require 'thor/actions/file_manipulation'
 require 'fileutils'
+require 'active_support'
+require 'active_support/core_ext'
 
 class ThecoreGenerate < Thor
   include Thor::Actions
