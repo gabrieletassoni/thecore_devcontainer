@@ -7,6 +7,7 @@ exit 0
 fi
 
 # Functions
+tc() { set "${*,,}" ; echo "${*^}" ; }
 choose () {
     echo -e "\e[33mPlease type the number of the choice.\e[0m"
     select CHOICE in "${OPTIONS[@]}"; do
@@ -22,9 +23,9 @@ yesno () {
     choose
 }
 
-FULLNAME="$(basename $(pwd))"
+FULLNAME="$(basename "$(pwd)")"
 yesno "The WebApp will be called $FULLNAME, is this ok?"
-[[ $CHOICE == "no" ]] && read -p "Please provide an alternative name: " -r FULLNAME && OTHERNAME=true
+[[ $CHOICE == "no" ]] && read -p "Please provide an alternative name: " -r FULLNAME
 pattern='^[a-z0-9_-]+$'
 if [[ "$FULLNAME" =~ $pattern ]]
 then
@@ -98,7 +99,8 @@ then
         DB_CONNECTION_STRING_DEV="${DB_TYPE}://${USER}:${PASS}@${ADDRESS}:${PORT}/${FULLNAME}_dev?pool=5"
         DB_CONNECTION_STRING_PROD="${DB_TYPE}://${USER}:${PASS}@${ADDRESS}:${PORT}/${FULLNAME}_prod?pool=5"
     fi
-    cat <<EOF | tee "${FULLNAME}/config/database.yml"
+    touch "config/database.yml"
+    cat <<EOF | tee "config/database.yml"
 development:
   url: ${DB_CONNECTION_STRING_DEV}
 
@@ -109,35 +111,34 @@ production:
   url: ${DB_CONNECTION_STRING_PROD}
 EOF
   
-    cat <<EOF | tee "${FULLNAME}/app/assets/stylesheets/overrides.scss"
+    cat <<EOF | tee "app/assets/stylesheets/overrides.scss"
 // Please remove this file if you'd like to override it in an engine.
 // You can override these UI settings:
 
-// $primary: #1f4068 !default;
+// \$primary: #1f4068;
 
-// $background: lighten($primary, 51%) !default;
-// $shadows: darken($primary, 10%) !default;
+// \$background: lighten(\$primary, 51%);
+// \$shadows: darken(\$primary, 10%);
 
-// $text: darken($primary, 40%) !default;
-// $text-highlight: lighten($text, 80%) !default;
+// \$text: darken(\$primary, 40%);
+// \$text-highlight: lighten(\$text, 80%);
 
-// $link: $text !default;
-// $link-highlight: lighten($link, 10%) !default;
+// \$link: \$text;
+// \$link-highlight: lighten(\$link, 10%);
 
-// $element: $primary !default;
-// $element-text: lighten($element, 40%) !default;
-// $element-text-highlight: lighten($element-text, 10%) !default;
-// $element-border: darken($element, 10%) !default;
+// \$element: \$primary;
+// \$element-text: lighten(\$element, 40%);
+// \$element-text-highlight: lighten(\$element-text, 10%);
+// \$element-border: darken(\$element, 10%);
 
-// $neutral: #706f6f !default;
-// $success: #37BC9B !default;
-// $info: #3BAFDA !default;
-// $danger: #E9573F !default;
-// $warning: #F6BB42 !default;
+// \$neutral: #706f6f;
+// \$success: #37BC9B;
+// \$info: #3BAFDA;
+// \$danger: #E9573F;
+// \$warning: #F6BB42;
 EOF
 
-    echo "${FULLNAME}" > "${FULLNAME}/.ruby-gemset"
-    cd "$FULLNAME"
+    echo "${FULLNAME}" > ".ruby-gemset"
 
     # Add Thecore base gems
     if [[ $APPLICATION_TYPE == "api" ]]
@@ -154,23 +155,26 @@ EOF
 
     # Private GEM Repo
     echo "Would you like to setup a private gem repository or provide an existing one?"
-    OPTIONS=("setup" "provide" "none of the above, go on without adding a private repository")
+    OPTIONS=("setup" "don't want to setup a private GEMs repository, go on without adding one")
     choose
-    if [[ $CHOICE == "setup" ]]
+    if [[ "$CHOICE" == "setup" ]]
     then
-        STOPLOOP=false
-        while $STOPLOOP
+        STOPLOOP="false"
+        while [[ "$STOPLOOP" == "false" ]]
         do
+            echo "1"
             while [[ "$GEMURL" == '' ]]
             do
-                read -rp "Please provide the gem server URL (i.e. https://www.alchemic.it/gems): " GEMURL
+                read -rp "Please provide the gem server URL (i.e. https://gems.alchemic.it): " GEMURL
             done 
 
+            echo "2"
             while [[ "$USERNAME" == '' ]]
             do
                 read -rp "Please provide username for $GEMURL gems repository: " USERNAME
             done 
 
+            echo "3"
             while [[ "$PASSWORD" == '' ]]
             do
                 read -rp "Please provide the password for $USERNAME: " PASSWORD
@@ -186,34 +190,14 @@ EOF
                 STOPLOOP=true
             fi
         done
-    elif [[ $CHOICE == "provide" ]]
-    then
-        # Just add in the Gemfile
-        STOPLOOP=false
-        while $STOPLOOP
-        do
-            echo "Write here the URL of the private GEMs repository"
-            read -r
-            yesno "Is GEMs URL $REPLY correct?"
-            if [[ $CHOICE == "yes" ]]
-            then
-                echo "source '$REPLY'" >> Gemfile
-            fi
-            yesno "Would you like to add more private gems repositories?"
-            if [[ $CHOICE == "no" ]]
-            then
-                STOPLOOP=true
-            fi
-        done
-        
     fi
 
     # Asking for more gems
     yesno "Do you want to add more gems to the App?"
     if [[ $CHOICE == "yes" ]]
     then
-        STOPLOOP=false
-        while $STOPLOOP
+        STOPLOOP="false"
+        while [[ "$STOPLOOP" == "false" ]]
         do
             echo "Please add the name and the semver of the gem."
             echo "For example: thecore_background_jobs 2.0"
@@ -237,33 +221,37 @@ EOF
     rails active_storage:install
     rails action_text:install
     yarn install
-    rails db:exists || rails db:create
+    rails db:create
+    rails g migration ChangeThecoreAppName
+    APPNAMEFILE=$(find db/migrate -maxdepth 1 -mindepth 1 -name "*_change_thecore_app_name.rb")
+    sed -i "/def change/a \ \ \ \ Settings.app_name = '$(tc "${FULLNAME//[-_]/ }")'" "$APPNAMEFILE"
     rails db:migrate
     
     # Add gitignore
     curl https://www.toptal.com/developers/gitignore/api/osx,macos,ruby,linux,rails,windows,sublimetext,visualstudio,visualstudiocode > .gitignore
+    echo ".passwords" >> .gitignore
 
     git init
     git add . -A
     git commit -a -m "Initial Git"
     yesno "Would you like to add a remote git repository?"
-    if [[ $CHOICE == "no" ]]
+    if [[ $CHOICE == "yes" ]]
     then
-        STOPLOOP=false
-        while $STOPLOOP
+        STOPLOOP="false"
+        while [[ "$STOPLOOP" == "false" ]]
         do
-            read -r
-            yesno "Is the connection string $REPLY correct?"
+            read -r -p "Please provide a git repository URL: " GITREPOURL
+            yesno "Is the connection string $GITREPOURL correct?"
             if [[ $CHOICE == "yes" ]]
             then
-                git remote origin add "${REPLY}"
+                git remote add origin "${GITREPOURL}"
+                git push --set-upstream origin master
                 STOPLOOP=true
             fi
         done
     fi
-    cd ..
 else
-    echo "ERROR! The name can only contain lowercase letters, - and _" 
+    echo -e "\e[31m\e[1mERROR"'!'"\e[0m The name can only contain lowercase letters, numbers, - and _: \e[31m\e[1mplease rename\e[0m\e[31m this project's folder to match the given constraint\e[0m." 
     exit 1
 fi
 

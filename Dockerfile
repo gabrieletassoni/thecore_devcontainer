@@ -48,6 +48,7 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | (OUT=$(apt-key add - 2>&
         man-db \
         strace \
         libssl1.1 \
+        gridsite-clients \
     # Update
     && apt-get -y dist-upgrade --no-install-recommends \
     # Clean up
@@ -77,7 +78,7 @@ RUN gem install \
     sass-rails \
     selenium-webdriver \
     rack-proxy \
-    puma:4.3.6 \
+    puma:4.3.7 \
     rb-fsevent \
     rb-inotify \
     listen \
@@ -95,7 +96,8 @@ RUN gem install \
     addressable \
     zeitwerk \
     geminabox \
-    thor
+    thor \
+    haml
 # Thecore GEMs
 RUN gem install \
     model_driven_api:2.3.1 \

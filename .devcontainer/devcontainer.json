@@ -20,7 +20,8 @@
 		"misogi.ruby-rubocop",
 		"rogalmic.bash-debug",
 		"shakram02.bash-beautify",
-		"foxundermoon.shell-format"
+		"foxundermoon.shell-format",
+		"timonwong.shellcheck"
 	],
 	"build": {
 		"args": {
