@@ -238,6 +238,7 @@ EOF
     git init
     git add . -A
     git commit -a -m "Initial Git"
+    git tag 0.1.0
     yesno "Would you like to add a remote git repository?"
     if [[ $CHOICE == "yes" ]]
     then
@@ -250,6 +251,7 @@ EOF
             then
                 git remote add origin "${GITREPOURL}"
                 git push --set-upstream origin master
+                git push --tags
                 STOPLOOP=true
             fi
         done
