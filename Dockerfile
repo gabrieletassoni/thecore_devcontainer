@@ -158,7 +158,8 @@ EXPOSE 3000
 # Add MOTD instructions for scripts provided within this image
 RUN echo '/usr/bin/thecore_help.sh' >> ~/.bashrc
 RUN echo 'export APPBIN=$(find /workspaces/*/ -maxdepth 1 -mindepth 1 -name bin)'  >> ~/.bashrc
-RUN echo 'export PATH=$GEM_HOME/bin:$PATH:$APPBIN' >> ~/.bashrc
+RUN echo 'export CODEBIN=$(find $HOME/.vscode-server/bin/* -maxdepth 1 -mindepth 1 -name bin)'  >> ~/.bashrc
+RUN echo 'export PATH=$GEM_HOME/bin:$PATH:$APPBIN:$CODEBIN' >> ~/.bashrc
 RUN tail ~/.bashrc
 
 WORKDIR /workspaces
