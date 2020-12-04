@@ -93,14 +93,14 @@ EOL
 # Adding after locales
 cat > config/locales/it."${ENGINE_NAME}".yml << EOL
 it:
-  active_record:
+  activerecord:
     models:
     attributes:
 EOL
 
 cat > config/locales/en."${ENGINE_NAME}".yml << EOL
 en:
-  active_record:
+  activerecord:
     models:
     attributes:
 EOL
