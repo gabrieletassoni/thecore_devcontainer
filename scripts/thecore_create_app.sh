@@ -154,43 +154,43 @@ EOF
     fi
 
     # Private GEM Repo
-    echo "Would you like to setup a private gem repository or provide an existing one?"
-    OPTIONS=("setup" "don't want to setup a private GEMs repository, go on without adding one")
-    choose
-    if [[ "$CHOICE" == "setup" ]]
-    then
-        STOPLOOP="false"
-        while [[ "$STOPLOOP" == "false" ]]
-        do
-            echo "1"
-            while [[ "$GEMURL" == '' ]]
-            do
-                read -rp "Please provide the gem server URL (i.e. https://gems.alchemic.it): " GEMURL
-            done 
+    # echo "Would you like to setup a private gem repository or provide an existing one?"
+    # OPTIONS=("setup" "don't want to setup a private GEMs repository, go on without adding one")
+    # choose
+    # if [[ "$CHOICE" == "setup" ]]
+    # then
+    #     STOPLOOP="false"
+    #     while [[ "$STOPLOOP" == "false" ]]
+    #     do
+    #         echo "1"
+    #         while [[ "$GEMURL" == '' ]]
+    #         do
+    #             read -rp "Please provide the gem server URL (i.e. https://gems.alchemic.it): " GEMURL
+    #         done 
 
-            echo "2"
-            while [[ "$USERNAME" == '' ]]
-            do
-                read -rp "Please provide username for $GEMURL gems repository: " USERNAME
-            done 
+    #         echo "2"
+    #         while [[ "$USERNAME" == '' ]]
+    #         do
+    #             read -rp "Please provide username for $GEMURL gems repository: " USERNAME
+    #         done 
 
-            echo "3"
-            while [[ "$PASSWORD" == '' ]]
-            do
-                read -rp "Please provide the password for $USERNAME: " PASSWORD
-            done 
+    #         echo "3"
+    #         while [[ "$PASSWORD" == '' ]]
+    #         do
+    #             read -rp "Please provide the password for $USERNAME: " PASSWORD
+    #         done 
 
-            CREDENTIALS="$(urlencode "$USERNAME"):$(urlencode "$PASSWORD")"
-            gem sources -a "${GEMURL/:\/\//:\/\/$CREDENTIALS@}"
-            bundle config "$GEMURL" "$CREDENTIALS"
+    #         CREDENTIALS="$(urlencode "$USERNAME"):$(urlencode "$PASSWORD")"
+    #         gem sources -a "${GEMURL/:\/\//:\/\/$CREDENTIALS@}"
+    #         bundle config "$GEMURL" "$CREDENTIALS"
 
-            yesno "Would you like to setup more private gems repositories?"
-            if [[ $CHOICE == "no" ]]
-            then
-                STOPLOOP=true
-            fi
-        done
-    fi
+    #         yesno "Would you like to setup more private gems repositories?"
+    #         if [[ $CHOICE == "no" ]]
+    #         then
+    #             STOPLOOP=true
+    #         fi
+    #     done
+    # fi
 
     # Asking for more gems
     yesno "Do you want to add more gems to the App?"
@@ -216,7 +216,7 @@ EOF
         done
     fi
 
-    bundle install
+    bundle && bundle install && bundle update
     rails webpacker:install
     rails active_storage:install
     rails action_text:install

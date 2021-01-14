@@ -162,4 +162,6 @@ RUN echo 'export CODEBIN=$(find $HOME/.vscode-server/bin/* -maxdepth 1 -mindepth
 RUN echo 'export PATH=$GEM_HOME/bin:$PATH:$APPBIN:$CODEBIN' >> ~/.bashrc
 RUN tail ~/.bashrc
 
+RUN bundle config set path 'vendor/bundle'
+
 WORKDIR /workspaces

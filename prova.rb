@@ -1,0 +1,2 @@
+class Ciao < ApplicationRecord
+end

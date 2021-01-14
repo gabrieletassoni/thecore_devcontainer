@@ -9,7 +9,7 @@ require 'active_support/core_ext'
 class ThecoreGenerate < Thor
   include Thor::Actions
 
-  desc "models", 'Thecorize the Model applying all the sane defaults proved efficient during the years of development using Thecore in production'
+  desc "models", 'Thecorize the Model applying all the sane defaults proved efficient during the years of development using Thecore in production ready projects'
   def models
     name = Dir["*.gemspec"].first.split(".").first
     loop do
