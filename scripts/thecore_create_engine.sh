@@ -2,7 +2,7 @@
 
 if [[ $1 == "--help" ]]
 then
-echo -e '\e[1mTo create a Thecore Engine:\e[0m\n  1) please run \e[31mthecore_create_engine.sh\e[0m\n  2) please answer to the questions posed by the wizard'
+echo -e '\e[1mTo create a Thecore Engine:\e[0m\n  1) please run \e[31mthecore_create_engine.sh\e[0m\n  2) please answer to the questions posed by the wizard.\n'
 exit 0
 fi
 

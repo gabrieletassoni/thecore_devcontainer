@@ -2,7 +2,7 @@
 
 if [[ $1 == "--help" ]]
 then
-echo -e '\e[1mTo create a Thecore APP:\e[0m\n  1) please run \e[31mthecore_create_app.sh\e[0m\n  2) please answer to the questions posed by the wizard'
+echo -e '\e[1mTo create a Thecore APP:\e[0m\n  1) please run \e[31mthecore_create_app.sh\e[0m\n  2) please answer to the questions posed by the wizard.\n'
 exit 0
 fi
 
@@ -256,6 +256,9 @@ EOF
             fi
         done
     fi
+
+    # Pull all the Thecore based gems for editing (if needed)
+    thecore_pull_git_repos.sh
 else
     echo -e "\e[31m\e[1mERROR"'!'"\e[0m The name can only contain lowercase letters, numbers, - and _: \e[31m\e[1mplease rename\e[0m\e[31m this project's folder to match the given constraint\e[0m." 
     exit 1

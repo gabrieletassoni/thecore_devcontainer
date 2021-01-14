@@ -7,5 +7,5 @@ do
     fi
 done
 
-echo -e "\n\e[1mTo show this help again, please run:\e[0m \e[31mthecore_help.sh\e[0m"
+echo -e "\n\e[1mTo show this help again, please run:\e[0m \e[31mthecore_help.sh\e[0m.\n"
 exit 0

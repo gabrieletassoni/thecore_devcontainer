@@ -1,2 +1,0 @@
-class Ciao < ApplicationRecord
-end
