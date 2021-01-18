@@ -258,7 +258,7 @@ EOF
     fi
 
     # Pull all the Thecore based gems for editing (if needed)
-    thecore_pull_git_repos.sh
+    thecore_update_git_repos.sh
 else
     echo -e "\e[31m\e[1mERROR"'!'"\e[0m The name can only contain lowercase letters, numbers, - and _: \e[31m\e[1mplease rename\e[0m\e[31m this project's folder to match the given constraint\e[0m." 
     exit 1
