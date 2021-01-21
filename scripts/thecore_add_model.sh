@@ -6,6 +6,45 @@ echo -e '\e[1mTo generate Models for your Engine:\e[0m\n  1) please cd into engi
 exit 0
 fi
 
+# $5 and $6 are present only if it's an has many through
+# add_has_many $1 $2 $3 $4 [ $5 $6 ]
+# i.e.
+# add_has_many $GEMNAME $MODEL_UNDERSCORE_PLURAL $LEFT $LEFTCLASSIFY
+# add_has_many $GEMNAME $MODEL_UNDERSCORE_PLURAL $LEFT $LEFTCLASSIFY $RIGHTPLURAL $LEFTPLURAL
+add_has_many () {
+  if [ -f "app/models/$3.rb" ] 
+  then 
+    # add has many and has many through declarations
+    if [ "$5" ]
+    then
+      grep "has_many :$5, through: :$2, inverse_of: $6" "app/models/$3.rb" || sed -i "/^  # Associations$/a\  has_many :$5, through: :$2, inverse_of: $6" "app/models/$3.rb"
+    fi
+    grep "has_many :$2, dependent: :destroy, inverse_of: $3" "app/models/$3.rb" || sed -i "/^  # Associations$/a\  has_many :$2, dependent: :destroy, inverse_of: $3" "app/models/$3.rb"
+  else
+    # otherwise (the file does not exist) check if the initializer for concerns exists,
+    # For each model in this gem
+    initializer_name="associations_for_${3}_concern.rb"
+    initializer_name_full_path=config/initializers/${initializer_name}
+    [ -f "$initializer_name_full_path" ] || cp '/etc/thecore/templates/association_concern.tt' "$initializer_name_full_path"
+    grep '<%= @model_name %>' "$initializer_name_full_path" && sed -i "s/<%= @model_name %>/$4/g" "$initializer_name_full_path"
+
+    # AGGIUNGO L'INCLUDE
+    echo 'Adding after_initialize file'
+    after_initialize_file_name="after_initialize_for_${1}.rb"
+    after_initialize_file_fullpath=config/initializers/$after_initialize_file_name
+    [ -f "$after_initialize_file_fullpath" ] || echo -e "Rails.application.configure do\n  config.after_initialize do\n  end\nend" > "$after_initialize_file_fullpath"
+    
+    sed -i "/config.after_initialize do$/a\  $4.send(:include, ${4}AssociationsConcern)" "$after_initialize_file_fullpath"
+
+    # then add to it the has_many declaration
+    if [ "$5" ]
+    then
+      grep "has_many :$5, through: :$2, inverse_of: $6" "$initializer_name_full_path" || sed -i "/included do$/a\  has_many :$5, through: :$2, inverse_of: $6" "$initializer_name_full_path"
+    fi
+    grep "has_many :$2, dependent: :destroy, inverse_of: $3" "$initializer_name_full_path" || sed -i "/included do$/a\  has_many :$2, dependent: :destroy, inverse_of: $3" "$initializer_name_full_path"
+  fi
+}
+
 # thor thecore_generate:models
 # Installing dependencies
 gem install activesupport
@@ -66,32 +105,29 @@ echo 'Add Has Many Through Associations:'
 # maybe I can show all the possible couples if more than two belongs_to are found?)
 BELONGS=$(grep -Po 'belongs_to :\K(.+), .+' "$MODEL_FILE_PATH" |cut -d , -f1)
 BELONGSARRAY=($BELONGS)
-BELONGSNUMBER=${#BELONGS[@]}
-if (( $BELONGSNUMBER > 1 ))
+BELONGSNUMBER=${#BELONGSARRAY[@]}
+if [ "$BELONGSNUMBER" -gt 1 ]
 then
   echo "$MODEL_FILE_PATH has more than one belongs_to, so it could be an association table for one or more has_many :through associations."
   ASSOCIATIONS=$(ruby -e "pivot='$BELONGS'.split;pivot2=pivot.clone; pivot.each {|elem| pivot2.each{|c| puts elem+'<->'+c if elem != c}; pivot2.shift}")
   for ASSOC in $ASSOCIATIONS
   do
-    echo "$MODEL_UNDERSCORE_CASE is the association table between $ASSOC"
     TABLES=$(ruby -e "'$ASSOC'.split('<->').each { |a| puts a }")
     TABLESARY=($TABLES)
-    [ ! -f "app/models/${TABLESARY[0]}.rb" ] 
+    echo "$MODEL_UNDERSCORE_CASE is the association table between ${TABLESARY[0]} and ${TABLESARY[1]}"
+    LEFT=${TABLESARY[0]}
+    RIGHT=${TABLESARY[1]}
+    LEFTCLASSIFY=$(ruby -e "require 'active_support/inflector'; puts '$LEFT'.classify")
+    RIGHTCLASSIFY=$(ruby -e "require 'active_support/inflector'; puts '$RIGHT'.classify")
+    LEFTPLURAL=$(ruby -e "require 'active_support/inflector'; puts '$LEFT'.pluralize")
+    RIGHTPLURAL=$(ruby -e "require 'active_support/inflector'; puts '$RIGHT'.pluralize")
+    add_has_many "$GEMNAME" "$MODEL_UNDERSCORE_PLURAL" "$LEFT" "$LEFTCLASSIFY" "$RIGHTPLURAL" "$LEFTPLURAL"
+    add_has_many "$GEMNAME" "$MODEL_UNDERSCORE_PLURAL" "$RIGHT" "$RIGHTCLASSIFY" "$LEFTPLURAL" "$RIGHTPLURAL"
   done
 fi
 
-      # I'ts just an approximation, but for now it could work
-      association_model = entry.split('.').first.split('/').last
-      file = File.join(entry)
-      # It must be an activerecord model class
-      model_with_belongs_to = File.readlines(file).grep(/^ *belongs_to :.*$/)
-      if model_with_belongs_to.size == 2 && yes?("Is #{association_model} an association model for a has_many through relation?", :red)
-        # getting both the belongs_to models, find their model files, and add the through to each other
-        left_side = model_with_belongs_to.first[/:(.*?),/, 1]
-        right_side = model_with_belongs_to.last[/:(.*?),/, 1]
-        # This side of the through
-        add_has_many_to_model_or_concern name, right_side, left_side, association_model
-        add_has_many_to_model_or_concern name, left_side, right_side, association_model
-      end
+echo 'Add Has Many Associations'
+[ "$BELONGSNUMBER" -eq 1 ] && add_has_many "$GEMNAME" "$MODEL_UNDERSCORE_PLURAL" "${BELONGSARRAY[0]}" "$(ruby -e "require 'active_support/inflector'; puts '${BELONGSARRAY[0]}'.classify")"
 
+# TODO: Go on with conversion of file thecore_generate.thor from line 91
 fi

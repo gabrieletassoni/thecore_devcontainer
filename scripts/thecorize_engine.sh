@@ -76,6 +76,31 @@ module ${ENGINE_NAME_PASCAL_CASE}
 end
 EOL
 
+# Adding auto migrate to engine.rb
+if [ ! -f config/initializers/abilities_for_"${ENGINE_NAME}".rb ]
+then
+cat > config/initializers/abilities_for_"${ENGINE_NAME}".rb << EOL
+module Abilities
+  class ${ENGINE_NAME_PASCAL_CASE}
+    include CanCan::Ability
+    def initialize user
+      # # By default only admin can do everything
+      # # Here are example of usage
+      # if user && !user.admin? && user.has_role?(:operator)
+      #   # a specific role, brings specific powers
+      #   cannot :manage, :all
+      #   can :access, :rails_admin # grant access to rails_admin
+      # end
+      # # Root actions must be declared like this:
+      # if user && user.admin?
+      #   can :name_of:root_action, :all
+      # end
+    end
+  end
+end
+EOL
+fi
+
 # Replace static VERSION with git tag based version
 sed -i 's/^  VERSION =.*/  VERSION = "#{`git describe --tags $(git rev-list --tags --max-count=1)`}"/' lib/"$ENGINE_NAME"/version.rb
 
