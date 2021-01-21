@@ -62,7 +62,7 @@ MODEL_UNDERSCORE_CASE=$(sed 's/^[[:upper:]]/\L&/;s/[[:upper:]]/\L_&/g' <<< "$MOD
 MODEL_UNDERSCORE_PLURAL=$(ruby -e "require 'active_support/inflector'; puts '$MODEL_UNDERSCORE_CASE'.pluralize")
 MODEL_FILE_NAME="$MODEL_UNDERSCORE_CASE.rb"
 MODEL_FILE_PATH="app/models/$MODEL_FILE_NAME"
-rails g model ${MODEL_ARRAY[@]} -s -q -f
+rails g model "${MODEL_ARRAY[@]}" -s -q -f
 echo 'Replace ActiveRecord::Base with ApplicationRecord'
 echo "Add rails_admin declaration only in files which are ActiveRecords and don't already have that declaration"
 echo 'Thecorize the Model and completing Belongs To Associations'
