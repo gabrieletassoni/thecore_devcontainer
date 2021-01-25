@@ -132,7 +132,7 @@ RUN usermod -aG sudo vscode
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 # RUN mkdir -p /workspaces/thecore
 # RUN chown -R vscode /workspaces
-# USER vscode
+USER vscode
 # WORKDIR /workspaces/thecore
 # RUN git clone https://github.com/gabrieletassoni/model_driven_api.git \
 #     && git clone https://github.com/gabrieletassoni/rails_admin_selectize.git \
