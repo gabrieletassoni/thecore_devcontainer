@@ -31,7 +31,7 @@ add_has_many () {
     [ -f "$initializer_name_full_path" ] || cp '/etc/thecore/templates/association_concern.tt' "$initializer_name_full_path"
     grep '<%= @model_name %>' "$initializer_name_full_path" && sed -i "s/<%= @model_name %>/$CLASSIFY/g" "$initializer_name_full_path"
 
-    # AGGIUNGO L'INCLUDE
+    # Add the Include
     echo 'Adding after_initialize file'
     after_initialize_file_name="after_initialize_for_${1}.rb"
     after_initialize_file_fullpath=config/initializers/$after_initialize_file_name
@@ -62,7 +62,7 @@ add_poly_has_many () {
     [ -f "$initializer_name_full_path" ] || cp '/etc/thecore/templates/association_concern.tt' "$initializer_name_full_path"
     grep '<%= @model_name %>' "$initializer_name_full_path" && sed -i "s/<%= @model_name %>/$CLASSIFY/g" "$initializer_name_full_path"
 
-    # AGGIUNGO L'INCLUDE
+    # ADD the include
     echo 'Adding after_initialize file'
     after_initialize_file_name="after_initialize_for_${1}.rb"
     after_initialize_file_fullpath=config/initializers/$after_initialize_file_name
