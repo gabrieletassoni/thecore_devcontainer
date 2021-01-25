@@ -86,7 +86,7 @@ GEMNAME="${GEMNAME%.*}"
 if [[ -e bin/rails ]]
 then
   read -rp "Please enter a model declaration (i.e. ModelName title:string:index active:boolean due_at:datetime):" MODEL_DECLARATION
-  MODEL_ARRAY=($MODEL_DECLARATION) # ex. ModelName title:string:index active:boolean due_at:datetime reviewable:references{polymorphic} user:references
+  MODEL_ARRAY=("$MODEL_DECLARATION") # ex. ModelName title:string:index active:boolean due_at:datetime reviewable:references{polymorphic} user:references
   MODEL_CAMEL_CASE=${MODEL_ARRAY[0]} # 
   MODEL_UNDERSCORE_CASE=$(sed 's/^[[:upper:]]/\L&/;s/[[:upper:]]/\L_&/g' <<< "$MODEL_CAMEL_CASE")
   MODEL_UNDERSCORE_PLURAL=$(ruby -e "require 'active_support/inflector'; puts '$MODEL_UNDERSCORE_CASE'.pluralize")
@@ -138,7 +138,7 @@ then
   # and give the choice by listing all the belongs_to (user must choose two, 
   # maybe I can show all the possible couples if more than two belongs_to are found?)
   # BELONGS=$(grep -Po 'belongs_to :\K(.+), .+' "$MODEL_FILE_PATH" |cut -d , -f1)
-  BELONGSARRAY=($BELONGS)
+  BELONGSARRAY=("$BELONGS")
   BELONGSNUMBER=${#BELONGSARRAY[@]}
   if [ "$BELONGSNUMBER" -gt 1 ]
   then
@@ -147,7 +147,7 @@ then
     for ASSOC in $ASSOCIATIONS
     do
       TABLES=$(ruby -e "'$ASSOC'.split('<->').each { |a| puts a }")
-      TABLESARY=($TABLES)
+      TABLESARY=("$TABLES")
       echo "$MODEL_UNDERSCORE_CASE is the association table between ${TABLESARY[0]} and ${TABLESARY[1]}"
       LEFT=${TABLESARY[0]}
       RIGHT=${TABLESARY[1]}
