@@ -3,7 +3,7 @@
 if [[ $1 == "--help" ]]
 then
 echo -e "\e[1mTo turn an existing Rails engine into a Thecore one (API only):\e[0m\n  1) please cd into engine directory\n  2) please run \e[31m$0 API\e[0m."
-echo -e "\e[1mTo turn an existing Rails engine into a Thecore one (GUI only):\e[0m\n  1) please cd into engine directory\n  2) please run \e[31M$0 GUI\e[0m."
+echo -e "\e[1mTo turn an existing Rails engine into a Thecore one (GUI only):\e[0m\n  1) please cd into engine directory\n  2) please run \e[31m$0 GUI\e[0m."
 echo -e "\e[1mTo turn an existing Rails engine into a Thecore one (API + GUI):\e[0m\n  1) please cd into engine directory\n  2) please run \e[31m$0 Both\e[0m."
 echo
 exit 0
