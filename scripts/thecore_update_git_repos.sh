@@ -2,7 +2,7 @@
 
 if [[ $1 == "--help" ]]
 then
-echo -e '\e[1mTo Pull thecore related repositories into vendor folder for local editing of the gems:\e[0m\n  1) Please edit, if needed the files in /etc/thecore/repos.conf.d/ by adding the needed repositories (ussually is not needed).\n  2) please run \e[31mthecore_pull_git_repos.sh\e[0m.\n'
+echo -e "\e[1mTo Pull thecore related repositories into vendor folder for local editing of the gems:\e[0m\n  1) Please edit, if needed the files in /etc/thecore/repos.conf.d/ by adding the needed repositories (usually is un-needed).\n  2) please run \e[31m$0\e[0m.\n"
 exit 0
 fi
 
