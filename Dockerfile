@@ -117,6 +117,7 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | (OUT=$(apt-key add - 2>&
 
 # Add to the container thecore specific scripts
 COPY scripts/ /usr/bin/
+COPY bin/increment_version.sh /usr/bin/increment_version.sh
 RUN mkdir -p /etc/thecore/templates
 COPY templates /etc/thecore/templates
 COPY thor_definitions/ /etc/thecore/
