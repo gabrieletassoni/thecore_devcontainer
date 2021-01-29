@@ -6,6 +6,15 @@ echo -e "\e[1mTo Pull thecore related repositories into vendor folder for local 
 exit 0
 fi
 
+# Trap failures to get also the line number of the failure
+set -eE -o functrace
+failure() {
+  local lineno=$1
+  local msg=$2
+  echo "Failed at $lineno: $msg"
+}
+trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
+
 # Must check if run from the root of a rails app, this must be the case.
 if [ -f Gemfile ]
 then

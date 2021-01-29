@@ -15,6 +15,15 @@ do
   fi
 done
 
+# Trap failures to get also the line number of the failure
+set -eE -o functrace
+failure() {
+  local lineno=$1
+  local msg=$2
+  echo "Failed at $lineno: $msg"
+}
+trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
+
 function ask_for_name # VARNAME prompt
 {
   while [ -z "${!1}" ]

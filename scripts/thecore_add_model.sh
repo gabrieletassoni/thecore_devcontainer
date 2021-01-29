@@ -6,6 +6,15 @@ then
   exit 0
 fi
 
+# Trap failures to get also the line number of the failure
+set -eE -o functrace
+failure() {
+  local lineno=$1
+  local msg=$2
+  echo "Failed at $lineno: $msg"
+}
+trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
+
 # add_has_many $1 $2 $3 [ $4 ]
 # $4 is present only if it's an has many through
 # i.e.

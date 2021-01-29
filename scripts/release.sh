@@ -1,5 +1,14 @@
 #!/bin/bash -e
 
+# Trap failures to get also the line number of the failure
+set -eE -o functrace
+failure() {
+  local lineno=$1
+  local msg=$2
+  echo "Failed at $lineno: $msg"
+}
+trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
+
 push.sh
 CURRENTVERSION=$(git describe --tags "$(git rev-list --tags --max-count=1)")
 if [ -z "$CURRENTVERSION" ]

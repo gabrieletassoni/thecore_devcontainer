@@ -30,6 +30,15 @@ do
   fi
 done
 
+# Trap failures to get also the line number of the failure
+set -eE -o functrace
+failure() {
+  local lineno=$1
+  local msg=$2
+  echo "Failed at $lineno: $msg"
+}
+trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
+
 ENGINE_NAME=$(cat -- *.gemspec|grep -e spec.name -e s.name|sed 's/^ *s.*.name *= *//'|sed 's/["]//g')
 ENGINE_NAME_PASCAL_CASE=$(echo "${ENGINE_NAME}" | sed -r 's/(^|_)([a-z])/\U\2/g')
 

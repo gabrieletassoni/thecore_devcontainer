@@ -6,6 +6,15 @@ echo -e "\e[1mTo create a Thecore APP:\e[0m\n  1) please run \e[31m$0\e[0m\n  2)
 exit 0
 fi
 
+# Trap failures to get also the line number of the failure
+set -eE -o functrace
+failure() {
+  local lineno=$1
+  local msg=$2
+  echo "Failed at $lineno: $msg"
+}
+trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
+
 # Functions
 tc() { set "${*,,}" ; echo "${*^}" ; }
 choose () {
