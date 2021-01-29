@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 
 # Trap failures to get also the line number of the failure
 set -eE -o functrace
