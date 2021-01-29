@@ -104,8 +104,8 @@ then
   # Associations Info got from the Model definition
   BELONGS=$(ruby -e "'$MODEL_DECLARATION'.split.map do |m| m.scan(/^(.+).references$/).flatten if m.include? 'references' end.flatten.compact.join(' ')")
   POLYMORPHICS=$(ruby -e "'$MODEL_DECLARATION'.split.map do |m| m.match(/^(.+).references.polymorphic.$/)[1] if m.include? 'polymorphic' end.compact.join(' ')")
-  # Generating the model: rails way
-  rails g model "${MODEL_ARRAY[@]}" -s -q -f
+  echo "Generating the model: rails way"
+  rails g model ${MODEL_ARRAY[@]} -s -q -f
   echo 'Replace ActiveRecord::Base with ApplicationRecord'
   echo "Add rails_admin declaration only in files which are ActiveRecords and don't already have that declaration"
   echo 'Thecorizing the Model and completing Belongs To Associations'
