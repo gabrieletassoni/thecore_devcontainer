@@ -9,17 +9,20 @@ do
   fi
 done
 
-if [ -z "$1" ]
-then
-    echo -e "\e[31mOne parameter is needed, please pass the name of the root action.\e[0m"
-    exit 1
-fi
+function ask_for_name # VARNAME prompt
+{
+  while [ -z "${!1}" ]
+  do
+    read -r -p "$2: " "$1"
+  done
+}
 
+ask_for_name ENGINE_NAME "Please provide the root action name in underscore notation"
 # Some sanity checks, allow only underscore names
 pattern='^[a-z0-9_]+$'
-if ! [[ "$1" =~ $pattern ]]
+if ! [[ "$ENGINE_NAME" =~ $pattern ]]
 then
-  echo -e "\e[31mError! Engine Name cannot contain special characters other than downcase letters, numbers and _\e[0m"
+  echo -e "\e[31mError! Root Action Name cannot contain special characters other than downcase letters, numbers and _\e[0m"
   exit 2
 fi
 
