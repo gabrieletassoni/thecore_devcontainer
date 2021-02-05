@@ -50,7 +50,7 @@ cat >"app/views/rails_admin/main/${ENGINE_NAME}.html.haml" <<EOL
     console.log()
   }
 
-  $(document).on('ready pjax:success', doWhenReady)
+  \$(document).on('ready pjax:success', doWhenReady)
 
 EOL
 
