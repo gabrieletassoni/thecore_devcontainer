@@ -132,7 +132,7 @@ git remote add origin "$URI"
 git push --set-upstream origin master
 git push --tags
 
-thecore add action root "$ENGINE_NAME"
+thecore add action root
 
 echo "RailsAdmin action stub generator is done"
 

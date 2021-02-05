@@ -54,6 +54,9 @@ cat >"app/views/rails_admin/main/${ENGINE_NAME}.html.haml" <<EOL
 
 EOL
 
+# Installing dependencies
+gem install activesupport
+
 TITLE="$(ruby -e "require 'active_support/inflector'; puts '$ENGINE_NAME'.titleize")"
 CAMELIZED="$(ruby -e "require 'active_support/inflector'; puts '$ENGINE_NAME'.camelize")"
 
