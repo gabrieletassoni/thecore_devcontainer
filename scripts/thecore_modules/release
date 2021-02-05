@@ -9,7 +9,7 @@ failure() {
 }
 trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
 
-push.sh
+push
 CURRENTVERSION=$(git describe --tags "$(git rev-list --tags --max-count=1)")
 if [ -z "$CURRENTVERSION" ]
 then

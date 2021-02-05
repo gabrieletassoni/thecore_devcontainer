@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Trap failures to get also the line number of the failure
+set -eE -o functrace
+failure() {
+  local lineno=$1
+  local msg=$2
+  echo "Failed at $lineno: $msg"
+}
+trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
+
+if [ $# -eq 0 ]
+then
+  echo
+  echo -e "\e[31mThe most common THECORE commands are:\e[0m"
+  echo
+  column /etc/thecore/templates/help -t -s '|' -e
+  echo
+else
+  LAST="${@: -1}"
+  BASEPATH="/usr/bin/thecore_modules"
+  for PARAM in "$@"
+  do
+    if [[ $PARAM == $LAST ]]
+    then
+      $BASEPATH/$PARAM
+      break
+    else 
+      BASEPATH="${BASEPATH}/$PARAM"
+    fi 
+  done
+fi
+
+exit 0

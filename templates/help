@@ -1,0 +1,13 @@
+thecore create app|This command will create a new scaffold for a Thecore application.
+thecore create library|This command will create a Library structure, usually to contain Ruby on Rails models definitions.
+thecore create action root|This command will create a Root Action, a special library which is not tied with a particular Ruby on Rails model, but adds completely customized functionality.
+thecore create action collections|Root action to create a button which will be present in List View of the Models.
+thecore create action member|Root action to create a button for each record in the List View.
+
+thecore add model|This command will create a model, inside a library, compatible with Thecore.
+
+thecore push|This command will commit and push to Git using just one command.
+thecore release|This command will add a Tag, then commit and push to the server using just one command.
+thecore get repos|This command will download the source code repositories which are Thecore related, to allow for customization of the bases.
+thecore update submodules|This command will update the submodules file inside VS Code to treat Git submodules in the right way.
+thecore enhance library|This command will transform a normal Ruby on Rails Gem into a full fledged Thecore Library.

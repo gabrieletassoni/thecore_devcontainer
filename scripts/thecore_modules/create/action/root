@@ -1,0 +1,253 @@
+#!/bin/bash
+
+for i in *.gemspec
+do
+  if [[ -f "$i" ]]
+  then
+    echo -e "\e[31mThis folder contains a gemspec file, please run this script outside a rails engine project.\e[0m"
+    exit 1
+  fi
+done
+
+if ! [[ -f "Gemfile" ]]
+then
+  echo -e "\e[31mThis folder does not contain a Gemfile. Please run this script inside a Thecore App.\e[0m"
+  exit 1
+fi
+
+# Trap failures to get also the line number of the failure
+set -eE -o functrace
+failure() {
+  local lineno=$1
+  local msg=$2
+  echo "Failed at $lineno: $msg"
+}
+trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
+
+# Needed to copy here because gist is incompatible with my current ruby openssl installation:
+# OpenSSL::SSL::SSLError (SSL_connect returned=1 errno=0 state=error: tlsv1 alert access denied)
+# Taken from original at: https://gist.githubusercontent.com/bbenezech/1621146/raw/5268788e715397bf476c83d76d335f152095e659/rails_admin_action_creator
+# From user bbenezech
+# echo "Create stub for '#{action_name = name.sub('rails_admin_', '')}' in gem '#{name}'. This may take a while"
+function ask_for_name # VARNAME prompt
+{
+  while [ -z "${!1}" ]
+  do
+    read -r -p "$2: " "$1"
+  done
+}
+
+ask_for_name ENGINE_NAME "Please provide an engine name in underscore notation"
+# Some sanity checks, allow only underscore names
+pattern='^[a-z0-9_]+$'
+if ! [[ "$ENGINE_NAME" =~ $pattern ]]
+then
+  echo -e "\e[31mError! Engine Name cannot contain special characters other than downcase letters, numbers and _\e[0m"
+  exit 2
+fi
+
+# Asking for ENGINE specifications
+ask_for_name ENGINE_AUTHOR "Please provide Engine's Author"
+ask_for_name ENGINE_EMAIL "Please provide Engine's Author's Email"
+ask_for_name ENGINE_HOMEPAGE "Please provide Engine's Homepage URL"
+ask_for_name ENGINE_SUMMARY "Please provide Engine's Summary"
+ask_for_name ENGINE_DESCRIPTION "Please provide Engine's Extended Description"
+ask_for_name ENGINE_GEM_REPO "Please provide Engine's GEM repository"
+# ASK for api only gem or UI dependent one and add a dependency on model_driven_api or thecore_ui_rails_admin respectively.
+TYPE="GUI"
+# Sanity Checks on input variables
+EMAIL_REGEX="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z0-9]([a-z0-9-]*[a-z0-9])?\$"
+if ! [[ $ENGINE_EMAIL =~ $EMAIL_REGEX ]]
+then
+  echo -e "\e[31mError! Engine Email must be a valid Email Address.\e[0m"
+  exit 3
+fi
+if ! [[ $ENGINE_HOMEPAGE =~ https?://.* ]]
+then
+  echo -e "\e[31mError! Engine Homepage must be a valid URL.\e[0m"
+  exit 2
+fi
+if ! [[ $ENGINE_GEM_REPO =~ https?://.* ]]
+then
+  echo -e "\e[31mError! Engine Gem Repo must be a valid URL.\e[0m"
+  exit 4
+fi
+
+mkdir -p vendor/custom
+# Adding to submodules
+# rm -f .submodules
+touch .submodules
+ROOTDIR=$(pwd)
+for conffile in vendor/custom/*
+do
+  # Rebuilding the submodules
+  echo -e "[submodule \"$conffile\"]\n    path = vendor/custom/$conffile\n    url = $ENGINE_GEM_REPO\n" >> "$ROOTDIR/.submodules"
+done
+cd vendor/custom
+
+rails plugin new "$ENGINE_NAME" -fG --full
+
+cd "$ENGINE_NAME"
+
+# Setup the gemspec file
+function edit_gem_info # KEY VALUE FILE
+{
+  sed -i "/spec.${1}/d" "${3}".gemspec
+  sed -i "/spec.version/a \ \ spec.${1} = $2" "${3}".gemspec
+}
+edit_gem_info homepage "\"$ENGINE_HOMEPAGE\"" "$ENGINE_NAME"
+edit_gem_info authors "[\"$ENGINE_AUTHOR\"]" "$ENGINE_NAME"
+edit_gem_info email "[\"$ENGINE_EMAIL\"]" "$ENGINE_NAME"
+edit_gem_info summary "\"$ENGINE_SUMMARY\"" "$ENGINE_NAME"
+edit_gem_info description "\"$ENGINE_DESCRIPTION\"" "$ENGINE_NAME"
+edit_gem_info metadata "\"$ENGINE_DESCRIPTION\"" "$ENGINE_NAME"
+sed -i "/spec.metadata/d" "${ENGINE_NAME}".gemspec
+sed -i "/spec.respond_to?(:metadata)/a \ \ \ \ spec.metadata[\"allowed_push_host\"] = \"$ENGINE_GEM_REPO\"" "${ENGINE_NAME}".gemspec
+# Remove all spec.add_dependency 
+sed -i '/add_dependency/d' "${ENGINE_NAME}".gemspec
+sed -i '/add_development_dependency/d' "${ENGINE_NAME}".gemspec
+
+echo "Thecorizing Engine of type $TYPE"
+/usr/bin/thecore_modules/enhance/library ${TYPE}
+
+# GIT
+# Add gitignore
+curl https://www.toptal.com/developers/gitignore/api/osx,macos,ruby,linux,rails,windows > .gitignore
+echo ".passwords" >> .gitignore
+echo "vendor/gems/" >> .gitignore
+echo "Gemfile.lock" >> .gitignore
+echo "config/database.yml" >> .gitignore
+# And manage working copy
+git init
+git config user.name "$ENGINE_AUTHOR"
+git config user.email "$ENGINE_EMAIL"
+git add . -A
+git commit -a -m "Initial git"
+git tag 0.1.0
+echo "Please add a git repository URI if you like (empty string to add nothing):"
+read -r URI
+if [[ -z $URI ]]
+then
+    exit 0
+fi
+
+git remote add origin "$URI"
+git push --set-upstream origin master
+git push --tags
+
+# run "rm -rf script/ config/ lib/tasks/"
+# run "rm -rf app/assets app/controllers app/helpers app/mailers app/models"
+mkdir -p app/views/rails_admin/main
+touch "app/views/rails_admin/main/${ENGINE_NAME}.html.haml"
+cat >"app/views/rails_admin/main/${ENGINE_NAME}.html.haml" <<EOL
+= breadcrumb
+
+-# Here goes your custom HAML structure
+
+:javascript
+  function doWhenReady() {
+    // Here goes your custom logic
+    console.log()
+  }
+
+  $(document).on('ready pjax:success', doWhenReady)
+
+EOL
+
+TITLE="$(ruby -e "require 'active_support/inflector'; puts '$ENGINE_NAME'.titleize")"
+CAMELIZED="$(ruby -e "require 'active_support/inflector'; puts '$ENGINE_NAME'.camelize")"
+
+mkdir -p config/locales
+touch "config/locales/${ENGINE_NAME}.en.yml"
+cat >"config/locales/${ENGINE_NAME}.en.yml" <<EOL
+en:
+  admin:
+    actions:
+      ${ENGINE_NAME}:
+        title: ${TITLE}
+        menu: ${TITLE}
+        breadcrumb: ${TITLE}
+        link: ${TITLE}
+        bulk_link: Select Multiple ${TITLE}
+        done: ${TITLE} Done
+EOL
+
+cat >"lib/${ENGINE_NAME}.rb" <<EOL
+require 'rails_admin/config/actions'
+
+module RailsAdmin
+  module Config
+    module Actions
+      class ${CAMELIZED} < Base
+        RailsAdmin::Config::Actions.register(self)
+        
+        # This is for member actions
+        # register_instance_option :object_level do
+        #  true
+        # end
+        register_instance_option :object_level do
+          false
+        end
+        # This ensures the action only shows up for Users
+        register_instance_option :visible? do
+          # visible only if authorized and if the object has a defined method
+          authorized? #&& bindings[:abstract_model].model == ${CAMELIZED} && bindings[:abstract_model].model.column_names.include?('barcode')
+        end
+        # We want the action on members, not the Users collection
+        register_instance_option :member do
+          false
+        end
+        
+        register_instance_option :collection do
+          false
+        end
+        register_instance_option :root? do
+          true
+        end
+        
+        register_instance_option :breadcrumb_parent do
+          [nil]
+        end
+        
+        register_instance_option :link_icon do
+          'icon-barcode'
+        end
+
+        # You may or may not want pjax for your action
+        register_instance_option :pjax? do
+            true
+        end
+
+        register_instance_option :http_methods do
+            [:get, :post]
+        end
+
+        # Adding the controller which is needed to compute calls from the ui
+        register_instance_option :controller do
+          Proc.new do # This is needed becaus we sant that this code is re-evaluated each time is called
+            # This could be useful to distinguish between ajax calls and restful calls
+            # Avoid running code on pjax request, only the calls when the doument is ready and displayed are useful
+            if request.xhr? && !request.headers['X-PJAX']
+            end
+          end
+        end
+      end
+    end
+  end
+end
+EOL
+
+mkdir -p config/initializers
+touch "config/initializers/load_root_action_for_${ENGINE_NAME}.rb" 
+cat >"config/initializers/load_root_action_for_${ENGINE_NAME}.rb" <<EOL
+RailsAdmin.config do |config|
+  config.actions do
+    ${ENGINE_NAME}
+  end
+end
+EOL
+
+echo "RailsAdmin action stub generator is done"
+
+cd ../../..
+exit 0

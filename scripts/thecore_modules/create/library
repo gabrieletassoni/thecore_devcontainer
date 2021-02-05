@@ -1,11 +1,5 @@
 #!/bin/bash
 
-if [[ $1 == "--help" ]]
-then
-echo -e "\e[1mTo create a Thecore Engine:\e[0m\n  1) please run \e[31m$0\e[0m\n  2) please answer to the questions posed by the wizard.\n"
-exit 0
-fi
-
 for i in *.gemspec
 do
   if [[ -f "$i" ]]
@@ -14,6 +8,12 @@ do
     exit 1
   fi
 done
+
+if ! [[ -f "Gemfile" ]]
+then
+  echo -e "\e[31mThis folder does not contain a Gemfile. Please run this script inside a Thecore App.\e[0m"
+  exit 1
+fi
 
 # Trap failures to get also the line number of the failure
 set -eE -o functrace
@@ -78,7 +78,17 @@ then
   exit 4
 fi
 
-cd vendor/gems
+mkdir -p vendor/custom
+# Adding to submodules
+# rm -f .submodules
+touch .submodules
+ROOTDIR=$(pwd)
+for conffile in vendor/custom/*
+do
+  # Rebuilding the submodules
+  echo -e "[submodule \"$conffile\"]\n    path = vendor/custom/$conffile\n    url = $ENGINE_GEM_REPO\n" >> "$ROOTDIR/.submodules"
+done
+cd vendor/custom
 
 rails plugin new "$ENGINE_NAME" -fG --full
 
@@ -103,11 +113,15 @@ sed -i '/add_dependency/d' "${ENGINE_NAME}".gemspec
 sed -i '/add_development_dependency/d' "${ENGINE_NAME}".gemspec
 
 echo "Thecorizing Engine of type $TYPE"
-thecorize_engine.sh ${TYPE}
+/usr/bin/thecore_modules/enhance/library ${TYPE}
 
 # GIT
 # Add gitignore
 curl https://www.toptal.com/developers/gitignore/api/osx,macos,ruby,linux,rails,windows > .gitignore
+echo ".passwords" >> .gitignore
+echo "vendor/gems/" >> .gitignore
+echo "Gemfile.lock" >> .gitignore
+echo "config/database.yml" >> .gitignore
 # And manage working copy
 git init
 git config user.name "$ENGINE_AUTHOR"

@@ -1,0 +1,58 @@
+#!/bin/bash
+
+
+# Needed to copy here because gist is incompatible with my current ruby openssl installation:
+# OpenSSL::SSL::SSLError (SSL_connect returned=1 errno=0 state=error: tlsv1 alert access denied)
+# Taken from original at: https://gist.githubusercontent.com/bbenezech/1621146/raw/5268788e715397bf476c83d76d335f152095e659/rails_admin_action_creator
+# From user bbenezech
+say "Create stub for '#{action_name = name.sub('rails_admin_', '')}' in gem '#{name}'. This may take a while"
+run "rm -rf script/ config/ lib/tasks/"
+run "rm -rf app/assets app/controllers app/helpers app/mailers app/models"
+run "mkdir -p app/views/rails_admin/main"
+inside "app/views/rails_admin/main" do
+create_file "#{action_name}.html.haml", <<-END
+%h2 Custom action loaded and active
+%pre @abstract_model.inspect
+%pre @object.inspect
+END
+end
+
+inside "config/locales" do
+create_file "#{action_name}.en.yml", <<-END
+
+en:
+  admin:
+    actions:
+      #{action_name}:
+        title: "#{action_name.titleize}"
+        menu: "#{action_name.titleize} for %{model_label} '%{object_label}'"
+        breadcrumb: "#{action_name.titleize}"
+        link: "#{action_name.titleize}"
+        bulk_link: "#{action_name.titleize} selected %{model_label_plural}"
+        done: "#{action_name.titleize}ed"
+END
+end
+
+inside "lib" do
+append_file "#{name}.rb", <<-END
+
+require 'rails_admin/config/actions'
+
+module RailsAdmin
+  module Config
+    module Actions
+      class #{action_name.camelize} < Base
+        RailsAdmin::Config::Actions.register(self)
+        
+        register_instance_option :object_level do
+          true
+        end
+      end
+    end
+  end
+end
+
+END
+end
+
+say "RailsAdmin action stub generator is done"

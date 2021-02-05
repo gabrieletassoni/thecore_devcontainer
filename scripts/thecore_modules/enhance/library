@@ -1,13 +1,14 @@
 #!/bin/bash
 
-if [[ $1 == "--help" ]]
-then
-echo -e "\e[1mTo turn an existing Rails engine into a Thecore one (API only):\e[0m\n  1) please cd into engine directory\n  2) please run \e[31m$0 API\e[0m"
-echo -e "\e[1mTo turn an existing Rails engine into a Thecore one (GUI only):\e[0m\n  1) please cd into engine directory\n  2) please run \e[31m$0 GUI\e[0m"
-echo -e "\e[1mTo turn an existing Rails engine into a Thecore one (API + GUI):\e[0m\n  1) please cd into engine directory\n  2) please run \e[31m$0 Both\e[0m"
-echo
-exit 0
-fi
+# Trap failures to get also the line number of the failure
+set -eE -o functrace
+failure() {
+  local lineno=$1
+  local msg=$2
+  echo "Failed at $lineno: $msg"
+}
+trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
+
 # Sanity Checks
 echo "Parameter $1"
 if [[ -z "$1" ]]
@@ -29,15 +30,6 @@ do
     exit 1
   fi
 done
-
-# Trap failures to get also the line number of the failure
-set -eE -o functrace
-failure() {
-  local lineno=$1
-  local msg=$2
-  echo "Failed at $lineno: $msg"
-}
-trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
 
 ENGINE_NAME=$(cat -- *.gemspec|grep -e spec.name -e s.name|sed 's/^ *s.*.name *= *//'|sed 's/["]//g')
 ENGINE_NAME_PASCAL_CASE=$(echo "${ENGINE_NAME}" | sed -r 's/(^|_)([a-z])/\U\2/g')
@@ -102,7 +94,7 @@ module Abilities
       # end
       # # Root actions must be declared like this:
       # if user && user.admin?
-      #   can :name_of:root_action, :all
+      #   can :name_of_root_action, :all
       # end
     end
   end
