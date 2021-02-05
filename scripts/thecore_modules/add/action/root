@@ -35,8 +35,6 @@ failure() {
 }
 trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
 
-ENGINE_NAME=$1
-
 # run "rm -rf script/ config/ lib/tasks/"
 # run "rm -rf app/assets app/controllers app/helpers app/mailers app/models"
 mkdir -p app/views/rails_admin/main
