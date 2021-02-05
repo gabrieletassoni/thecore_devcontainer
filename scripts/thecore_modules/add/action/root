@@ -1,14 +1,5 @@
 #!/bin/bash
 
-# Trap failures to get also the line number of the failure
-set -eE -o functrace
-failure() {
-  local lineno=$1
-  local msg=$2
-  echo "Failed at $lineno: $msg"
-}
-trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
-
 for i in *.gemspec
 do
   if ! [ -f "$i" ]
@@ -31,6 +22,15 @@ then
   echo -e "\e[31mError! Engine Name cannot contain special characters other than downcase letters, numbers and _\e[0m"
   exit 2
 fi
+
+# Trap failures to get also the line number of the failure
+set -eE -o functrace
+failure() {
+  local lineno=$1
+  local msg=$2
+  echo "Failed at $lineno: $msg"
+}
+trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
 
 ENGINE_NAME=$1
 
