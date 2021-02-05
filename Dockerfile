@@ -159,7 +159,7 @@ RUN cp /etc/thecore/thor.yml ~/.thor/thor.yml
 EXPOSE 3000
 
 # Add MOTD instructions for scripts provided within this image
-RUN echo '/usr/bin/thecore/help' >> ~/.bashrc
+RUN echo '/usr/bin/thecore' >> ~/.bashrc
 RUN echo 'export APPBIN=$(find /workspaces/*/ -maxdepth 1 -mindepth 1 -name bin)'  >> ~/.bashrc
 RUN echo 'export CODEBIN=$(find $HOME/.vscode-server/bin/* -maxdepth 1 -mindepth 1 -name bin)'  >> ~/.bashrc
 RUN echo 'export PATH=$GEM_HOME/bin:$PATH:$APPBIN:$CODEBIN' >> ~/.bashrc
