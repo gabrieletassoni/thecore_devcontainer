@@ -5,6 +5,7 @@ thecore create action collections|Root action to create a button which will be p
 thecore create action member|Root action to create a button for each record in the List View.
 
 thecore add model|This command will create a model, inside a library, compatible with Thecore.
+thecore add action root "<name>"|This command will create the needed files, inside the current engine, to setup a root action.
 
 thecore push|This command will commit and push to Git using just one command.
 thecore release|This command will add a Tag, then commit and push to the server using just one command.

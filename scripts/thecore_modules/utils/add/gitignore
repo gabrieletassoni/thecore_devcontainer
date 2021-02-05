@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Trap failures to get also the line number of the failure
+set -eE -o functrace
+failure() {
+  local lineno=$1
+  local msg=$2
+  echo "Failed at $lineno: $msg"
+}
+trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
+
+# Add gitignore
+curl https://www.toptal.com/developers/gitignore/api/osx,macos,ruby,linux,rails,windows > .gitignore
+echo ".passwords" >> .gitignore
+echo "vendor/gems" >> .gitignore
+echo "vendor/custom" >> .gitignore
+echo "Gemfile.lock" >> .gitignore
+echo "config/database.yml" >> .gitignore
+
+exit 0

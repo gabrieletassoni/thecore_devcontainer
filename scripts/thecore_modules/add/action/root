@@ -1,0 +1,132 @@
+#!/bin/bash
+
+for i in *.gemspec
+do
+  if ! [ -f "$i" ]
+  then
+    echo -e "\e[31mThis folder does not contain a gemspec file, please run this script inside a rails engine project.\e[0m"
+    exit 1
+  fi
+done
+
+if [ -z "$1" ]
+then
+    echo -e "\e[31mOne parameter is needed, please pass the name of the root action.\e[0m"
+    exit 1
+fi
+
+ENGINE_NAME=$1
+
+# run "rm -rf script/ config/ lib/tasks/"
+# run "rm -rf app/assets app/controllers app/helpers app/mailers app/models"
+mkdir -p app/views/rails_admin/main
+touch "app/views/rails_admin/main/${ENGINE_NAME}.html.haml"
+cat >"app/views/rails_admin/main/${ENGINE_NAME}.html.haml" <<EOL
+= breadcrumb
+
+-# Here goes your custom HAML structure
+
+:javascript
+  function doWhenReady() {
+    // Here goes your custom logic
+    console.log()
+  }
+
+  $(document).on('ready pjax:success', doWhenReady)
+
+EOL
+
+TITLE="$(ruby -e "require 'active_support/inflector'; puts '$ENGINE_NAME'.titleize")"
+CAMELIZED="$(ruby -e "require 'active_support/inflector'; puts '$ENGINE_NAME'.camelize")"
+
+mkdir -p config/locales
+touch "config/locales/${ENGINE_NAME}.en.yml"
+cat >"config/locales/${ENGINE_NAME}.en.yml" <<EOL
+en:
+  admin:
+    actions:
+      ${ENGINE_NAME}:
+        title: ${TITLE}
+        menu: ${TITLE}
+        breadcrumb: ${TITLE}
+        link: ${TITLE}
+        bulk_link: Select Multiple ${TITLE}
+        done: ${TITLE} Done
+EOL
+
+cat >"lib/${ENGINE_NAME}.rb" <<EOL
+require 'rails_admin/config/actions'
+
+module RailsAdmin
+  module Config
+    module Actions
+      class ${CAMELIZED} < Base
+        RailsAdmin::Config::Actions.register(self)
+        
+        # This is for member actions
+        # register_instance_option :object_level do
+        #  true
+        # end
+        register_instance_option :object_level do
+          false
+        end
+        # This ensures the action only shows up for Users
+        register_instance_option :visible? do
+          # visible only if authorized and if the object has a defined method
+          authorized? #&& bindings[:abstract_model].model == ${CAMELIZED} && bindings[:abstract_model].model.column_names.include?('barcode')
+        end
+        # We want the action on members, not the Users collection
+        register_instance_option :member do
+          false
+        end
+        
+        register_instance_option :collection do
+          false
+        end
+        register_instance_option :root? do
+          true
+        end
+        
+        register_instance_option :breadcrumb_parent do
+          [nil]
+        end
+        
+        register_instance_option :link_icon do
+          'icon-barcode'
+        end
+
+        # You may or may not want pjax for your action
+        register_instance_option :pjax? do
+            true
+        end
+
+        register_instance_option :http_methods do
+            [:get, :post]
+        end
+
+        # Adding the controller which is needed to compute calls from the ui
+        register_instance_option :controller do
+          Proc.new do # This is needed becaus we sant that this code is re-evaluated each time is called
+            # This could be useful to distinguish between ajax calls and restful calls
+            # Avoid running code on pjax request, only the calls when the doument is ready and displayed are useful
+            if request.xhr? && !request.headers['X-PJAX']
+            end
+          end
+        end
+      end
+    end
+  end
+end
+EOL
+
+mkdir -p config/initializers
+touch "config/initializers/load_root_action_for_${ENGINE_NAME}.rb" 
+cat >"config/initializers/load_root_action_for_${ENGINE_NAME}.rb" <<EOL
+RailsAdmin.config do |config|
+  config.actions do
+    ${ENGINE_NAME}
+  end
+end
+EOL
+
+exit 0

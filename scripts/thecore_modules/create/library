@@ -113,7 +113,7 @@ sed -i '/add_dependency/d' "${ENGINE_NAME}".gemspec
 sed -i '/add_development_dependency/d' "${ENGINE_NAME}".gemspec
 
 echo "Thecorizing Engine of type $TYPE"
-/usr/bin/thecore_modules/enhance/library ${TYPE}
+thecore enhance library ${TYPE}
 
 # GIT
 # Add gitignore
