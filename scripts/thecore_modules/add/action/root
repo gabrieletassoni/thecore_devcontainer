@@ -47,7 +47,7 @@ cat >"app/views/rails_admin/main/${ENGINE_NAME}.html.haml" <<EOL
 :javascript
   function doWhenReady() {
     // Here goes your custom logic
-    console.log()
+    console.log("Root action installed")
   }
 
   \$(document).on('ready pjax:success', doWhenReady)
@@ -61,8 +61,8 @@ TITLE="$(ruby -e "require 'active_support/inflector'; puts '$ENGINE_NAME'.titlei
 CAMELIZED="$(ruby -e "require 'active_support/inflector'; puts '$ENGINE_NAME'.camelize")"
 
 mkdir -p config/locales
-touch "config/locales/${ENGINE_NAME}.en.yml"
-cat >"config/locales/${ENGINE_NAME}.en.yml" <<EOL
+touch "config/locales/en.${ENGINE_NAME}.yml"
+cat >"config/locales/en.${ENGINE_NAME}.yml" <<EOL
 en:
   admin:
     actions:
@@ -75,7 +75,9 @@ en:
         done: ${TITLE} Done
 EOL
 
-cat >"lib/${ENGINE_NAME}.rb" <<EOL
+mkdir -p config/initializers
+touch "config/initializers/load_root_action_for_${ENGINE_NAME}.rb" 
+cat >"config/initializers/load_root_action_for_${ENGINE_NAME}.rb" <<EOL
 require 'rails_admin/config/actions'
 
 module RailsAdmin
@@ -118,16 +120,17 @@ module RailsAdmin
 
         # You may or may not want pjax for your action
         register_instance_option :pjax? do
-            true
+          true
         end
 
         register_instance_option :http_methods do
-            [:get, :post]
+          [:get, :post]
         end
 
         # Adding the controller which is needed to compute calls from the ui
         register_instance_option :controller do
-          Proc.new do # This is needed becaus we sant that this code is re-evaluated each time is called
+          # Proc.new is needed because we want this code be re-evaluated each time the controller is called
+          Proc.new do
             # This could be useful to distinguish between ajax calls and restful calls
             # Avoid running code on pjax request, only the calls when the doument is ready and displayed are useful
             if request.xhr? && !request.headers['X-PJAX']
@@ -138,11 +141,7 @@ module RailsAdmin
     end
   end
 end
-EOL
 
-mkdir -p config/initializers
-touch "config/initializers/load_root_action_for_${ENGINE_NAME}.rb" 
-cat >"config/initializers/load_root_action_for_${ENGINE_NAME}.rb" <<EOL
 RailsAdmin.config do |config|
   config.actions do
     ${ENGINE_NAME}
