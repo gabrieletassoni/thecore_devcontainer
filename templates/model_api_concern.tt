@@ -17,7 +17,9 @@ module Api::<%= @model_name %>
     # Here you can add custom actions to be called from the API
     # The action must return an serializable (JSON) object.
     # Here you can find an example, in the API could be called like:
-    # GET /api/v1/:controller/:id/test?parameter=sample
+    # 
+    # GET /api/v2/:model/:id?do=test&custom_parameter=hello
+    #
     # Please uncomment it to test with a REST client:
     # def self.test id=nil, params=nil
     #     { test: [ :first, :second, :third ], id: id, params: params}
