@@ -20,8 +20,10 @@ module Api::<%= @model_name %>
     # 
     # GET /api/v2/:model/:id?do=test&custom_parameter=hello
     #
-    # Please uncomment it to test with a REST client:
-    # def self.test id=nil, params=nil
+    # Please uncomment it to test with a REST client.
+    # Please take note on the fact that, if the do params is test, the custom
+    # action definition must be, like below self.custom_action_test.
+    # def self.custom_action_test id=nil, params=nil
     #     { test: [ :first, :second, :third ], id: id, params: params}
     # end
   end
