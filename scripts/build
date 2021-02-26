@@ -1,5 +1,9 @@
 #!/bin/bash
 
-[[ $# -ne 1 ]] && echo -e "Please provide one argument, which must match and env.$argument file present on the disc.\ni.e. If a file named env.dev is present on the disc, the build command must be like:\n\n  build dev"
+if [[ $# -ne 1 ]]
+then 
+    echo -e "Please provide one argument, which must match an env.$argument file present on the disc.\ni.e. If a file named env.dev is present on the disc, the build command must be like:\n\n  build dev"
+    exit 1
+fi
 
 sudo env $(cat env.$1) docker-compose build
