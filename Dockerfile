@@ -9,6 +9,7 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | (OUT=$(apt-key add - 2>&
     && export DEBIAN_FRONTEND=noninteractive \
     && apt-key adv --refresh-keys --keyserver keyserver.ubuntu.com \
     && apt-get update && apt-get -y install \
+        docker-compose \
         software-properties-common \
         build-essential \
         freetds-dev \
