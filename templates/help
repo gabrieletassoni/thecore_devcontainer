@@ -12,3 +12,5 @@ thecore release|This command will add a Tag, then commit and push to the server 
 thecore get repos|This command will download the source code repositories which are Thecore related, to allow for customization of the bases.
 thecore update submodules|This command will update the submodules file inside VS Code to treat Git submodules in the right way.
 thecore enhance library|This command will transform a normal Ruby on Rails Gem into a full fledged Thecore Library.
+
+build|To build the docker image, it accepts one mandatory argument that must match an env.$argument file present on the disk at compile time.
