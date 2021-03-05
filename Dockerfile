@@ -10,7 +10,6 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | (OUT=$(apt-key add - 2>&
     && apt-key adv --refresh-keys --keyserver keyserver.ubuntu.com \
     && apt-get update && apt-get -y install \
         poppler-utils \
-        libgtk-3-dev \
         libvips-tools \
         libvips-dev \
         imagemagick \
