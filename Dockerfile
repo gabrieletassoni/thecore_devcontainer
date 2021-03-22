@@ -165,7 +165,7 @@ RUN cp /etc/thecore/thor.yml ~/.thor/thor.yml
 
 EXPOSE 3000
 
-RUN bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
+RUN git clone https://github.com/arialdomartini/oh-my-git.git ~/.oh-my-git && echo source ~/.oh-my-git/prompt.sh >> ~/.bashrc
 
 # Add MOTD instructions for scripts provided within this image
 RUN echo '/usr/bin/thecore' >> ~/.bashrc
