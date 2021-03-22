@@ -165,7 +165,7 @@ RUN cp /etc/thecore/thor.yml ~/.thor/thor.yml
 
 EXPOSE 3000
 
-RUN echo 'export PS1="\e[32m\u\e[0m ► \e[96m\W\e[0m ► \e[31m\$(git rev-parse --abbrev-ref HEAD)\e[0m:\e[33m\$(git describe --tags --abbrev=0)\e[0m \$ "'  >> ~/.bashrc
+RUN echo 'export PS1="\e[32m\u\e[0m ► \e[96m\W\e[0m [\e[31m\$(git rev-parse --abbrev-ref HEAD)\e[0m:\e[33m\$(git describe --tags --abbrev=0)\e[0m] \$ "'  >> ~/.bashrc
 
 # Add MOTD instructions for scripts provided within this image
 RUN echo '/usr/bin/thecore' >> ~/.bashrc
