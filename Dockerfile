@@ -165,8 +165,8 @@ RUN cp /etc/thecore/thor.yml ~/.thor/thor.yml
 
 EXPOSE 3000
 
-RUN git clone https://github.com/magicmonty/bash-git-prompt.git ~/.bash-git-prompt --depth=1
-RUN echo 'if [ -f "$HOME/.bash-git-prompt/gitprompt.sh" ]; then GIT_PROMPT_ONLY_IN_REPO=1; source $HOME/.bash-git-prompt/gitprompt.sh; fi' >> ~/.bashrc
+RUN git clone https://github.com/magicmonty/bash-git-prompt.git ~/.bash-git-prompt --depth=1 \
+    && echo 'if [ -f "$HOME/.bash-git-prompt/gitprompt.sh" ]; then GIT_PROMPT_ONLY_IN_REPO=1; source $HOME/.bash-git-prompt/gitprompt.sh; fi' >> ~/.bashrc
 
 # Add MOTD instructions for scripts provided within this image
 RUN echo '/usr/bin/thecore' >> ~/.bashrc
