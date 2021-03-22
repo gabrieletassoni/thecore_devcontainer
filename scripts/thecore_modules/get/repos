@@ -15,34 +15,18 @@ failure() {
 }
 trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
 
-# Must check if run from the root of a rails app, this must be the case.
+# Must check if run from the root of a rails app
 if [ -f Gemfile ]
 then
-    # Managing the git submodules for vscode compatibiity (git repos under other git repos are not managed by vscode otherwise)
-    rm -f .submodules
-    touch .submodules
-
-    ROOTDIR=$(pwd)
-
-    for conffile in /etc/thecore/repos.conf.d/*.conf
+    for CONFFILE in /etc/thecore/repos.conf.d/*.conf
     do
-        CURDIR=$(basename "$conffile" .conf)
-        mkdir -p "vendor/$CURDIR"
-        cd "vendor/$CURDIR"
+        CURDIR=$(basename "$CONFFILE" .conf)
+        mkdir -p "../dependencies/$CURDIR"
+        cd "../dependencies/$CURDIR"
         # clone all the repos
-        while read -r line
-        do 
-            if [ -n "$line" ]
-            then
-                MODULE=$(basename "$line" .git)
-                # Rebuilding the submodules
-                echo -e "[submodule \"$MODULE\"]\n    path = vendor/$CURDIR/$MODULE\n    url = $line\n" >> "$ROOTDIR/.submodules"
-                [ -d "$MODULE" ] || git clone "$line"
-            fi
-        done < "$conffile"
+        while read -r line; do git clone "$line"; done < "$CONFFILE"
         # Getting all the tags
         for i in *; do if [ -d "$i" ]; then cd "$i"; echo "$i"; git pull; git fetch --all --tags --prune; cd ..; fi; done
-        cd ../..
     done
 else
     echo "ERROR! Must be run inside root dir of your Ruby on Rails app (the dir in which is present a Gemfile)."
