@@ -166,15 +166,14 @@ RUN cp /etc/thecore/thor.yml ~/.thor/thor.yml
 EXPOSE 3000
 
 # Copy the awesome fonts to ~/.fonts
+# update the font-info cache
 RUN cd /tmp \
     && git clone http://github.com/gabrielelana/awesome-terminal-fonts \
     && cd awesome-terminal-fonts \
     && git checkout patching-strategy \
     && mkdir -p ~/.fonts \
-    && cp patched/*.ttf ~/.fonts
-
-# update the font-info cache
-sudo fc-cache -fv ~/.fonts
+    && cp patched/*.ttf ~/.fonts \
+    && sudo fc-cache -fv ~/.fonts
 
 RUN git clone https://github.com/arialdomartini/oh-my-git.git ~/.oh-my-git && echo source ~/.oh-my-git/prompt.sh >> ~/.bashrc
 
