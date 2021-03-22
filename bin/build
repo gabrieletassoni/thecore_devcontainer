@@ -39,5 +39,5 @@ DOCKERUSER=gabrieletassoni
 DOCKERTAG=$DOCKERUSER/vscode-devcontainers-thecore:$DOCKERVERSION
 
 docker build -t "$DOCKERTAG" .
-export DOCKERTAG=$DOCKERTAG
+echo "$DOCKERTAG"
 exit 0
