@@ -13,7 +13,7 @@ trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
 git pull
 git fetch --all --tags --prune
 
-push
+thecore push
 CURRENTVERSION=$(git describe --tags "$(git rev-list --tags --max-count=1)")
 if [ -z "$CURRENTVERSION" ]
 then
