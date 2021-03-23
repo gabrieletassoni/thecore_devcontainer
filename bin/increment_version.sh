@@ -17,7 +17,7 @@ done
 
 shift $(($OPTIND - 1))
 
-version=$1
+version="${1/test/}"
 
 # Build array from version string.
 
