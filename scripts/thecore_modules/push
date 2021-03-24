@@ -9,6 +9,7 @@ failure() {
 }
 trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
 
+# Be sure to push anything new
 git add . -A
 if [ "$1" ]
 then
@@ -16,3 +17,4 @@ then
 else
   git commit -a
 fi
+git push
