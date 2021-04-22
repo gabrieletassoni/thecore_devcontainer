@@ -57,6 +57,7 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | (OUT=$(apt-key add - 2>&
         libssl1.1 \
         gridsite-clients \
         geoip-database \
+        libgirepository1.0-dev \
     # Update
     && apt-get -y dist-upgrade --no-install-recommends \
     # Clean up
