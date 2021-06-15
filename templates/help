@@ -14,3 +14,6 @@ thecore deploy production|This command will add a Tag, then commit and push to t
 
 thecore get repos|This command will download the source code repositories which are Thecore related, to allow for customization of the bases.
 thecore enhance engine|This command will transform a normal Ruby on Rails Gem into a full fledged Thecore Library.
+
+thecore create config test deployment|This command creates a test configuration for a customer to be used with docker targerts
+thecore create config production deployment|This command creates a production configuration for a customer to be used with docker targerts
