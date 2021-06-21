@@ -149,6 +149,8 @@ EOF
 
     echo "${FULLNAME}" > ".ruby-gemset"
 
+    echo "gem 'rails-erd', group: :development" >> Gemfile
+
     # Add Thecore base gems
     if [[ $APPLICATION_TYPE == "api" ]]
     then
@@ -229,6 +231,7 @@ EOF
     rails webpacker:install
     rails active_storage:install
     rails action_text:install
+    rails g erd:install
     yarn install
     rails db:create
     rails g migration ChangeThecoreAppName
@@ -269,6 +272,8 @@ else
     echo -e "\e[31m\e[1mERROR"'!'"\e[0m The name can only contain lowercase letters, numbers, - and _: \e[31m\e[1mplease rename\e[0m\e[31m this project's folder to match the given constraint\e[0m." 
     exit 1
 fi
+
+thecore create config production deployment
 
 echo "New Thecore App: ${FULLNAME} created."
 

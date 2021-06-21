@@ -7,9 +7,9 @@ if [ -f "/tmp/latest-service-name" ]
 then
     SERVICE_NAME=$(cat "/tmp/latest-service-name")
 fi
-if [ -f "/tmp/latest-customer-name" ]
-then
-    CUSTOMER_NAME=$(cat "/tmp/latest-customer-name")
-fi
+# if [ -f "/tmp/latest-customer-name" ]
+# then
+#     CUSTOMER_NAME=$(cat "/tmp/latest-customer-name")
+# fi
 
 mv "$SERVICE_NAME/docker_host" "$SERVICE_NAME/docker_test_host"
