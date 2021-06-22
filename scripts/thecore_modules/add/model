@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 if [[ $1 == "--help" ]]
 then
@@ -86,7 +86,7 @@ add_poly_has_many () {
 
 # thor thecore_generate:models
 # Installing dependencies
-# gem install activesupport
+gem install rails -v '~> 6.0.0'
 bundle install
 
 GEMSPEC_FILE="$(find . -name "*.gemspec"|tail -n1)"
@@ -107,9 +107,6 @@ then
   POLYMORPHICS=$(ruby -e "'$MODEL_DECLARATION'.split.map do |m| m.match(/^(.+).references.polymorphic.$/)[1] if m.include? 'polymorphic' end.compact.join(' ')")
   echo "Generating the model: rails way"
   bin/rails g model ${MODEL_ARRAY[@]} -s
-  echo 'Replace ActiveRecord::Base with ApplicationRecord'
-  echo "Add rails_admin declaration only in files which are ActiveRecords and don't already have that declaration"
-  echo 'Thecorizing the Model and completing Belongs To Associations'
   # Download this entry's template for api and railsadmin
   mkdir -p "app/models/concerns/api/" "app/models/concerns/rails_admin/"
   # API + Rails Admin Concerns
@@ -119,7 +116,7 @@ then
   sed -i "s/<%= @model_name %>/$MODEL_CAMEL_CASE/g" "app/models/concerns/api/$MODEL_FILE_NAME"
   sed -i "s/<%= @model_name %>/$MODEL_CAMEL_CASE/g" "app/models/concerns/rails_admin/$MODEL_FILE_NAME"
 
-  # It must be a class and don't have rails_admin declaration
+  # Replace ActiveRecord::Base with ApplicationRecord
   sed -i 's/ActiveRecord::Base/ApplicationRecord/' "$MODEL_FILE_PATH"
   # Associations
   sed -i '/ApplicationRecord$/a\  # Associations' "$MODEL_FILE_PATH"
@@ -130,17 +127,25 @@ then
   # If it's UI type only
   if grep thecore_ui_rails_admin "$GEMSPEC_FILE"
   then
-    grep "include RailsAdmin::$MODEL_CAMEL_CASE" "$MODEL_FILE_PATH" || sed -i "/ApplicationRecord$/a\  include RailsAdmin::$MODEL_CAMEL_CASE" "$MODEL_FILE_PATH"
+    grep "include RailsAdmin::$MODEL_CAMEL_CASE" "$MODEL_FILE_PATH" || sed -i "/\# Concerns$/a\  include RailsAdmin::$MODEL_CAMEL_CASE" "$MODEL_FILE_PATH"
   fi
   # If it's API type only
   if grep model_driven_api "$GEMSPEC_FILE"
   then
-    grep "include Api::$MODEL_CAMEL_CASE" "$MODEL_FILE_PATH" || sed -i "/ApplicationRecord$/a\  include Api::$MODEL_CAMEL_CASE" "$MODEL_FILE_PATH"
+    grep "include Api::$MODEL_CAMEL_CASE" "$MODEL_FILE_PATH" || sed -i "/\# Concerns$/a\  include Api::$MODEL_CAMEL_CASE" "$MODEL_FILE_PATH"
   fi
 
   # TODO: go on with translating line 50 in thecore_generate.thor to bash
   echo 'Completing Belongs To Associations:'
-  sed -i "/^(?!.*inverse_of.*)^ *belongs_to.*$/s/$/, inverse_of: :$MODEL_UNDERSCORE_PLURAL/g" "$MODEL_FILE_PATH"
+  for BEL in $BELONGS
+  do
+    echo "Completing $BEL belongs_to association with inverse_of in file $MODEL_FILE_PATH"
+    if grep "belongs_to :$BEL" $MODEL_FILE_PATH | grep "inverse_of" -v
+    then
+      # Append by replacing end of line
+      sed "/belongs_to :$BEL/s/$/, inverse_of: :$MODEL_UNDERSCORE_PLURAL/g" "$MODEL_FILE_PATH"
+    fi
+  done
 
   echo 'Add Has Many Through Associations:'
   # Check if the model described in "$MODEL_FILE_PATH" has 2 or more belongs_to
@@ -150,6 +155,8 @@ then
   # BELONGS=$(grep -Po 'belongs_to :\K(.+), .+' "$MODEL_FILE_PATH" |cut -d , -f1)
   BELONGSARRAY=($BELONGS)
   BELONGSNUMBER=${#BELONGSARRAY[@]}
+  echo "Found $BELONGSNUMBER belongs to associations in $MODEL_FILE_PATH"
+  echo "- the belongs_to associationas are: $BELONGS"
   if [ "$BELONGSNUMBER" -gt 1 ]
   then
     echo "$MODEL_FILE_PATH has more than one belongs_to, so it could be an association table for one or more has_many :through associations."
