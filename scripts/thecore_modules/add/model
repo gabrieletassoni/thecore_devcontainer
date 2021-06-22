@@ -86,7 +86,7 @@ add_poly_has_many () {
 
 # thor thecore_generate:models
 # Installing dependencies
-gem install rails -v '~> 6.0.0'
+# gem install rails -v '~> 6.0.0'
 bundle install
 
 GEMSPEC_FILE="$(find . -name "*.gemspec"|tail -n1)"
