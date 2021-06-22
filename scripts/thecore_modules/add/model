@@ -103,8 +103,9 @@ then
   MODEL_FILE_NAME="$MODEL_UNDERSCORE_CASE.rb"
   MODEL_FILE_PATH="app/models/$MODEL_FILE_NAME"
   # Associations Info got from the Model definition
-  BELONGS=$(ruby -e "'$MODEL_DECLARATION'.split.map do |m| m.scan(/^(.+).references$/).flatten if m.include? 'references' end.flatten.compact.join(' ')")
-  POLYMORPHICS=$(ruby -e "'$MODEL_DECLARATION'.split.map do |m| m.match(/^(.+).references.polymorphic.$/)[1] if m.include? 'polymorphic' end.compact.join(' ')")
+  BELONGS=$(ruby -e "puts('$MODEL_DECLARATION'.split.map do |m| m.scan(/^(.+).references$/).flatten if m.include? 'references' end.flatten.compact.join(' '))")
+  POLYMORPHICS=$(ruby -e "puts('$MODEL_DECLARATION'.split.map do |m| m.match(/^(.+).references.polymorphic.$/)[1] if m.include? 'polymorphic' end.compact.join(' '))")
+  
   echo "Generating the model: rails way"
   bin/rails g model ${MODEL_ARRAY[@]} -s
   # Download this entry's template for api and railsadmin

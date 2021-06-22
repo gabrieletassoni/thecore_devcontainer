@@ -79,6 +79,8 @@ rails plugin new "$ENGINE_NAME" -fG --full
 
 cd "$ENGINE_NAME"
 
+bundle config set path /workspaces/project/app/vendor/bundle
+
 # Setup the gemspec file
 function edit_gem_info # KEY VALUE FILE
 {
