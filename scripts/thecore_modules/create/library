@@ -110,7 +110,7 @@ git config user.name "$ENGINE_AUTHOR"
 git config user.email "$ENGINE_EMAIL"
 git add . -A
 git commit -a -m "Initial git"
-git tag test0.1.0
+git tag 0.1.0-test
 echo "Please add a git repository URI if you like (empty string to add nothing):"
 read -r URI
 if [[ -z $URI ]]
