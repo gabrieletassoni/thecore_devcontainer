@@ -10,24 +10,25 @@ failure() {
 trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
 
 # Sanity Checks
-echo "Parameter $1"
-if [[ -z "$1" ]]
-then
-  echo -e "\e[31mPlease run this script with one parameter.\e[0m"
-  exit 1
-else
-  if ! [[ "API Both GUI" =~ $1 ]]
-  then
-    echo -e "\e[31mThe first parameter must be the string API or GUI or Both.\e[0m"
-    exit 1
-  fi
-fi
 for i in *.gemspec
 do
   if ! [ -f "$i" ]
   then
     echo -e "\e[31mThe Folder $(pwd) does NOT contain a gemspec file, please run this script INSIDE a rails engine project.\e[0m"
     exit 1
+  fi
+done
+
+# ASK for api only gem or UI dependent one and add a dependency on model_driven_api or thecore_ui_rails_admin respectively.
+PS3="Please select the type of engine you are creating, select it by specifying element's number from the list above:"
+TYPE="Both"
+select T in "API" "GUI" "Both"
+do
+  echo "Selected ${T}"
+  if [[ -n "${T}" ]]
+  then
+    TYPE="$T"
+    break
   fi
 done
 
@@ -44,7 +45,7 @@ function prepare_for_dependency
   sed -i "/require .${2}./d" lib/"${1}".rb
   sed -i "1 s/^/require '${2}'\n/" lib/"${1}".rb
 }
-case $1 in
+case $TYPE in
   "API")
   prepare_for_dependency "${ENGINE_NAME}" "model_driven_api"
   ;;
