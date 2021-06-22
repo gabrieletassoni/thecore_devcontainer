@@ -86,7 +86,7 @@ add_poly_has_many () {
 
 # thor thecore_generate:models
 # Installing dependencies
-gem install activesupport
+# gem install activesupport
 
 GEMSPEC_FILE="$(find . -name "*.gemspec"|tail -n1)"
 GEMNAME=$(basename -- "$GEMSPEC_FILE")
