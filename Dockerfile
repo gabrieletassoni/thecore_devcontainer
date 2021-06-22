@@ -61,6 +61,9 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | (OUT=$(apt-key add - 2>&
     # Clean up
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
+# Add at least a version of rails to work with
+RUN gem install rails  -v '~> 6.0.0'
+
 # Add to the container thecore specific scripts
 COPY scripts/ /usr/bin/
 COPY bin/increment_version.sh /usr/bin/increment_version.sh
