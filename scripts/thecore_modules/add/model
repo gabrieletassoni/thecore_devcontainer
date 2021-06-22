@@ -105,7 +105,7 @@ then
   # Associations Info got from the Model definition
   BELONGS=$(ruby -e "puts('$MODEL_DECLARATION'.split.map do |m| m.scan(/^(.+).references$/).flatten if m.include? 'references' end.flatten.compact.join(' '))")
   POLYMORPHICS=$(ruby -e "puts('$MODEL_DECLARATION'.split.map do |m| m.match(/^(.+).references.polymorphic.$/)[1] if m.include? 'polymorphic' end.compact.join(' '))")
-  
+
   echo "Generating the model: rails way"
   bin/rails g model ${MODEL_ARRAY[@]} -s
   # Download this entry's template for api and railsadmin
@@ -144,7 +144,7 @@ then
     if grep "belongs_to :$BEL" $MODEL_FILE_PATH | grep "inverse_of" -v
     then
       # Append by replacing end of line
-      sed "/belongs_to :$BEL/s/$/, inverse_of: :$MODEL_UNDERSCORE_PLURAL/g" "$MODEL_FILE_PATH"
+      sed -i "/belongs_to :$BEL/s/$/, inverse_of: :$MODEL_UNDERSCORE_PLURAL/g" "$MODEL_FILE_PATH"
     fi
   done
 
