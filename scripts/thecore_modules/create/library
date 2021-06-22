@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if ! [ -d ../dependencies ]
+then
+  echo "ERROR! This must be run from inside app directory and have a sibling directory called dependencies"
+  exit 1  
+fi
+
 for i in *.gemspec
 do
   if [[ -f "$i" ]]
