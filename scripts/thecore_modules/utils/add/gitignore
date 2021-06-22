@@ -11,10 +11,6 @@ trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
 
 # Add gitignore
 curl https://www.toptal.com/developers/gitignore/api/osx,macos,ruby,linux,rails,windows > .gitignore
-echo ".passwords" >> .gitignore
-echo "vendor/gems" >> .gitignore
-echo "vendor/custom" >> .gitignore
-echo "Gemfile.lock" >> .gitignore
-echo "config/database.yml" >> .gitignore
+{ echo ".passwords"; echo "vendor/bundle"; echo "config/database.yml"; } >> .gitignore
 
 exit 0

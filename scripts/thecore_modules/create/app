@@ -227,6 +227,8 @@ EOF
         done
     fi
 
+    # Remove auto generated git, I will create a git init in the proper way below
+    rm -rf .git
     bundle && bundle install && bundle update
     rails webpacker:install
     rails active_storage:install
@@ -241,13 +243,10 @@ EOF
     
     thecore utils add gitignore
 
-    mkdir -p vendor/gems
-    touch vendor/gems/.keep
-
     git init
     git add . -A
     git commit -a -m "Initial Git"
-    git tag 0.1.0
+    git tag test0.1.0
     yesno "Would you like to add a remote git repository?"
     if [[ $CHOICE == "yes" ]]
     then
@@ -273,7 +272,9 @@ else
     exit 1
 fi
 
-thecore create config production deployment
+mkdir installers
+
+thecore create config localdev deployment
 
 echo "New Thecore App: ${FULLNAME} created."
 
