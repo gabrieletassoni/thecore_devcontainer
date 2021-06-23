@@ -309,6 +309,106 @@ bundle exec rails s -p 3000 -b '0.0.0.0'
 exit 0
 EOT
 
+cat <<EOF | tee "bin/down.sh"
+#!/bin/bash
+
+if ! [[ -d installers ]]
+then
+    echo -e "\e[31m\e[1mERROR! This Script is intended to be run from installer's parent directory."
+    exit 1
+fi
+
+if [[ $# -ne 3 ]]
+then
+    echo -e "\e[31m\e[1mERROR! This command accepts exactly 3 arguments:\e[0m"
+    echo "  $0 service customer type"
+    echo "  - service must be chosen among: $(ls installers | xargs)"
+    echo "  - customer must be chosen among: $(ls installers/**/*.env | xargs -n 1 basename | sed -e 's/\.env$//' | xargs)"
+    echo "  - type must be chosen between wet or dry: wet to apply the deploy, dry to just test the building."
+    exit 1
+fi
+
+if ! [[ -d installers/$1 ]]
+then
+    echo -e "\e[31m\e[1mERROR! installers/$1 must exist, configure the deploy, please\e[0m"
+    exit 1
+fi
+
+if ! [[ -f installers/$1/$2.env ]]
+then
+    echo -e "\e[31m\e[1mERROR! installers/$1/$2.env must exist, configure the deploy, please\e[0m"
+    exit 1
+fi
+
+if [[ $3 != "wet" ]] && [[ $3 != "dry" ]]
+then
+    echo -e "\e[31m\e[1mERROR! The third argument must be either wet or dry: wet to apply the deploy, dry to just test the building\e[0m"
+    exit 1
+fi
+
+cd installers
+
+if [ "$3" = "wet" ]
+then
+    docker-compose --env-file $1/$2.env down --remove-orphans
+
+    docker system prune -a -f --volumes
+    docker builder prune -a -f
+else
+    echo "Third parameter is not wet, so I destroy nothing!"
+fi
+EOF
+
+cat <<EOF | tee "bin/up.sh"
+#!/bin/bash -e
+
+if ! [[ -d installers ]]
+then
+    echo -e "\e[31m\e[1mERROR! This Script is intended to be run from installer's parent directory."
+    exit 1
+fi
+
+if [[ $# -ne 3 ]]
+then
+    echo -e "\e[31m\e[1mERROR! This command accepts exactly 3 arguments:\e[0m"
+    echo "  $0 service customer type"
+    echo "  - service must be chosen among: $(ls installers | xargs)"
+    echo "  - customer must be chosen among: $(ls installers/**/*.env | xargs -n 1 basename | sed -e 's/\.env$//' | xargs)"
+    echo "  - type must be chosen between wet or dry: wet to apply the deploy, dry to just test the building."
+    exit 1
+fi
+
+if ! [[ -d installers/$1 ]]
+then
+    echo -e "\e[31m\e[1mERROR! installers/$1 must exist, configure the deploy, please\e[0m"
+    exit 1
+fi
+
+if ! [[ -f installers/$1/$2.env ]]
+then
+    echo -e "\e[31m\e[1mERROR! installers/$1/$2.env must exist, configure the deploy, please\e[0m"
+    exit 1
+fi
+
+if [[ $3 != "wet" ]] && [[ $3 != "dry" ]]
+then
+    echo -e "\e[31m\e[1mERROR! The third argument must be either wet or dry: wet to apply the deploy, dry to just test the building\e[0m"
+    exit 1
+fi
+
+cd installers
+
+# Start the builds
+docker-compose --env-file $1/$2.env config
+docker-compose --env-file $1/$2.env pull
+# The build phase is no longer needed, the image is already in the container registry, ready to be spinned up after pulling
+# docker-compose --env-file $1/$2.env build
+
+# Thanks to the -e switch, the up is done only if the previous preparation steps are succesfull
+# and obviously only if a first param is given (just to have control on the type or run: dry or wet)
+[ "$3" = "wet" ] && docker-compose --env-file $1/$2.env up -d --remove-orphans
+EOF
+
 chmod +x vendor/backend/entrypoint*.sh
 
 exit 0

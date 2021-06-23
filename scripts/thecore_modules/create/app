@@ -233,6 +233,7 @@ EOF
     rails webpacker:install
     rails active_storage:install
     rails action_text:install
+    rails action_mailbox:install
     rails g erd:install
     yarn install
     rails db:create
@@ -275,6 +276,54 @@ fi
 mkdir installers
 
 thecore create config localdev deployment
+
+# Add some script useful for CI/CD
+cat <<EOF | tee "bin/deploy.sh"
+#!/bin/sh -e
+
+if [ "$#" -ne 1 ]
+then
+    echo "ERROR! The first argument must exists and it has to be either docker_test_host or docker_host"
+    exit 1
+fi
+
+if ! [ -d installers ]
+then
+    echo "ERROR! This script must be run from the directory containing installers folder."
+    exit 2
+fi
+
+cd installers
+for PROVIDER in *
+do 
+if [ -f "$PROVIDER/$1" ]
+then
+    echo "$PROVIDER has a docker_test_host file, let's see if it also has customers"
+    export DOCKER_HOST="$(cat "$PROVIDER/$1")"
+    export DOCKER_HOST_DOMAIN="$(echo $DOCKER_HOST | cut -d'/' -f3 | cut -d':' -f1)"
+    export DOCKER_HOST_PORT="$(echo $DOCKER_HOST | cut -d'/' -f3 | cut -d':' -f2)"
+    ssh $DOCKER_HOST_DOMAIN -p $DOCKER_HOST_PORT "
+    docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY; 
+    mkdir -p /tmp/installers; 
+    exit"
+    rsync -arvz -e "ssh -p $DOCKER_HOST_PORT" --progress --delete docker-compose.yml $PROVIDER ${DOCKER_HOST_DOMAIN}:/tmp/installers/
+    for CUSTOMER in $PROVIDER/*.env
+    do
+    echo "  - found $CUSTOMER doing the remote up thing on $DOCKER_HOST"
+    ssh $DOCKER_HOST_DOMAIN -p $DOCKER_HOST_PORT " 
+        export IMAGE_TAG_HELPDESK_SIDEKIQ=$IMAGE_TAG_HELPDESK_SIDEKIQ; 
+        export IMAGE_TAG_HELPDESK=$IMAGE_TAG_HELPDESK; 
+        export IMAGE_TAG_BACKEND=$IMAGE_TAG_BACKEND; 
+        export IMAGE_TAG_BACKEND_SIDEKIQ=$IMAGE_TAG_BACKEND_SIDEKIQ; 
+        cd /tmp/installers
+        docker-compose --env-file $CUSTOMER pull; 
+        docker-compose --env-file $CUSTOMER up -d --remove-orphans --no-build; 
+        exit"
+    done
+    ssh $DOCKER_HOST_DOMAIN -p $DOCKER_HOST_PORT "docker system prune -f; docker logout $CI_REGISTRY; exit" 
+fi
+done
+EOF
 
 echo "New Thecore App: ${FULLNAME} created."
 
