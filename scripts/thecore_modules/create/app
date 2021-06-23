@@ -278,7 +278,7 @@ mkdir installers
 thecore create config localdev deployment
 
 # Add some script useful for CI/CD
-cat <<EOF | tee "bin/deploy.sh"
+cat <<'EOF' | tee "bin/deploy.sh"
 #!/bin/sh -e
 
 if [ "$#" -ne 1 ]
