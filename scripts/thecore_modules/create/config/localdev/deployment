@@ -108,7 +108,7 @@ networks:
 # probably set in the shell script which handles 
 # the up of the application.
 x-vars: &vars
-  APP_NAME: $APP_NAME
+  APP_NAME: \${APP_NAME}
   ADMIN_EMAIL: admin@\${BASE_DOMAIN}
   ADMIN_PASSWORD: \${ADMIN_PASSWORD}
   BACKEND_DOMAIN: \${BACKEND_DOMAIN}
