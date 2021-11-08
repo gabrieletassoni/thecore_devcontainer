@@ -9,8 +9,7 @@ thecore add action root|This command will create the needed files, inside the cu
 
 thecore push|This command will commit and push to Git using just one command.
 
-thecore deploy test|This command will add a Tag with test prepended to trigger test only CI/CD pipelines, then commit and push to the server using just one command.
-thecore deploy production|This command will add a Tag, then commit and push to the server using just one command. It's actually a Release.
+thecore deploy|This command will ask for env target for the deploymenta and tags the git thus to have the Gitlab pipeline run on the right target.
 
 thecore get repos|This command will download the source code repositories which are Thecore related, to allow for customization of the bases.
 thecore enhance engine|This command will transform a normal Ruby on Rails Gem into a full fledged Thecore Library.
