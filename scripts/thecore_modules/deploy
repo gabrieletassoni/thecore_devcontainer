@@ -68,7 +68,7 @@ done
 
 echo "SWTICH: $SWITCH"
 
-DOCKERVERSION="$(increment_version.sh $SWITCH $CURRENTVERSION)-test"
+DOCKERVERSION="$(increment_version.sh $SWITCH $CURRENTVERSION)$ENVIRONMENT"
 echo "New Version: $DOCKERVERSION"
 git tag "$DOCKERVERSION"
 git push --tags
