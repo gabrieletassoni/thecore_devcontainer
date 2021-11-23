@@ -38,6 +38,6 @@ git push --tags
 DOCKERUSER=gabrieletassoni
 DOCKERTAG=$DOCKERUSER/vscode-devcontainers-thecore:$DOCKERVERSION
 
-docker build -f Dockerfile.common -f Dockerfile.development -t "$DOCKERTAG" .
+docker build --no-cache --pull -f Dockerfile.common -f Dockerfile.development -t "$DOCKERTAG" .
 echo "$DOCKERTAG"
 exit 0

@@ -14,7 +14,7 @@ DOCKERUSER=gabrieletassoni
 DOCKERVERSION=$(date +"%Y%m%d")
 DOCKERTAG="$DOCKERUSER/thecore"
 
-docker build -f Dockerfile.common -t "${DOCKERTAG}:latest" -t "${DOCKERTAG}:${DOCKERVERSION}" .
+docker build --no-cache --pull -f Dockerfile.common -t "${DOCKERTAG}:latest" -t "${DOCKERTAG}:${DOCKERVERSION}" .
 echo "$DOCKERTAG"
 
 if yes_or_no "Would you like to push this image to the docker hub?"
