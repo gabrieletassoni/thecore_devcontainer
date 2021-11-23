@@ -325,6 +325,15 @@ fi
 done
 EOF
 
+
+cat <<'EOF' | tee "bin/build.sh"
+#!/bin/sh -e
+
+docker-compose -f installers/docker-compose.yml -f installers/docker-compose.build.yml config
+docker-compose -f installers/docker-compose.yml -f installers/docker-compose.build.yml build --pull --no-cache
+docker-compose -f installers/docker-compose.yml -f installers/docker-compose.build.yml push
+EOF
+
 echo "New Thecore App: ${FULLNAME} created."
 
 exit 0

@@ -1,0 +1,4 @@
+#!/bin/bash -e
+
+bin/build-for-dev
+bin/build-for-deploy
