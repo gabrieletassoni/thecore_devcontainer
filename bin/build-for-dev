@@ -8,9 +8,9 @@ git tag "$DOCKERVERSION"
 git push
 git push --tags
 DOCKERUSER=gabrieletassoni
-DOCKERTAG=$DOCKERUSER/vscode-devcontainers-thecore:$DOCKERVERSION
+DOCKERTAG=$DOCKERUSER/vscode-devcontainers-thecore
 
-docker build --no-cache --pull -f Dockerfile.common -f Dockerfile.development -t "$DOCKERTAG" .
+docker build --no-cache --pull -f Dockerfile.common -f Dockerfile.development -t "${DOCKERTAG}:latest" -t "${DOCKERTAG}:${DOCKERVERSION}" .
 echo "$DOCKERTAG"
 
 echo "Login to docker hub"
