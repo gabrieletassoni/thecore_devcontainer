@@ -1,6 +1,18 @@
 #!/bin/bash -e
 
-DOCKERTAG="$(bin/build | tail -n1)"
+DOCKERVERSION=$(date +"%Y%m%d")
+echo "New Version: $DOCKERVERSION"
+git add . -A
+git commit -a -m "New Version $DOCKERVERSION"
+git tag "$DOCKERVERSION"
+git push
+git push --tags
+DOCKERUSER=gabrieletassoni
+DOCKERTAG=$DOCKERUSER/vscode-devcontainers-thecore:$DOCKERVERSION
+
+docker build --no-cache --pull -f Dockerfile.common -f Dockerfile.development -t "$DOCKERTAG" .
+echo "$DOCKERTAG"
+
 echo "Login to docker hub"
 docker login
 [[ "$DOCKERTAG" ]] && docker push "$DOCKERTAG"
