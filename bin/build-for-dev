@@ -16,6 +16,7 @@ echo "$DOCKERTAG"
 
 echo "Login to docker hub"
 docker login
+echo "Pushing to docker hub"
 [[ "$DOCKERTAG" ]] && docker push "$DOCKERTAG"
 
 exit 0
