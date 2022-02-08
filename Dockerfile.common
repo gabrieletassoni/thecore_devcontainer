@@ -63,7 +63,8 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | (OUT=$(apt-key add - 2>&
         geoip-database \
         libgirepository1.0-dev \
         nodejs \
-    && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* && rm -rf /var/cache/apt/archives \
+    && apt-get autoremove -y && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/* && rm -rf /var/cache/apt/archives \
     && rm -rf /usr/share/doc/ && rm -rf /usr/share/man/ && rm -rf /usr/share/locale/
 
 EXPOSE 3000
