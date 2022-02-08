@@ -1,0 +1,85 @@
+version: "3.7"
+
+networks:
+  default:
+    external:
+      name: ${NETWORK}
+
+# These come from exported environment variables
+# probably set in the shell script which handles 
+# the up of the application.
+x-vars: &vars
+  APP_NAME: $APP_NAME
+  ADMIN_EMAIL: admin@${BASE_DOMAIN}
+  ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+  BACKEND_DOMAIN: ${BACKEND_DOMAIN}
+  BACKEND_URL: ${BACKEND_URL}
+  FRONTEND_DOMAIN: ${FRONTEND_DOMAIN}
+  FRONTEND_URL: ${FRONTEND_URL}
+  BASE_DOMAIN: ${BASE_DOMAIN}
+  COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
+  DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+  DEFAULT_OUTGOING_EMAIL_DOMAIN: ${BASE_DOMAIN}
+  DEFAULT_SENDER_EMAIL: mailer@${BASE_DOMAIN}
+  LANG: ${LANG}
+  LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+  RACK_ENV: ${RACK_ENV}
+  RAILS_ENV: ${RAILS_ENV}
+  RAILS_LOG_TO_STDOUT: ${RAILS_LOG_TO_STDOUT}
+  RAILS_RELATIVE_URL_ROOT: ${RAILS_RELATIVE_URL_ROOT}
+  RAILS_SERVE_STATIC_FILES: ${RAILS_SERVE_STATIC_FILES}
+  REDIS_PASSWORD: ${REDIS_PASSWORD}
+  REDIS_URL: ${REDIS_URL}
+  DATABASE_URL: ${DATABASE_URL}
+  SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+  SMTP_ADDRESS: ${SMTP_ADDRESS}
+  SMTP_DELIVERY_METHOD: ${SMTP_DELIVERY_METHOD}
+  SMTP_PASSWORD: ${SMTP_PASSWORD}
+  SMTP_USERNAME: ${SMTP_USERNAME}
+  FE_SUBDOMAIN: ${FE_SUBDOMAIN}
+  BE_SUBDOMAIN: ${BE_SUBDOMAIN}
+  ALLOW_MULTISESSIONS: ${ALLOW_MULTISESSIONS}
+
+services: 
+  backend:
+    image: ${IMAGE_TAG_BACKEND}
+    restart: always
+    external_links:
+      - postgresql
+      - redis
+      - letsencrypt
+    entrypoint: /bin/thecore/entrypoint.sh
+    environment:
+      <<: *vars
+      VIRTUAL_HOST: ${BACKEND_DOMAIN}
+      LETSENCRYPT_HOST: ${BACKEND_DOMAIN}
+      VIRTUAL_PORT: 3000
+    volumes:
+      - /root/persistence/${COMPOSE_PROJECT_NAME}/storage:/app/storage
+      - /root/persistence/${COMPOSE_PROJECT_NAME}/imports:/app/tmp/imports
+    healthcheck:
+      test: "${DOCKER_HEALTHCHECK_TEST:-curl --fail http://localhost:3000/}"
+      interval: "60s"
+      timeout: "3s"
+      retries: 3
+
+  backend-sidekiq:
+    image: ${IMAGE_TAG_BACKEND_SIDEKIQ}
+    restart: always
+    depends_on:
+      - backend
+    external_links: 
+      - postgresql
+      - redis
+    entrypoint: /bin/thecore/entrypoint-sidekiq.sh
+    environment:
+      <<: *vars
+    volumes:
+      - /root/persistence/${COMPOSE_PROJECT_NAME}/storage:/app/storage
+      - /root/persistence/${COMPOSE_PROJECT_NAME}/imports:/app/tmp/imports
+    healthcheck:
+      test: "${DOCKER_HEALTHCHECK_TEST:-bundle exec sidekiqmon|grep $(hostname)}"
+      interval: "60s"
+      timeout: "3s"
+      retries: 3
+

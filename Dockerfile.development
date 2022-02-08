@@ -65,13 +65,14 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | (OUT=$(apt-key add - 2>&
 RUN gem install rails -v '~> 6.1.0'
 
 # Add to the container thecore specific scripts
+RUN mkdir -p /etc/thecore/templates /etc/thecore/repos.conf.d
+
 COPY scripts/ /usr/bin/
 COPY bin/increment_version.sh /usr/bin/increment_version.sh
-RUN mkdir -p /etc/thecore/templates
 COPY templates /etc/thecore/templates
 COPY thor_definitions/ /etc/thecore/
-RUN mkdir -p /etc/thecore/repos.conf.d
 COPY repos /etc/thecore/repos.conf.d
+COPY docker /etc/thecore/docker
 
 # Creating the git clones of thecore gems.
 # Useful to have them already inside the dev environment if the need to customize them arises.

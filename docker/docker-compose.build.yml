@@ -1,0 +1,12 @@
+version: "3.7"
+
+services: 
+  backend:
+    build: 
+      dockerfile: /etc/thecore/docker/Dockerfile
+      context: /workspaces/project/app/.
+
+  backend-sidekiq:
+    build: 
+      dockerfile: /etc/thecore/docker/Dockerfile
+      context: /workspaces/project/app/.
