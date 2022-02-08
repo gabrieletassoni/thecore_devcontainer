@@ -12,6 +12,6 @@ ADD . /app
 #     && rm -rf tmp/cache/* /tmp/*
 
 #forward request and error logs to docker log collector
-RUN ln -sf /dev/stdout /app/log/latest-startup.log \
-    && ln -sf /dev/stderr /app/log/latest-startup.log
+# RUN ln -sf /dev/stdout /app/log/latest-startup.log \
+#     && ln -sf /dev/stderr /app/log/latest-startup.log
 SHELL ["/bin/bash", "-c"]

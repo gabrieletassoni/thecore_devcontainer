@@ -5,10 +5,8 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | (OUT=$(apt-key add - 2>&
     && export DEBIAN_FRONTEND=noninteractive \
     && apt-key adv --refresh-keys --keyserver keyserver.ubuntu.com \
     && apt-get update \
-    && apt-get -y dist-upgrade --no-install-recommends
-
-# Specific needed thecore packages
-RUN apt-get -y install \
+    && apt-get -y dist-upgrade --no-install-recommends \
+    && apt-get -y install \
         poppler-utils \
         libvips-tools \
         libvips-dev \
@@ -57,29 +55,7 @@ RUN apt-get -y install \
         libssl1.1 \
         gridsite-clients \
         geoip-database \
-        libgirepository1.0-dev
-
-# Clean up
-RUN apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
-
-RUN mkdir -p /app/vendor
-COPY Gemfile /app/Gemfile
-COPY package.json /app/package.json
-WORKDIR /app
-
-# Install Rails dependecies
-# Use libxml2, libxslt a packages from alpine for building nokogiri
-RUN gem install bundler \
-    && bundle config set without development test \
-    && bundle config build.nokogiri --use-system-libraries \
-    && bundle install --jobs=8
-
-RUN yarn install --check-files \
-    && yarn cache clean
-
-# Add the entrypoints
-RUN mkdir /bin/thecore
-COPY entrypoint*.sh /bin/thecore/
-RUN chmod +x /bin/thecore/entrypoint*.sh
+        libgirepository1.0-dev \
+    && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 3000

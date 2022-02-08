@@ -1,0 +1,19 @@
+#!/bin/bash -e
+
+DOCKERVERSION=$(date +"%Y%m%d")
+echo "New Version: $DOCKERVERSION"
+git add . -A
+git commit -a -m "New Version $DOCKERVERSION"
+git push origin ":refs/tags/$DOCKERVERSION"
+git tag -fa "$DOCKERVERSION"
+git push
+git push --tags
+
+DOCKERUSER=gabrieletassoni
+DOCKERTAG="$DOCKERUSER/thecore-common"
+
+docker build --no-cache --pull -f Dockerfile.common -t "${DOCKERTAG}:latest" -t "${DOCKERTAG}:${DOCKERVERSION}" .
+
+source bin/functions.sh
+
+exit 0
