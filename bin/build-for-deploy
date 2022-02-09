@@ -1,10 +1,13 @@
 #!/bin/bash -e
 
+source bin/version.sh
+
 DOCKERUSER=gabrieletassoni
-DOCKERVERSION=$(date +"%Y%m%d")
+# DOCKERVERSION=$(date +"%Y%m%d")
 DOCKERTAG="$DOCKERUSER/thecore"
 
-docker build --no-cache --pull -f Dockerfile.deploy -t "${DOCKERTAG}:latest" -t "${DOCKERTAG}:${DOCKERVERSION}" .
+# --no-cache --pull
+docker build -f Dockerfile.deploy -t "${DOCKERTAG}:latest" -t "${DOCKERTAG}:${DOCKERVERSION}" .
 
 source bin/functions.sh
 
