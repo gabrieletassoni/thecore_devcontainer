@@ -12,7 +12,7 @@ function yes_or_no {
 
 echo "$DOCKERTAG"
 [[ -z "$DOCKERTAG" ]] && exit 1
-if yes_or_no "Would you like to push this image to the docker hub?"
+if [[ -n "$GITHUB_WORKSPACE" ]] || yes_or_no "Would you like to push this image to the docker hub?"
 then
     echo "Login to docker hub"
     docker login
