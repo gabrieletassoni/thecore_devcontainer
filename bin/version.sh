@@ -1,3 +1,8 @@
 #!/bin/bash -e
 
-DOCKERVERSION=2.1.3
+MAJOR=2
+MINOR=$(date +"%Y")
+PATCH=$(date +"%-m")
+BUILD=$(date +"%-d")
+
+DOCKERVERSION="$MAJOR.$MINOR.$PATCH.$BUILD"
