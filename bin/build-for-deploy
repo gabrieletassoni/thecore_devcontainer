@@ -7,7 +7,7 @@ DOCKERUSER=gabrieletassoni
 DOCKERTAG="$DOCKERUSER/thecore"
 
 # --no-cache --pull
-docker build -f Dockerfile.deploy -t "${DOCKERTAG}:latest" -t "${DOCKERTAG}:${DOCKERVERSION}" --no-cache --pull .
+docker build -f Dockerfile.deploy -t "${DOCKERTAG}:latest" -t "${DOCKERTAG}:${DOCKERVERSION}" -t "${DOCKERTAG}:${MAJOR}" --no-cache --pull .
 
 source bin/functions.sh
 

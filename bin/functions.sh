@@ -16,7 +16,9 @@ if yes_or_no "Would you like to push this image to the docker hub?"
 then
     echo "Login to docker hub"
     docker login
-    [[ "$DOCKERTAG" ]] && docker push --all-tags "$DOCKERTAG"
+    docker push "$DOCKERTAG:$MAJOR"
+    docker push "$DOCKERTAG:$DOCKERVERSION"
+    docker push "$DOCKERTAG:latest"
 else
     exit 0
 fi
