@@ -7,7 +7,7 @@ DOCKERUSER=gabrieletassoni
 DOCKERTAG=$DOCKERUSER/vscode-devcontainers-thecore
 
 # --no-cache --pull 
-docker build -f Dockerfile.dev -t "${DOCKERTAG}:latest" -t "${DOCKERTAG}:${DOCKERVERSION}" .
+docker build -f Dockerfile.dev -t "${DOCKERTAG}:latest" -t "${DOCKERTAG}:${DOCKERVERSION}" --no-cache --pull .
 
 source bin/functions.sh
 

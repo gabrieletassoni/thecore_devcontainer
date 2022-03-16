@@ -1,4 +1,4 @@
-FROM gabrieletassoni/thecore-common:20220209
+FROM gabrieletassoni/thecore-common:latest
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-key adv --refresh-keys --keyserver keyserver.ubuntu.com \
