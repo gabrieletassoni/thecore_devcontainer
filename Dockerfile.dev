@@ -1,4 +1,4 @@
-FROM gabrieletassoni/thecore-common:latest
+FROM gabrieletassoni/thecore-common:2
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-key adv --refresh-keys --keyserver keyserver.ubuntu.com \
@@ -20,6 +20,7 @@ COPY templates /etc/thecore/templates
 COPY thor_definitions/ /etc/thecore/
 COPY repos /etc/thecore/repos.conf.d
 COPY docker /etc/thecore/docker
+COPY localdockerbuild /etc/thecore/localdockerbuild
 
 # Creating the git clones of thecore gems.
 # Useful to have them already inside the dev environment if the need to customize them arises.

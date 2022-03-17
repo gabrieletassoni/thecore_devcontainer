@@ -39,6 +39,7 @@ x-vars: &vars
   FE_SUBDOMAIN: ${FE_SUBDOMAIN}
   BE_SUBDOMAIN: ${BE_SUBDOMAIN}
   ALLOW_MULTISESSIONS: ${ALLOW_MULTISESSIONS}
+  BUNDLE_PATH: vendor/bundle
 
 services: 
   backend:
@@ -64,7 +65,7 @@ services:
       retries: 3
 
   backend-sidekiq:
-    image: ${IMAGE_TAG_BACKEND_SIDEKIQ}
+    image: ${IMAGE_TAG_BACKEND}
     restart: always
     depends_on:
       - backend
@@ -82,4 +83,3 @@ services:
       interval: "60s"
       timeout: "3s"
       retries: 3
-

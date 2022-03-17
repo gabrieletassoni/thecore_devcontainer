@@ -1,5 +1,5 @@
 #!/bin/sh
 
-cd /app || exit
+cd /app
 
-bundle exec sidekiq # -C config/sidekiq.yml
+bundle exec sidekiq -C config/sidekiq.yml

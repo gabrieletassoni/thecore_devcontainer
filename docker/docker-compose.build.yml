@@ -10,3 +10,4 @@ services:
     build: 
       dockerfile: /etc/thecore/docker/Dockerfile
       context: /workspaces/project/app/.
+      

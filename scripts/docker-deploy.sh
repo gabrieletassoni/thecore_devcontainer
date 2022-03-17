@@ -1,14 +1,14 @@
 #!/bin/bash -e
 
-if [ "$#" -ne 1 ]
-then
-    echo "ERROR! The first argument must exists and it has to be the version"
-    exit 1
-fi
+# if [ "$#" -ne 1 ]
+# then
+#     echo "ERROR! The first argument must exists and it has to be the version"
+#     exit 1
+# fi
 
 # /^\d+\.\d+\.\d+(-(test|dev|stage)){0,1}$/gm
-echo "COMMIT TAG: $1"
-VERSION=$1
+echo "COMMIT TAG: ${CI_COMMIT_TAG}"
+VERSION=${CI_COMMIT_TAG}
 # Version must have the form of a semver
 # ^\d+\.\d+\.\d+(-(test|dev|stage)){0,1}$
 # if ! [[ $VERSION =~ ^[0-9]+(\.[0-9]+){2,3}(-(test|dev|stage)){0,1}$ ]] 
@@ -21,6 +21,17 @@ VERSION=$1
 # - ENVIRONMENT = dev
 # in a string like 1.2.3
 # - SEMVER == ENVIRONMENT == VERSION == 1.2.3
+
+
+# Setup SSH trust 
+apk add --no-cache ca-certificates openssh-client rsync bash
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+echo -e "Host *\n\tStrictHostKeyChecking no\n\tControlMaster auto\n\tControlPath ~/.ssh/socket-%C\n\tControlPersist 1\n\n" > ~/.ssh/config
+chmod 600 ~/.ssh/config
+echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+chmod 600 ~/.ssh/id_rsa
+
 SEMVER=${VERSION%%-*}
 ENVIRONMENT=${VERSION##*-}
 
@@ -68,7 +79,6 @@ then
         export IMAGE_TAG_HELPDESK_SIDEKIQ=$IMAGE_TAG_HELPDESK_SIDEKIQ; 
         export IMAGE_TAG_HELPDESK=$IMAGE_TAG_HELPDESK; 
         export IMAGE_TAG_BACKEND=$IMAGE_TAG_BACKEND; 
-        export IMAGE_TAG_BACKEND_SIDEKIQ=$IMAGE_TAG_BACKEND_SIDEKIQ; 
         cd /tmp/installers
         docker-compose --env-file $CUSTOMER pull; 
         docker-compose --env-file $CUSTOMER up -d --remove-orphans --no-build;
