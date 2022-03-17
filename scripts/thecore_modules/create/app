@@ -164,45 +164,6 @@ EOF
         echo "gem 'thecore_ui_rails_admin', '~> 2.7', require: 'thecore_ui_rails_admin'" >> Gemfile
     fi
 
-    # Private GEM Repo
-    # echo "Would you like to setup a private gem repository or provide an existing one?"
-    # OPTIONS=("setup" "don't want to setup a private GEMs repository, go on without adding one")
-    # choose
-    # if [[ "$CHOICE" == "setup" ]]
-    # then
-    #     STOPLOOP="false"
-    #     while [[ "$STOPLOOP" == "false" ]]
-    #     do
-    #         echo "1"
-    #         while [[ "$GEMURL" == '' ]]
-    #         do
-    #             read -rp "Please provide the gem server URL (i.e. https://gems.alchemic.it): " GEMURL
-    #         done 
-
-    #         echo "2"
-    #         while [[ "$USERNAME" == '' ]]
-    #         do
-    #             read -rp "Please provide username for $GEMURL gems repository: " USERNAME
-    #         done 
-
-    #         echo "3"
-    #         while [[ "$PASSWORD" == '' ]]
-    #         do
-    #             read -rp "Please provide the password for $USERNAME: " PASSWORD
-    #         done 
-
-    #         CREDENTIALS="$(urlencode "$USERNAME"):$(urlencode "$PASSWORD")"
-    #         gem sources -a "${GEMURL/:\/\//:\/\/$CREDENTIALS@}"
-    #         bundle config "$GEMURL" "$CREDENTIALS"
-
-    #         yesno "Would you like to setup more private gems repositories?"
-    #         if [[ $CHOICE == "no" ]]
-    #         then
-    #             STOPLOOP=true
-    #         fi
-    #     done
-    # fi
-
     # Asking for more gems
     yesno "Do you want to add more gems to the App?"
     if [[ $CHOICE == "yes" ]]
@@ -227,7 +188,7 @@ EOF
         done
     fi
 
-    cat > .gitlab-ci.yml << EOL
+    cat > .gitlab-ci.yml << 'EOF'
 image: gabrieletassoni/vscode-devcontainers-thecore:2
 
 variables:
@@ -285,7 +246,7 @@ deploy:
   script:
     - /usr/bin/docker-deploy.sh
 
-EOL
+EOF
 
     # Remove auto generated git, I will create a git init in the proper way below
     rm -rf .git
