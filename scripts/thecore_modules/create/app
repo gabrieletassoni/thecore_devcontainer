@@ -189,7 +189,7 @@ EOF
     fi
 
     cat > .gitlab-ci.yml << 'EOF'
-image: gabrieletassoni/vscode-devcontainers-thecore:2
+image: gabrieletassoni/thecore:2
 
 variables:
   BUNDLE_PATH: vendor/bundle
@@ -232,6 +232,7 @@ build docker image:
   variables:
     NETWORK: dummy
   script:
+    - apt install docker-compose
     - /usr/bin/docker-build.sh
 
 # All the deploys need to setup the public key into the target machine
@@ -244,6 +245,7 @@ deploy:
   except:
     - branches
   script:
+    - apt install docker-compose
     - /usr/bin/docker-deploy.sh
 
 EOF
