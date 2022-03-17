@@ -154,14 +154,14 @@ EOF
     # Add Thecore base gems
     if [[ $APPLICATION_TYPE == "api" ]]
     then
-        echo "gem 'model_driven_api', '~> 2.0', require: 'model_driven_api'" >> Gemfile
+        echo "gem 'model_driven_api', '~> 2.5', require: 'model_driven_api'" >> Gemfile
     elif [[ $APPLICATION_TYPE == "backend" ]]
     then
-        echo "gem 'thecore_ui_rails_admin', '~> 2.0', require: 'thecore_ui_rails_admin'" >> Gemfile
+        echo "gem 'thecore_ui_rails_admin', '~> 2.7', require: 'thecore_ui_rails_admin'" >> Gemfile
     elif [[ $APPLICATION_TYPE == "both" ]]
     then
-        echo "gem 'model_driven_api', '~> 2.0', require: 'model_driven_api'" >> Gemfile
-        echo "gem 'thecore_ui_rails_admin', '~> 2.0', require: 'thecore_ui_rails_admin'" >> Gemfile
+        echo "gem 'model_driven_api', '~> 2.5', require: 'model_driven_api'" >> Gemfile
+        echo "gem 'thecore_ui_rails_admin', '~> 2.7', require: 'thecore_ui_rails_admin'" >> Gemfile
     fi
 
     # Private GEM Repo
@@ -227,6 +227,66 @@ EOF
         done
     fi
 
+    cat > .gitlab-ci.yml << EOL
+image: gabrieletassoni/vscode-devcontainers-thecore:2
+
+variables:
+  BUNDLE_PATH: vendor/bundle
+  DISABLE_SPRING: 1
+  IMAGE_TAG_BACKEND: ${CI_REGISTRY_IMAGE}/backend:$CI_COMMIT_TAG
+
+stages:
+  - build
+  - test
+  - lint
+  - dockerize
+  - deploy
+
+build:
+  stage: build
+  cache:
+    paths:
+      - vendor/bundle
+      - node_modules
+      - app/assets
+      - lib/assets
+      - vendor/assets
+      - public/assets
+  # Does not run on untagged branches
+  only:
+    - tags
+  except:
+    - branches
+  script:
+    - /usr/bin/app-compile.sh
+
+build docker image:
+  stage: dockerize
+  when: on_success
+  # Does not run on untagged branches
+  only:
+    - tags
+  except:
+    - branches
+  variables:
+    NETWORK: dummy
+  script:
+    - /usr/bin/docker-build.sh
+
+# All the deploys need to setup the public key into the target machine
+deploy:
+  when: on_success
+  stage: deploy
+  # Does not run on untagged branches
+  only:
+    - tags
+  except:
+    - branches
+  script:
+    - /usr/bin/docker-deploy.sh
+
+EOL
+
     # Remove auto generated git, I will create a git init in the proper way below
     rm -rf .git
     bundle && bundle install && bundle update
@@ -237,9 +297,6 @@ EOF
     rails g erd:install
     yarn install
     rails db:create
-    rails g migration ChangeThecoreAppName
-    APPNAMEFILE=$(find db/migrate -maxdepth 1 -mindepth 1 -name "*_change_thecore_app_name.rb")
-    sed -i "/def change/a \ \ \ \ Settings.app_name = '$(tc "${FULLNAME//[-_]/ }")'" "$APPNAMEFILE"
     rails db:migrate
     
     thecore utils add gitignore
@@ -247,7 +304,7 @@ EOF
     git init
     git add . -A
     git commit -a -m "Initial Git"
-    git tag test0.1.0
+    git tag 0.1.0-test
     yesno "Would you like to add a remote git repository?"
     if [[ $CHOICE == "yes" ]]
     then
@@ -274,63 +331,6 @@ else
 fi
 
 mkdir -p installers
-
-# Add some script useful for CI/CD
-cat <<'EOF' | tee "bin/deploy.sh"
-#!/bin/sh -e
-
-if [ "$#" -ne 1 ]
-then
-    echo "ERROR! The first argument must exists and it has to be either docker_test_host or docker_host"
-    exit 1
-fi
-
-if ! [ -d installers ]
-then
-    echo "ERROR! This script must be run from the directory containing installers folder."
-    exit 2
-fi
-
-cd installers
-for PROVIDER in *
-do 
-if [ -f "$PROVIDER/$1" ]
-then
-    echo "$PROVIDER has a docker_test_host file, let's see if it also has customers"
-    export DOCKER_HOST="$(cat "$PROVIDER/$1")"
-    export DOCKER_HOST_DOMAIN="$(echo $DOCKER_HOST | cut -d'/' -f3 | cut -d':' -f1)"
-    export DOCKER_HOST_PORT="$(echo $DOCKER_HOST | cut -d'/' -f3 | cut -d':' -f2)"
-    ssh $DOCKER_HOST_DOMAIN -p $DOCKER_HOST_PORT "
-    docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY; 
-    mkdir -p /tmp/installers; 
-    exit"
-    rsync -arvz -e "ssh -p $DOCKER_HOST_PORT" --progress --delete docker-compose.yml $PROVIDER ${DOCKER_HOST_DOMAIN}:/tmp/installers/
-    for CUSTOMER in $PROVIDER/*.env
-    do
-    echo "  - found $CUSTOMER doing the remote up thing on $DOCKER_HOST"
-    ssh $DOCKER_HOST_DOMAIN -p $DOCKER_HOST_PORT " 
-        export IMAGE_TAG_HELPDESK_SIDEKIQ=$IMAGE_TAG_HELPDESK_SIDEKIQ; 
-        export IMAGE_TAG_HELPDESK=$IMAGE_TAG_HELPDESK; 
-        export IMAGE_TAG_BACKEND=$IMAGE_TAG_BACKEND; 
-        export IMAGE_TAG_BACKEND_SIDEKIQ=$IMAGE_TAG_BACKEND_SIDEKIQ; 
-        cd /tmp/installers
-        docker-compose --env-file $CUSTOMER pull; 
-        docker-compose --env-file $CUSTOMER up -d --remove-orphans --no-build; 
-        exit"
-    done
-    ssh $DOCKER_HOST_DOMAIN -p $DOCKER_HOST_PORT "docker system prune -f; docker logout $CI_REGISTRY; exit" 
-fi
-done
-EOF
-
-
-cat <<'EOF' | tee "bin/build.sh"
-#!/bin/sh -e
-
-docker-compose -f installers/docker-compose.yml -f installers/docker-compose.build.yml config
-docker-compose -f installers/docker-compose.yml -f installers/docker-compose.build.yml build --pull --no-cache
-docker-compose -f installers/docker-compose.yml -f installers/docker-compose.build.yml push
-EOF
 
 echo "New Thecore App: ${FULLNAME} created."
 

@@ -22,7 +22,6 @@ RUN apt-get -y install --no-install-recommends \
         libvips-tools \
         libvips-dev \
         imagemagick \
-        docker-compose \
         software-properties-common \
         build-essential \
         freetds-dev \

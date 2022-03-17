@@ -142,7 +142,7 @@ grep sqlite3 Gemfile || echo "gem 'sqlite3'" >> Gemfile
 # Add CI CD Automation
 # GITLAB
 cat > .gitlab-ci.yml << EOL
-image: ruby:2.7.1
+image: ruby:2.7.5-bullseye
 
 stages:
     - build
