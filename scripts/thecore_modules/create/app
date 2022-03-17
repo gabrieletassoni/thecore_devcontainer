@@ -273,9 +273,7 @@ else
     exit 1
 fi
 
-mkdir installers
-
-# thecore create config localdev deployment
+mkdir -p installers
 
 # Add some script useful for CI/CD
 cat <<'EOF' | tee "bin/deploy.sh"
