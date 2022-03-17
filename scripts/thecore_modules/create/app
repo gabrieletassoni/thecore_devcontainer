@@ -275,7 +275,7 @@ fi
 
 mkdir installers
 
-thecore create config localdev deployment
+# thecore create config localdev deployment
 
 # Add some script useful for CI/CD
 cat <<'EOF' | tee "bin/deploy.sh"

@@ -4,7 +4,8 @@ COPY os/02nocache /etc/apt/apt.conf.d/02nocache
 COPY os/01_nodoc /etc/dpkg/dpkg.cfg.d/01_nodoc
 
 RUN export DEBIAN_FRONTEND=noninteractive \
-    && apt-key adv --refresh-keys --keyserver keyserver.ubuntu.com \
+    && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg \
+    && chmod o+r /usr/share/keyrings/docker-archive-keyring.gpg \
     && apt-get update \
     && apt-get -y dist-upgrade --no-install-recommends
 
