@@ -1,27 +1,15 @@
 #!/bin/bash -e
 
-# if [ "$#" -ne 1 ]
-# then
-#     echo "ERROR! The first argument must exists and it has to be the version"
-#     exit 1
-# fi
+if ! hash docker-compose
+then
+    apt update
+    apt install -y docker-compose
+else
+    echo "Docker Compose exists"
+fi
 
-# /^\d+\.\d+\.\d+(-(test|dev|stage)){0,1}$/gm
 echo "COMMIT TAG: ${CI_COMMIT_TAG}"
 VERSION=${CI_COMMIT_TAG}
-# Version must have the form of a semver
-# ^\d+\.\d+\.\d+(-(test|dev|stage)){0,1}$
-# if ! [[ $VERSION =~ ^[0-9]+(\.[0-9]+){2,3}(-(test|dev|stage)){0,1}$ ]] 
-# then
-#     echo "ERROR! The VERSION $VERSION is not in semver format"
-#     exit 3
-# fi
-# in a string like 1.2.3-dev:
-# - SEMVER = 1.2.3
-# - ENVIRONMENT = dev
-# in a string like 1.2.3
-# - SEMVER == ENVIRONMENT == VERSION == 1.2.3
-
 
 # Setup SSH trust 
 apk add --no-cache ca-certificates openssh-client rsync bash

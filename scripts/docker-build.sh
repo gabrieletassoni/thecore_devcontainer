@@ -1,5 +1,12 @@
 #!/bin/sh -e
 
+if ! hash docker-compose
+then
+    apt update
+    apt install -y docker-compose
+else
+    echo "Docker Compose exists"
+fi
 # Testing docker installation
 docker version
 docker-compose --version

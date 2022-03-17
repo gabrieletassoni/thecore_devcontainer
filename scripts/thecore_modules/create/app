@@ -232,7 +232,6 @@ build docker image:
   variables:
     NETWORK: dummy
   script:
-    - apt install docker-compose
     - /usr/bin/docker-build.sh
 
 # All the deploys need to setup the public key into the target machine
@@ -245,7 +244,6 @@ deploy:
   except:
     - branches
   script:
-    - apt install docker-compose
     - /usr/bin/docker-deploy.sh
 
 EOF
