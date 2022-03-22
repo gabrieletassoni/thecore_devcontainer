@@ -51,5 +51,5 @@ group :test do
   gem 'webdrivers'
 end
 
-gem 'thecore_ui_rails_admin', '~> 2.0'
-gem 'model_driven_api', '~> 2.0'
+gem 'thecore_ui_rails_admin', '~> 2.7'
+gem 'model_driven_api', '~> 2.5'
