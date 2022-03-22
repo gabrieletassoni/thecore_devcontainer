@@ -37,9 +37,7 @@ services:
     restart: unless-stopped
 
   backend:
-    build:
-      dockerfile: /etc/thecore/docker/Dockerfile
-      context: /workspaces/project/app/.
+    image: backenddev_backend:latest
     restart: unless-stopped
     depends_on:
     - db
@@ -54,9 +52,7 @@ services:
         retries: 3
 
   backend-sidekiq:
-    build:
-      dockerfile: /etc/thecore/docker/Dockerfile
-      context: /workspaces/project/app/.
+    image: backenddev_backend:latest
     restart: unless-stopped
     depends_on:
     - db

@@ -2,6 +2,8 @@
 
 cd /app || exit
 
+echo "DATABASE_URL $DATABASE_URL"
+
 if ! /app/bin/rails runner "ActiveRecord::Base.connection rescue exit 1"
 then
     # Fare solo la prima volta

@@ -65,7 +65,8 @@ then
     then
         DB_CONNECTION_STRING_TEST="${DB_TYPE}:${FULLNAME}_test"
         DB_CONNECTION_STRING_DEV="${DB_TYPE}:${FULLNAME}_dev"
-        DB_CONNECTION_STRING_PROD="${DB_TYPE}:${FULLNAME}_prod"
+        # DB_CONNECTION_STRING_PROD="${DB_TYPE}:${FULLNAME}_prod"
+        echo "Nothing to do"
     else
         case $DB_TYPE in
             mysql)
@@ -106,9 +107,9 @@ then
 
         DB_CONNECTION_STRING_TEST="${DB_TYPE}://${USER}:${PASS}@${ADDRESS}:${PORT}/${FULLNAME}_test?pool=5"
         DB_CONNECTION_STRING_DEV="${DB_TYPE}://${USER}:${PASS}@${ADDRESS}:${PORT}/${FULLNAME}_dev?pool=5"
-        DB_CONNECTION_STRING_PROD="${DB_TYPE}://${USER}:${PASS}@${ADDRESS}:${PORT}/${FULLNAME}_prod?pool=5"
+        # DB_CONNECTION_STRING_PROD="${DB_TYPE}://${USER}:${PASS}@${ADDRESS}:${PORT}/${FULLNAME}_prod?pool=5"
     fi
-    touch "config/database.yml"
+   touch "config/database.yml"
     cat <<EOF | tee "config/database.yml"
 development:
   url: ${DB_CONNECTION_STRING_DEV}
@@ -116,8 +117,6 @@ development:
 test:
   url: ${DB_CONNECTION_STRING_TEST}
 
-production:
-  url: ${DB_CONNECTION_STRING_PROD}
 EOF
   
     cat <<EOF | tee "app/assets/stylesheets/overrides.scss"
