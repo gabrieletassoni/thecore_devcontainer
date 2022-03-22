@@ -13,7 +13,7 @@ x-common-vars: &commmon-vars
     RAILS_SERVE_STATIC_FILES: "${RAILS_SERVE_STATIC_FILES:-true}"
     RAILS_RELATIVE_URL_ROOT: "${RAILS_RELATIVE_URL_ROOT:-/}"
     SECRET_KEY_BASE: "${SECRET_KEY_BASE:-dh37rbf4c7clbry320b4y3t854y9tc4938nyrnl9}"
-    DATABASE_URL: "${DATABASE_URL:-postgres://postgres:postgres@db/backend?pool=5}"
+    DATABASE_URL: "${DATABASE_URL:-postgres://postgres:postgres@db/postgres?pool=5}"
     REDIS_URL: "${REDIS_URL:-redis://redis}"
     SMTP_DELIVERY_METHOD: "${SMTP_DELIVERY_METHOD:-smtp}"
     SMTP_ADDRESS: "${SMTP_ADDRESS:-changeme@example.com}"
@@ -41,8 +41,8 @@ services:
       dockerfile: /etc/thecore/docker/Dockerfile
       context: /workspaces/project/app/.
     restart: unless-stopped
-    external_links:
-    - postgresql
+    depends_on:
+    - db
     - redis
     entrypoint: /bin/thecore/entrypoint.sh
     environment: 
@@ -58,10 +58,9 @@ services:
       dockerfile: /etc/thecore/docker/Dockerfile
       context: /workspaces/project/app/.
     restart: unless-stopped
-    external_links:
-    - postgresql
-    - redis
     depends_on:
+    - db
+    - redis
     - backend
     entrypoint: /bin/thecore/entrypoint-sidekiq.sh
     environment: 
