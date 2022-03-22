@@ -5,5 +5,10 @@ bundle update
 SECRET_KEY_BASE=dummy RAILS_ENV=production DATABASE_URL=nulldb:fake ./bin/rails --trace assets:precompile
 
 cd /etc/thecore/localdockerbuild
-docker-compose build -f docker-compose.yml -f docker-compose.build.yml --pull --no-cache backend
-docker-compose up -f docker-compose.yml --remove-orphans
+docker-compose \
+    -f docker-compose.yml \
+    -f docker-compose.build.yml \
+    build --pull --no-cache backend
+docker-compose \
+    -f docker-compose.yml \
+    up --remove-orphans
