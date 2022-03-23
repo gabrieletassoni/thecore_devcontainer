@@ -11,5 +11,5 @@ cd /etc/thecore/docker/
 sudo docker-compose \
     -f docker-compose.yml \
     -f docker-compose.build.yml \
-    build --pull --no-cache --build-arg "BUILD_DIR=${CI_PROJECT_DIR}"  backend
+    build --pull --no-cache --build-arg "BUILD_DIR=${CI_PROJECT_DIR}" backend
 sudo docker-compose push
