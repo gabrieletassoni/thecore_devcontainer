@@ -30,15 +30,27 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: postgres
+    healthcheck: 
+      interval: 1s
+      retries: 30
+      test: "pg_isready -U postgres"
+      timeout: 3s
 
   redis:
     image: redis:latest
     entrypoint: "redis-server --appendonly yes"
     restart: unless-stopped
+    healthcheck: 
+      interval: 1s
+      retries: 30
+      test: "redis-cli ping"
+      timeout: 3s
 
   backend:
     image: backenddev_backend:latest
     restart: unless-stopped
+    ports:
+      - "3000:3000"
     depends_on:
     - db
     - redis

@@ -4,46 +4,68 @@ version: "3.7"
 # probably set in the shell script which handles 
 # the up of the application.
 x-vars: &vars
-  APP_NAME: $APP_NAME
+  # Hardcoded
+  RACK_ENV: production
+  RAILS_ENV: production
+  RAILS_LOG_TO_STDOUT: "true"
+  RAILS_RELATIVE_URL_ROOT: /
+  RAILS_SERVE_STATIC_FILES: "true"
+  REDIS_URL: redis://redis
+  DATABASE_URL: postgres://postgres:postgres@db/postgres?pool=${DATABASE_POOL:-30}
+  ALLOW_MULTISESSIONS: "true"
+  BUNDLE_PATH: vendor/bundle
+  # Environment
+  APP_NAME: ${APP_NAME}
+  BASE_DOMAIN: ${BASE_DOMAIN}
   ADMIN_EMAIL: admin@${BASE_DOMAIN}
   ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-  BACKEND_DOMAIN: ${BACKEND_DOMAIN}
-  BACKEND_URL: ${BACKEND_URL}
-  FRONTEND_DOMAIN: ${FRONTEND_DOMAIN}
-  FRONTEND_URL: ${FRONTEND_URL}
-  BASE_DOMAIN: ${BASE_DOMAIN}
+  BE_SUBDOMAIN: ${BE_SUBDOMAIN}
+  BACKEND_DOMAIN: ${BE_SUBDOMAIN}.${BASE_DOMAIN}
+  BACKEND_URL: https://${BACKEND_DOMAIN}
+  FE_SUBDOMAIN: ${FE_SUBDOMAIN}
+  FRONTEND_DOMAIN: ${FE_SUBDOMAIN}.${BASE_DOMAIN}
+  FRONTEND_URL: https://${FRONTEND_DOMAIN}
   COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
-  DATABASE_PASSWORD: ${DATABASE_PASSWORD}
   DEFAULT_OUTGOING_EMAIL_DOMAIN: ${BASE_DOMAIN}
   DEFAULT_SENDER_EMAIL: mailer@${BASE_DOMAIN}
   LANG: ${LANG}
   LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
-  RACK_ENV: ${RACK_ENV}
-  RAILS_ENV: ${RAILS_ENV}
-  RAILS_LOG_TO_STDOUT: ${RAILS_LOG_TO_STDOUT}
-  RAILS_RELATIVE_URL_ROOT: ${RAILS_RELATIVE_URL_ROOT}
-  RAILS_SERVE_STATIC_FILES: ${RAILS_SERVE_STATIC_FILES}
-  REDIS_PASSWORD: ${REDIS_PASSWORD}
-  REDIS_URL: ${REDIS_URL}
-  DATABASE_URL: ${DATABASE_URL}
   SECRET_KEY_BASE: ${SECRET_KEY_BASE}
   SMTP_ADDRESS: ${SMTP_ADDRESS}
   SMTP_DELIVERY_METHOD: ${SMTP_DELIVERY_METHOD}
   SMTP_PASSWORD: ${SMTP_PASSWORD}
   SMTP_USERNAME: ${SMTP_USERNAME}
-  FE_SUBDOMAIN: ${FE_SUBDOMAIN}
-  BE_SUBDOMAIN: ${BE_SUBDOMAIN}
-  ALLOW_MULTISESSIONS: ${ALLOW_MULTISESSIONS}
-  BUNDLE_PATH: vendor/bundle
 
 services: 
+  db:
+    image: postgres:latest
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck: 
+      interval: 1s
+      retries: 30
+      test: "pg_isready -U postgres"
+      timeout: 3s
+
+  redis:
+    image: redis:latest
+    entrypoint: "redis-server --appendonly yes"
+    restart: unless-stopped
+    healthcheck: 
+      interval: 1s
+      retries: 30
+      test: "redis-cli ping"
+      timeout: 3s
+
   backend:
     image: ${IMAGE_TAG_BACKEND}
-    restart: always
-    external_links:
-      - postgresql
+    restart: unless-stopped
+    depends_on:
+      - db
       - redis
-      - letsencrypt
     entrypoint: /bin/thecore/entrypoint.sh
     environment:
       <<: *vars
@@ -61,12 +83,11 @@ services:
 
   backend-sidekiq:
     image: ${IMAGE_TAG_BACKEND}
-    restart: always
+    restart: unless-stopped
     depends_on:
-      - backend
-    external_links: 
-      - postgresql
+      - db
       - redis
+      - backend
     entrypoint: /bin/thecore/entrypoint-sidekiq.sh
     environment:
       <<: *vars

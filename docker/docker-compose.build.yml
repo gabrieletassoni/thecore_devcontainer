@@ -4,10 +4,6 @@ services:
   backend:
     build: 
       dockerfile: /etc/thecore/docker/Dockerfile
-      context: /workspaces/project/app/.
+      context: ${BUILD_DIR}
 
-  backend-sidekiq:
-    build: 
-      dockerfile: /etc/thecore/docker/Dockerfile
-      context: /workspaces/project/app/.
       

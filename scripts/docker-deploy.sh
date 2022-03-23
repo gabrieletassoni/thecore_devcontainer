@@ -1,18 +1,9 @@
 #!/bin/bash -e
 
-if ! hash docker-compose
-then
-    apt update
-    apt install -y docker-compose
-else
-    echo "Docker Compose exists"
-fi
-
 echo "COMMIT TAG: ${CI_COMMIT_TAG}"
 VERSION=${CI_COMMIT_TAG}
 
 # Setup SSH trust 
-apk add --no-cache ca-certificates openssh-client rsync bash
 mkdir -p ~/.ssh
 chmod 700 ~/.ssh
 echo -e "Host *\n\tStrictHostKeyChecking no\n\tControlMaster auto\n\tControlPath ~/.ssh/socket-%C\n\tControlPersist 1\n\n" > ~/.ssh/config
