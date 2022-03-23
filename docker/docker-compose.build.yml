@@ -4,6 +4,3 @@ services:
   backend:
     build: 
       dockerfile: /etc/thecore/docker/Dockerfile
-      context: ${BUILD_DIR}
-
-      
