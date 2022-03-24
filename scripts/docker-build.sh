@@ -14,11 +14,13 @@ export DOCKER_SERVICE=${DOCKER_SERVICE:-backend}
 
 export IMAGE_TAG_BACKEND=${CI_REGISTRY_IMAGE}/$DOCKER_SERVICE:$CI_COMMIT_TAG
 
+echo "Building Image $IMAGE_TAG_BACKEND"
 docker-compose \
     -f docker-compose.yml \
     -f docker-compose.build.yml \
     build --pull --no-cache "$DOCKER_SERVICE"
 
+echo "Pushing Image $IMAGE_TAG_BACKEND"
 docker-compose \
     -f docker-compose.yml \
-    push
+    push "$DOCKER_SERVICE"
