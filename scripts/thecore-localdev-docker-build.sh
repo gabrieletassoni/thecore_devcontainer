@@ -15,6 +15,6 @@ export CI_PROJECT_DIR=/workspaces/project/app
 sudo -E docker-compose \
     -f docker-compose.yml \
     -f docker-compose.build.yml \
-    build --pull --no-cache --build-arg "BUILD_DIR=${CI_PROJECT_DIR}" backend
+    build --pull --no-cache backend
 
 sudo -E docker-compose up --remove-orphans
