@@ -1,5 +1,7 @@
 FROM gabrieletassoni/thecore-common:2
 
+USER root
+
 RUN mkdir -p /app/vendor/bundle
 COPY Gemfile /app/Gemfile
 COPY package.json /app/package.json
@@ -10,8 +12,9 @@ WORKDIR /app
 RUN gem install bundler \
     && bundle config set without development test \
     && bundle config build.nokogiri --use-system-libraries \
-    && bundle install --jobs=8 \
     && bundle config set path /app/vendor/bundle \
+    && bundle install --jobs=8 \
+    && ls -l /app/vendor/bundle/ruby/*/gems/ \
     && yarn install --check-files \
     && yarn cache clean
 
