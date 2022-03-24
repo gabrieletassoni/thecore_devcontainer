@@ -69,8 +69,8 @@ services:
     entrypoint: /bin/thecore/entrypoint.sh
     environment:
       <<: *vars
-      VIRTUAL_HOST: ${BACKEND_DOMAIN}
-      LETSENCRYPT_HOST: ${BACKEND_DOMAIN}
+      VIRTUAL_HOST: ${BE_SUBDOMAIN}.${BASE_DOMAIN}
+      LETSENCRYPT_HOST: ${BE_SUBDOMAIN}.${BASE_DOMAIN}
       VIRTUAL_PORT: 3000
     volumes:
       - /root/persistence/${COMPOSE_PROJECT_NAME}/storage:/app/storage
