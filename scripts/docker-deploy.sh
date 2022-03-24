@@ -57,9 +57,7 @@ do
         for CUSTOMER in "$PROVIDER"/*.env
         do
         echo "  - found $CUSTOMER doing the remote up thing on $DOCKER_HOST"
-        ssh "$DOCKER_HOST_DOMAIN" -p "$DOCKER_HOST_PORT" " 
-            export IMAGE_TAG_HELPDESK_SIDEKIQ=$IMAGE_TAG_HELPDESK_SIDEKIQ; 
-            export IMAGE_TAG_HELPDESK=$IMAGE_TAG_HELPDESK; 
+        ssh "$DOCKER_HOST_DOMAIN" -p "$DOCKER_HOST_PORT" "
             export IMAGE_TAG_BACKEND=$IMAGE_TAG_BACKEND; 
             cd /tmp/installers
             docker-compose --env-file $CUSTOMER pull; 
