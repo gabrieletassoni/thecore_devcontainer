@@ -4,4 +4,4 @@ services:
   backend:
     build:
       dockerfile: /etc/thecore/docker/Dockerfile
-      context: /workspaces/project/app/.
+      context: ${CI_PROJECT_DIR}

@@ -1,5 +1,7 @@
 version: "3.7"
 
-services: 
+services:
   backend:
-    build: .
+    build:
+      context: ${CI_PROJECT_DIR}
+      dockerfile: /etc/thecore/docker/Dockerfile
