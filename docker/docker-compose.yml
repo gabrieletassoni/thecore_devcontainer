@@ -13,7 +13,6 @@ x-vars: &vars
   REDIS_URL: redis://redis
   DATABASE_URL: postgres://postgres:postgres@db/postgres?pool=${DATABASE_POOL:-30}
   ALLOW_MULTISESSIONS: "true"
-  BUNDLE_PATH: vendor/bundle
   # Environment
   APP_NAME: ${APP_NAME}
   BASE_DOMAIN: ${BASE_DOMAIN}

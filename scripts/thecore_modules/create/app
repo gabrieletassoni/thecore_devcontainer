@@ -191,7 +191,6 @@ EOF
 image: gabrieletassoni/thecore:2
 
 variables:
-  BUNDLE_PATH: vendor/bundle
   DISABLE_SPRING: 1
   IMAGE_TAG_BACKEND: ${CI_REGISTRY_IMAGE}/backend:$CI_COMMIT_TAG
 

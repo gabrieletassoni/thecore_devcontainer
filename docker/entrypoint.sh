@@ -1,22 +1,28 @@
-#!/bin/sh
+#!/bin/bash -e
 
 cd /app || exit
 
-echo "DATABASE_URL $DATABASE_URL"
+echo -e "\e[32mDATABASE_URL $DATABASE_URL\e[0m"
 
-if ! /app/bin/rails runner "ActiveRecord::Base.connection rescue exit 1"
+echo -e "\e[32mUser running this script\e[0m"
+id
+
+echo -e "\e[32mBundle config get path\e[0m"
+bundle config get path
+
+echo -e "\e[32mCreate Database\e[0m"
+bundle exec ./bin/rails db:create
+
+echo -e "\e[32mDoing DB migration\e[0m"
+if bundle exec ./bin/rails db:migrate
 then
-    # Fare solo la prima volta
-    /app/bin/rails db:create
-fi
-
-if /app/bin/rails db:migrate
-then 
-    if /app/bin/rails thecore:db:seed
+    echo -e "\e[32m- Doing DB seed\e[0m"
+    if bundle exec ./bin/rails thecore:db:seed
     then
         # Only if all the migrations are ok, run the server
+        echo -e "\e[32m- - Everything was ok, starting the rails server\e[0m"
         rm -f tmp/pids/server.pid
-        /app/bin/rails s -p 3000 -b '0.0.0.0'
+        bundle exec ./bin/rails s -p 3000 -b '0.0.0.0'
     fi
 fi
 
