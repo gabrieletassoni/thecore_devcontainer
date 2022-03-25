@@ -3,22 +3,24 @@ FROM gabrieletassoni/thecore-common:2
 USER root
 
 RUN mkdir -p /app/vendor/bundle
-COPY Gemfile /app/Gemfile
-COPY package.json /app/package.json
+# These are useless since /app will be COPY . /app target, to be pruned if no error arises.
+# COPY Gemfile /app/Gemfile
+# COPY package.json /app/package.json
 WORKDIR /app
 
 # Install Rails dependecies
-# Use libxml2, libxslt a packages from alpine for building nokogiri
 RUN gem install bundler \
     && bundle config set without development test \
     && bundle config build.nokogiri --use-system-libraries \
-    && bundle config set path /app/vendor/bundle \
-    && bundle install --jobs=8 \
-    && ls -l /app/vendor/bundle/ruby/*/gems/ \
-    && yarn install --check-files \
-    && yarn cache clean
+    && bundle config set path /app/vendor/bundle 
+    # These are useless since /app will be COPY . /app target, to be pruned if no error arises.
+    # \
+    # && bundle install --jobs=8 \
+    # && ls -l /app/vendor/bundle/ruby/*/gems/ \
+    # && yarn install --check-files \
+    # && yarn cache clean
 
 # Add the entrypoints
-RUN mkdir /bin/thecore
+RUN mkdir -p /bin/thecore
 COPY docker/entrypoint*.sh /bin/thecore/
 RUN chmod +x /bin/thecore/entrypoint*.sh

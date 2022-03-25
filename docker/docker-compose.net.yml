@@ -1,6 +1,10 @@
 version: "3.7"
 
+# This network is fixed to webproxy since is the name used in
+# our production environments for the nginx-proxy docker image
+# this way it can pickup the new rails app automatically and proxy it
+# via http(s)
 networks:
   default:
     external:
-      name: ${NETWORK}
+      name: webproxy
