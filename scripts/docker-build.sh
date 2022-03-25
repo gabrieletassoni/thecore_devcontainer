@@ -3,6 +3,10 @@
 # Testing docker installation
 sudo docker version
 
+echo "Checking ${CI_PROJECT_DIR} content (context for Dockerfile)"
+ls -l "${CI_PROJECT_DIR}"
+ls -l "${CI_PROJECT_DIR}/vendor/bundle/ruby/*/gems/"
+
 echo "Building Image $IMAGE_TAG_BACKEND"
 sudo docker build -f /etc/thecore/docker/Dockerfile --no-cache --pull -t "${IMAGE_TAG_BACKEND}" "${CI_PROJECT_DIR}"
 
