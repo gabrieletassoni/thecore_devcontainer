@@ -5,7 +5,7 @@ then
   echo
   echo -e "\e[31mThe most common THECORE commands are:\e[0m"
   echo
-  column /etc/thecore/templates/help -t -s '|' -e
+  column /etc/thecore/help -t -s '|' -e
   echo
 else
   LAST="${@: -1}"

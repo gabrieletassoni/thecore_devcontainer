@@ -18,8 +18,6 @@ RUN gem install rails -v '~> 6.1.0'
 
 RUN mkdir -p /etc/thecore/templates /etc/thecore/repos.conf.d
 COPY bin/increment_version.sh /usr/bin/increment_version.sh
-COPY templates /etc/thecore/templates
-COPY thor_definitions/ /etc/thecore/
 COPY repos /etc/thecore/repos.conf.d
 COPY localdockerbuild /etc/thecore/localdockerbuild
 # Creating the git clones of thecore gems.
@@ -31,10 +29,7 @@ RUN useradd -ms /bin/bash vscode \
 
 USER vscode
 
-RUN mkdir ~/.thor \
-    && cp /etc/thecore/thecore_generate.thor ~/.thor/a84ebaa152a909f88944fc7354130e94 \
-    && cp /etc/thecore/thor.yml ~/.thor/thor.yml \
-    && echo 'export PS1="\e[32m\u\e[0m ► \e[96m\W\e[0m [\e[31m\$(git rev-parse --abbrev-ref HEAD)\e[0m:\e[33m\$(git describe --tags --abbrev=0)\e[0m] \$ "'  >> ~/.bashrc \
+RUN echo 'export PS1="\e[32m\u\e[0m ► \e[96m\W\e[0m [\e[31m\$(git rev-parse --abbrev-ref HEAD 2>/dev/null)\e[0m:\e[33m\$(git describe --tags --abbrev=0 2>/dev/null)\e[0m] \$ "'  >> ~/.bashrc \
     && echo '/usr/bin/thecore' >> ~/.bashrc \
     && echo 'export APPBIN=/workspaces/project/app/bin'  >> ~/.bashrc \
     && echo 'export CODEBIN=$(find $HOME/.vscode-server/bin/* -maxdepth 1 -mindepth 1 -name bin)'  >> ~/.bashrc \

@@ -1,7 +1,0 @@
-require 'active_support/concern'
-
-module <%= @model_name %>AssociationsConcern
-  extend ActiveSupport::Concern
-  included do
-  end
-end

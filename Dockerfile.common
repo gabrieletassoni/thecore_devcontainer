@@ -6,6 +6,7 @@ COPY os/01_nodoc /etc/dpkg/dpkg.cfg.d/01_nodoc
 # Add to the container thecore specific scripts
 COPY scripts/ /usr/bin/
 COPY docker /etc/thecore/docker
+COPY help /etc/thecore/
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg \
