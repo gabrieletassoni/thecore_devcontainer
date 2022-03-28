@@ -15,7 +15,7 @@ echo "$DOCKERTAG"
 if [[ -n "$GITHUB_WORKSPACE" ]] || yes_or_no "Would you like to push this image to the docker hub?"
 then
     echo "Login to docker hub"
-    docker login
+    # docker login
     docker push "$DOCKERTAG:$MAJOR"
     docker push "$DOCKERTAG:$DOCKERVERSION"
     docker push "$DOCKERTAG:latest"
