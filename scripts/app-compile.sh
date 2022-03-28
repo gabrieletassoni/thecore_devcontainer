@@ -1,7 +1,5 @@
 #!/bin/bash -e
 
-[[ -z "$BANCOLINI_GEMS_CREDENTIALS" ]] && exit 1
-
 bundle config set path vendor/bundle
 bundle config get path
 bundle update
