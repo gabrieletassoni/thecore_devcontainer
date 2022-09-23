@@ -8,10 +8,12 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         docker-compose \
         git-flow \
         graphviz \
+        python3-pip \
     # Clean up
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* \
     && which docker \
-    && docker-compose version
+    && docker-compose version \
+    && python3 -m pip install semgrep
 
 # Add at least a version of rails to work with
 RUN gem install rails -v '~> 6.1.0'
@@ -25,7 +27,8 @@ COPY localdockerbuild /etc/thecore/localdockerbuild
 # Otherwise the gem installed ones will suffice to the needs of thecore development.
 RUN useradd -ms /bin/bash vscode \
     && usermod -aG sudo vscode \
-    && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+    && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
+    && groupadd -g 127 -f docker && usermod -aG docker vscode
 
 USER vscode
 

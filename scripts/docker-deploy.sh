@@ -12,7 +12,6 @@ echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
 chmod 600 ~/.ssh/id_rsa
 
 SEMVER=${VERSION%%-*}
-ENVIRONMENT=${VERSION##*-}
 
 if ! [[ $SEMVER =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] 
 then
@@ -20,24 +19,25 @@ then
     exit 3
 fi
 
-if [[ $SEMVER == "$ENVIRONMENT" && $SEMVER == "$VERSION" && $VERSION == "$ENVIRONMENT" ]]
+if [ -z "${TARGETENV}" ]
 then
     # Sono in production
     HOSTFILE="docker_host"
 else
     # Sono in uno degli env di preprod
-    HOSTFILE="docker_${ENVIRONMENT}_host"
+    HOSTFILE="docker_${TARGETENV}_host"
 fi
 
 echo "HOSTFILE: $HOSTFILE"
 
-if ! [ -d installers ]
+DEPTARGETS="vendor/deploytargets"
+if ! [ -d $DEPTARGETS ]
 then
-    echo "ERROR! This script must be run from the directory containing installers folder."
+    echo "ERROR! This script must be run from the directory containing $DEPTARGETS folder."
     exit 2
 fi
 
-cd installers
+cd $DEPTARGETS
 for PROVIDER in *
 do 
     if [ -f "$PROVIDER/$HOSTFILE" ]
