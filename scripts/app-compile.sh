@@ -19,7 +19,7 @@ TARGETDIR="${CI_PROJECT_DIR:-.}/vendor/custombuilds/"
     # Looking if thre is a custom script
     DIRNAME=$(dirname "$file")
     PRECOMPILESCRIPT="$DIRNAME/pre-compile.sh"
-    [[ -f $PRECOMPILESCRIPT ]] && export -- "$($PRECOMPILESCRIPT)"
+    [[ -f $PRECOMPILESCRIPT ]] && export `$PRECOMPILESCRIPT`
     # Looking if there are more gems to add
     GEMFILEDELTA="$DIRNAME/Gemfile"
     if [[ -f $GEMFILEDELTA ]] 

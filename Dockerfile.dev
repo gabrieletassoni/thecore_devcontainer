@@ -34,10 +34,10 @@ USER vscode
 
 RUN echo 'export PS1="\e[32m\u\e[0m ► \e[96m\W\e[0m [\e[31m\$(git rev-parse --abbrev-ref HEAD 2>/dev/null)\e[0m:\e[33m\$(git describe --tags --abbrev=0 2>/dev/null)\e[0m] \$ "'  >> ~/.bashrc \
     && echo '/usr/bin/thecore' >> ~/.bashrc \
-    && echo 'export APPBIN=/workspaces/project/app/bin'  >> ~/.bashrc \
+    && echo 'export APPBIN=/workspaces/project/backend/bin'  >> ~/.bashrc \
     && echo 'export CODEBIN=$(find $HOME/.vscode-server/bin/* -maxdepth 1 -mindepth 1 -name bin)'  >> ~/.bashrc \
     && echo 'export PATH=$GEM_HOME/bin:$PATH:$APPBIN:$CODEBIN' >> ~/.bashrc \
     && tail ~/.bashrc \
-    && bundle config set path /workspaces/project/app/vendor/bundle
+    && bundle config set path /workspaces/project/backend/vendor/bundle
 
 WORKDIR /workspaces/project
