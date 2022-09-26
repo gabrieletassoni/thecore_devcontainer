@@ -10,30 +10,23 @@ x-vars: &vars
   RAILS_LOG_TO_STDOUT: "true"
   RAILS_RELATIVE_URL_ROOT: /
   RAILS_SERVE_STATIC_FILES: "true"
-  REDIS_URL: redis://redis
+  REDIS_URL: redis://store
   DATABASE_URL: postgres://postgres:postgres@db/postgres?pool=${DATABASE_POOL:-30}
   ALLOW_MULTISESSIONS: "true"
   # Environment
-  APP_NAME: ${APP_NAME}
-  BASE_DOMAIN: ${BASE_DOMAIN}
-  ADMIN_EMAIL: admin@${BASE_DOMAIN}
+  SECRET_KEY_BASE: ${SECRET_KEY_BASE}
   ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+  APP_NAME: ${APP_NAME}
+  COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
+  BASE_DOMAIN: ${BASE_DOMAIN}
+  FE_SUBDOMAIN: ${FE_SUBDOMAIN}
   BE_SUBDOMAIN: ${BE_SUBDOMAIN}
+  LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+  LANG: ${LANG}
   BACKEND_DOMAIN: ${BE_SUBDOMAIN}.${BASE_DOMAIN}
   BACKEND_URL: https://${BE_SUBDOMAIN}.${BASE_DOMAIN}
-  FE_SUBDOMAIN: ${FE_SUBDOMAIN}
   FRONTEND_DOMAIN: ${FE_SUBDOMAIN}.${BASE_DOMAIN}
   FRONTEND_URL: https://${FE_SUBDOMAIN}.${BASE_DOMAIN}
-  COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
-  DEFAULT_OUTGOING_EMAIL_DOMAIN: ${BASE_DOMAIN}
-  DEFAULT_SENDER_EMAIL: mailer@${BASE_DOMAIN}
-  LANG: ${LANG}
-  LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
-  SECRET_KEY_BASE: ${SECRET_KEY_BASE}
-  SMTP_ADDRESS: ${SMTP_ADDRESS}
-  SMTP_DELIVERY_METHOD: ${SMTP_DELIVERY_METHOD}
-  SMTP_PASSWORD: ${SMTP_PASSWORD}
-  SMTP_USERNAME: ${SMTP_USERNAME}
 
 services: 
   db:
@@ -49,7 +42,7 @@ services:
       test: "pg_isready -U postgres"
       timeout: 3s
 
-  redis:
+  store:
     image: redis:latest
     entrypoint: "redis-server --appendonly yes"
     restart: unless-stopped
@@ -64,7 +57,7 @@ services:
     restart: unless-stopped
     depends_on:
       - db
-      - redis
+      - store
     entrypoint: /bin/thecore/entrypoint.sh
     environment:
       <<: *vars
@@ -85,7 +78,7 @@ services:
     restart: unless-stopped
     depends_on:
       - db
-      - redis
+      - store
       - backend
     entrypoint: /bin/thecore/entrypoint-sidekiq.sh
     environment:
