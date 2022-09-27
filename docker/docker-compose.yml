@@ -64,6 +64,7 @@ services:
       VIRTUAL_HOST: ${BE_SUBDOMAIN}.${BASE_DOMAIN}
       LETSENCRYPT_HOST: ${BE_SUBDOMAIN}.${BASE_DOMAIN}
       VIRTUAL_PORT: 3000
+      HTTPS_METHOD: noredirect
     volumes:
       - /root/persistence/${COMPOSE_PROJECT_NAME}/storage:/app/storage
       - /root/persistence/${COMPOSE_PROJECT_NAME}/imports:/app/tmp/imports

@@ -1,0 +1,20 @@
+#!/bin/bash -e
+
+echo "Update gems for default app:"
+bundle update
+
+echo "Update gems for all custom builds app:"
+TARGETDIR="./vendor/custombuilds/"
+[[ -d "$TARGETDIR" ]] && find "$TARGETDIR" -name Dockerfile | while read -r file; do
+    echo "Updating gems for: $file";
+    # Looking if thre is a custom script
+    DIRNAME=$(dirname "$file")
+    PRECOMPILESCRIPT="$DIRNAME/pre-compile.sh"
+    [[ -f $PRECOMPILESCRIPT ]] && export `$PRECOMPILESCRIPT`
+    # Looking if there are more gems to add
+    GEMFILEDELTA="$DIRNAME/Gemfile"
+    if [[ -f $GEMFILEDELTA ]] 
+    then
+        bundle install --gemfile "$GEMFILEDELTA"
+    fi
+done

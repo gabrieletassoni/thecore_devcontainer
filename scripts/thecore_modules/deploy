@@ -9,6 +9,8 @@ failure() {
 }
 trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
 
+thecore bundle update
+
 # Be sure to be aligned with remote repository
 git pull
 git fetch --all --tags --prune
