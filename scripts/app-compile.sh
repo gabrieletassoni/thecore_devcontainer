@@ -22,12 +22,8 @@ TARGETDIR="${CI_PROJECT_DIR:-.}/vendor/custombuilds/"
     [[ -f $PRECOMPILESCRIPT ]] && export `$PRECOMPILESCRIPT`
     # Looking if there are more gems to add
     GEMFILEDELTA="$DIRNAME/Gemfile"
-    if [[ -f $GEMFILEDELTA ]] 
-    then
-        bundle install --gemfile "$GEMFILEDELTA" 
-    else
-        bundle install
-    fi
+    [[ -f $GEMFILEDELTA ]] && bundle install --gemfile "$GEMFILEDELTA"
+    
     SECRET_KEY_BASE=dummy RAILS_ENV=production DATABASE_URL=nulldb:fake ./bin/rails --trace assets:precompile
     rm -rf tmp/cache/* /tmp/*
 
