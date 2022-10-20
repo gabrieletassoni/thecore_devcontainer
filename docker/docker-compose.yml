@@ -32,6 +32,7 @@ services:
   db:
     image: postgres:latest
     restart: unless-stopped
+    hostname: ${COMPOSE_PROJECT_NAME}_db_1
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
@@ -45,6 +46,7 @@ services:
   store:
     image: redis:latest
     entrypoint: "redis-server --appendonly yes"
+    hostname: ${COMPOSE_PROJECT_NAME}_store_1
     restart: unless-stopped
     healthcheck: 
       interval: 1s
@@ -55,6 +57,7 @@ services:
   backend:
     image: ${IMAGE_TAG_BACKEND}
     restart: unless-stopped
+    hostname: ${COMPOSE_PROJECT_NAME}_backend_1
     depends_on:
       - db
       - store
@@ -77,6 +80,7 @@ services:
   backend-sidekiq:
     image: ${IMAGE_TAG_BACKEND}
     restart: unless-stopped
+    hostname: ${COMPOSE_PROJECT_NAME}_sidekiq_1
     depends_on:
       - db
       - store
