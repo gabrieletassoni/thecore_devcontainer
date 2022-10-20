@@ -14,7 +14,7 @@ ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 ARG SOURCE_SOCKET=/var/run/docker-host.sock
 ARG TARGET_SOCKET=/var/run/docker.sock
-COPY library-scripts/*.sh /tmp/library-scripts/
+COPY .devcontainer/library-scripts/*.sh /tmp/library-scripts/
 RUN apt-get update \
     && /bin/bash /tmp/library-scripts/common-debian.sh "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" \
     # Use Docker script from script library to set things up
