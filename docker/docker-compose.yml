@@ -10,19 +10,10 @@ x-vars: &vars
   RAILS_LOG_TO_STDOUT: "true"
   RAILS_RELATIVE_URL_ROOT: /
   RAILS_SERVE_STATIC_FILES: "true"
-  REDIS_URL: redis://${COMPOSE_PROJECT_NAME}_store_1
-  DATABASE_URL: postgres://postgres:postgres@${COMPOSE_PROJECT_NAME}_db_1/postgres?pool=${DATABASE_POOL:-30}
+  REDIS_URL: redis://cache
+  DATABASE_URL: postgres://postgres:postgres@db/postgres?pool=${DATABASE_POOL:-30}
   ALLOW_MULTISESSIONS: "true"
-  # Environment
-  SECRET_KEY_BASE: ${SECRET_KEY_BASE}
-  ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-  APP_NAME: ${APP_NAME}
-  COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
-  BASE_DOMAIN: ${BASE_DOMAIN}
-  FE_SUBDOMAIN: ${FE_SUBDOMAIN}
-  BE_SUBDOMAIN: ${BE_SUBDOMAIN}
-  LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
-  LANG: ${LANG}
+  # Derived
   BACKEND_DOMAIN: ${BE_SUBDOMAIN}.${BASE_DOMAIN}
   BACKEND_URL: https://${BE_SUBDOMAIN}.${BASE_DOMAIN}
   FRONTEND_DOMAIN: ${FE_SUBDOMAIN}.${BASE_DOMAIN}
@@ -32,7 +23,6 @@ services:
   db:
     image: postgres:latest
     restart: unless-stopped
-    hostname: ${COMPOSE_PROJECT_NAME}_db_1
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
@@ -43,10 +33,9 @@ services:
       test: "pg_isready -U postgres"
       timeout: 3s
 
-  store:
+  cache:
     image: redis:latest
     entrypoint: "redis-server --appendonly yes"
-    hostname: ${COMPOSE_PROJECT_NAME}_store_1
     restart: unless-stopped
     healthcheck: 
       interval: 1s
@@ -57,17 +46,12 @@ services:
   backend:
     image: ${IMAGE_TAG_BACKEND}
     restart: unless-stopped
-    hostname: ${COMPOSE_PROJECT_NAME}_backend_1
     depends_on:
       - db
-      - store
+      - cache
     entrypoint: /bin/thecore/entrypoint.sh
     environment:
       <<: *vars
-      VIRTUAL_HOST: ${BE_SUBDOMAIN}.${BASE_DOMAIN}
-      LETSENCRYPT_HOST: ${BE_SUBDOMAIN}.${BASE_DOMAIN}
-      VIRTUAL_PORT: 3000
-      HTTPS_METHOD: noredirect
     volumes:
       - /root/persistence/${COMPOSE_PROJECT_NAME}/storage:/app/storage
       - /root/persistence/${COMPOSE_PROJECT_NAME}/imports:/app/tmp/imports
@@ -77,13 +61,12 @@ services:
       timeout: "3s"
       retries: 3
 
-  backend-sidekiq:
+  sidekiq:
     image: ${IMAGE_TAG_BACKEND}
     restart: unless-stopped
-    hostname: ${COMPOSE_PROJECT_NAME}_sidekiq_1
     depends_on:
       - db
-      - store
+      - cache
       - backend
     entrypoint: /bin/thecore/entrypoint-sidekiq.sh
     environment:

@@ -1,10 +1,40 @@
 version: "3.7"
 
+services:
+  proxy:
+    image: marcnuri/port-forward:latest
+    restart: unless-stopped
+    environment:
+      VIRTUAL_HOST: ${BE_SUBDOMAIN}.${BASE_DOMAIN}
+      LETSENCRYPT_HOST: ${BE_SUBDOMAIN}.${BASE_DOMAIN}
+      REMOTE_HOST: backend
+      REMOTE_PORT: 3000
+    ports:
+      - 80
+    depends_on:
+      - backend
+    networks:
+      - internal
+      - net
+  db:
+    networks:
+        - internal
+  store:
+    networks:
+        - internal
+  backend:
+    networks:
+        - internal
+  sidekiq:
+    networks:
+        - internal
+
 # This network is fixed to webproxy since is the name used in
 # our production environments for the nginx-proxy docker image
 # this way it can pickup the new rails app automatically and proxy it
 # via http(s)
 networks:
-  default:
+  internal:
+  net:
     external:
       name: webproxy
