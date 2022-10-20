@@ -13,5 +13,5 @@ TARGETDIR="./vendor/custombuilds/"
     [[ -f $PRECOMPILESCRIPT ]] && export `$PRECOMPILESCRIPT`
     # Looking if there are more gems to add
     GEMFILEDELTA="$DIRNAME/Gemfile"
-    [[ -f $GEMFILEDELTA ]] && bundle install --gemfile "$GEMFILEDELTA"
+    [[ -f $GEMFILEDELTA ]] && bundle update --gemfile "$GEMFILEDELTA"
 done

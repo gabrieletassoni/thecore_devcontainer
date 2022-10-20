@@ -10,8 +10,8 @@ x-vars: &vars
   RAILS_LOG_TO_STDOUT: "true"
   RAILS_RELATIVE_URL_ROOT: /
   RAILS_SERVE_STATIC_FILES: "true"
-  REDIS_URL: redis://store
-  DATABASE_URL: postgres://postgres:postgres@db/postgres?pool=${DATABASE_POOL:-30}
+  REDIS_URL: redis://${COMPOSE_PROJECT_NAME}_store_1
+  DATABASE_URL: postgres://postgres:postgres@${COMPOSE_PROJECT_NAME}_db_1/postgres?pool=${DATABASE_POOL:-30}
   ALLOW_MULTISESSIONS: "true"
   # Environment
   SECRET_KEY_BASE: ${SECRET_KEY_BASE}
