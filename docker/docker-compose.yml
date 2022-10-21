@@ -68,7 +68,7 @@ services:
       timeout: "3s"
       retries: 3
 
-  sidekiq:
+  worker:
     image: ${IMAGE_TAG_BACKEND}
     restart: unless-stopped
     depends_on:
