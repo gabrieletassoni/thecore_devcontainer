@@ -1,4 +1,4 @@
-version: "3.7"
+version: "3.9"
 
 # These come from exported environment variables
 # probably set in the shell script which handles 
@@ -14,6 +14,11 @@ x-vars: &vars
   DATABASE_URL: postgres://postgres:postgres@db/postgres?pool=${DATABASE_POOL:-30}
   ALLOW_MULTISESSIONS: "true"
   # Derived
+  SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+  ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+  APP_NAME: ${APP_NAME}
+  COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
+  LANG: ${LANG}
   BACKEND_DOMAIN: ${BE_SUBDOMAIN}.${BASE_DOMAIN}
   BACKEND_URL: https://${BE_SUBDOMAIN}.${BASE_DOMAIN}
   FRONTEND_DOMAIN: ${FE_SUBDOMAIN}.${BASE_DOMAIN}
@@ -47,8 +52,10 @@ services:
     image: ${IMAGE_TAG_BACKEND}
     restart: unless-stopped
     depends_on:
-      - db
-      - cache
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
     entrypoint: /bin/thecore/entrypoint.sh
     environment:
       <<: *vars
@@ -65,9 +72,12 @@ services:
     image: ${IMAGE_TAG_BACKEND}
     restart: unless-stopped
     depends_on:
-      - db
-      - cache
-      - backend
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
     entrypoint: /bin/thecore/entrypoint-sidekiq.sh
     environment:
       <<: *vars

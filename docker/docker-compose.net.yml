@@ -1,25 +1,26 @@
-version: "3.7"
+version: "3.9"
 
 services:
   proxy:
     image: marcnuri/port-forward:latest
     restart: unless-stopped
     environment:
-      VIRTUAL_HOST: ${BE_SUBDOMAIN}.${BASE_DOMAIN}
-      LETSENCRYPT_HOST: ${BE_SUBDOMAIN}.${BASE_DOMAIN}
+      VIRTUAL_HOST: ${BACKEND_DOMAIN}
+      LETSENCRYPT_HOST: ${BACKEND_DOMAIN}
       REMOTE_HOST: backend
       REMOTE_PORT: 3000
     ports:
       - 80
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - internal
-      - net
+      - webproxy
   db:
     networks:
         - internal
-  store:
+  cache:
     networks:
         - internal
   backend:
@@ -35,6 +36,6 @@ services:
 # via http(s)
 networks:
   internal:
-  net:
-    external:
-      name: webproxy
+  webproxy:
+    name: webproxy
+    external: true
