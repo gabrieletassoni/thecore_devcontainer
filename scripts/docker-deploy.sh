@@ -50,9 +50,8 @@ do
         DOCKER_HOST_PORT="$(echo "$DOCKER_HOST" | cut -d'/' -f3 | cut -d':' -f2)"
         export DOCKER_HOST_PORT
         ssh "$DOCKER_HOST_DOMAIN" -p "$DOCKER_HOST_PORT" "
-            docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY; 
-            mkdir -p /tmp/installers; 
-            exit"
+            docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY || exit 1
+            mkdir -p /tmp/installers"
         rsync -arvz -e "ssh -p $DOCKER_HOST_PORT" --progress --delete /etc/thecore/docker/docker-compose.yml /etc/thecore/docker/docker-compose.net.yml "$PROVIDER" "${DOCKER_HOST_DOMAIN}:/tmp/installers/"
         for CUSTOMER in "$PROVIDER"/*.env
         do
@@ -67,9 +66,9 @@ do
             ssh "$DOCKER_HOST_DOMAIN" -p "$DOCKER_HOST_PORT" "
                 export IMAGE_TAG_BACKEND=$IMAGE_TAG_BACKEND
                 cd /tmp/installers
-                docker-compose -f docker-compose.yml -f docker-compose.net.yml --env-file $CUSTOMER up -d --remove-orphans --no-build;
-                docker system prune -f; docker logout $CI_REGISTRY; 
-                exit"
+                docker-compose -f docker-compose.yml -f docker-compose.net.yml --env-file $CUSTOMER up -d --remove-orphans --no-build || exit 2
+                docker system prune -f
+                docker logout $CI_REGISTRY"
         done
     fi
 done
