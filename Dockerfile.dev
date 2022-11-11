@@ -16,7 +16,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && docker-compose version \
     && python3 -m pip install semgrep
 
-RUN usermod -aG docker node
+RUN usermod -aG docker vscode
 # Add at least a version of rails to work with
 RUN gem install rails -v '~> 6.1.0'
 
