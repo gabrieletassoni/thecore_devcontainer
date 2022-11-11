@@ -29,8 +29,7 @@ COPY localdockerbuild /etc/thecore/localdockerbuild
 # Otherwise the gem installed ones will suffice to the needs of thecore development.
 RUN useradd -ms /bin/bash vscode \
     && usermod -aG sudo vscode \
-    && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
-    && groupadd -g 127 -f docker && usermod -aG docker vscode
+    && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 USER vscode
 
