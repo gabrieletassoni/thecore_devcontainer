@@ -113,7 +113,7 @@ NETWORK=$NETWORK
 ALLOW_MULTISESSIONS=true
 EOT
     cd ..
-    docker-compose --env-file "$SERVICE_NAME/$CUSTOMER_NAME.env" config
+    docker compose --env-file "$SERVICE_NAME/$CUSTOMER_NAME.env" config
     echo -e "\e[32m\e[1mCongratulations! Config file succesfully generated. Please run bin/up.sh on the production server to install this new application.\e[0m"
     echo "Please check the config file dump above to see if it's all right for the installation."
 fi

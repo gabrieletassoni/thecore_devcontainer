@@ -1,5 +1,18 @@
 FROM gabrieletassoni/thecore-common:2
 
+# Install base packages and latest debian keyrings
+RUN export DEBIAN_FRONTEND=noninteractive \
+    && apt-get update && apt-get -y install --no-install-recommends \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release \
+    sudo \
+    rsync \
+    && mkdir -p /etc/apt/keyrings \
+    && curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+# Setup Docker repository
 RUN echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
   $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
@@ -13,10 +26,9 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     # Clean up
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* \
     && which docker \
-    && docker-compose version \
+    && docker compose version \
     && python3 -m pip install semgrep
 
-RUN usermod -aG docker vscode
 # Add at least a version of rails to work with
 RUN gem install rails -v '~> 6.1.0'
 
@@ -29,6 +41,7 @@ COPY localdockerbuild /etc/thecore/localdockerbuild
 # Otherwise the gem installed ones will suffice to the needs of thecore development.
 RUN useradd -ms /bin/bash vscode \
     && usermod -aG sudo vscode \
+    && usermod -aG docker vscode \
     && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 USER vscode

@@ -3,6 +3,10 @@
 echo "COMMIT TAG: ${CI_COMMIT_TAG}"
 VERSION=${CI_COMMIT_TAG}
 
+# Used to not have conflicting installations
+UUID=$(cat /proc/sys/kernel/random/uuid)
+TARGET_DIR="/tmp/installers/$UUID"
+
 # Setup SSH trust 
 mkdir -p ~/.ssh
 chmod 700 ~/.ssh
@@ -51,8 +55,8 @@ do
         export DOCKER_HOST_PORT
         ssh "$DOCKER_HOST_DOMAIN" -p "$DOCKER_HOST_PORT" "
             docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY || exit 1
-            mkdir -p /tmp/installers"
-        rsync -arvz -e "ssh -p $DOCKER_HOST_PORT" --progress --delete /etc/thecore/docker/docker-compose.yml /etc/thecore/docker/docker-compose.net.yml "$PROVIDER" "${DOCKER_HOST_DOMAIN}:/tmp/installers/"
+            mkdir -p $TARGET_DIR"
+        rsync -arvz -e "ssh -p $DOCKER_HOST_PORT" --progress --delete /etc/thecore/docker/docker-compose.yml /etc/thecore/docker/docker-compose.net.yml "$PROVIDER" "${DOCKER_HOST_DOMAIN}:$TARGET_DIR"
         for CUSTOMER in "$PROVIDER"/*.env
         do
             echo "  - found $CUSTOMER doing the remote up thing on $DOCKER_HOST"
@@ -65,10 +69,11 @@ do
             export IMAGE_TAG_BACKEND
             ssh "$DOCKER_HOST_DOMAIN" -p "$DOCKER_HOST_PORT" "
                 export IMAGE_TAG_BACKEND=$IMAGE_TAG_BACKEND
-                cd /tmp/installers
-                docker-compose -f docker-compose.yml -f docker-compose.net.yml --env-file $CUSTOMER up -d --remove-orphans --no-build || exit 2
+                cd $TARGET_DIR
+                docker compose -f docker-compose.yml -f docker-compose.net.yml --env-file $CUSTOMER up -d --remove-orphans --no-build || exit 2
                 docker system prune -f
-                docker logout $CI_REGISTRY"
+                docker logout $CI_REGISTRY
+                rm -rf $TARGET_DIR"
         done
     fi
 done

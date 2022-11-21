@@ -9,8 +9,6 @@ COPY docker /etc/thecore/docker
 COPY help /etc/thecore/
 
 RUN export DEBIAN_FRONTEND=noninteractive \
-    && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg \
-    && chmod o+r /usr/share/keyrings/docker-archive-keyring.gpg \
     && apt-get update \
     && apt-get -y dist-upgrade --no-install-recommends
 
