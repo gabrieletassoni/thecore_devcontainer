@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-MAJOR=2
+MAJOR=$(head -1 version)
 MINOR=$(date +"%Y")
 PATCH=$(date +"%-m")
 BUILD=$(date +"%-d")

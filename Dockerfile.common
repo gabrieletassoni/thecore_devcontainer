@@ -1,4 +1,5 @@
-FROM ruby:2.7.5-bullseye
+ARG THECORE_VERSION
+FROM ruby:${THECORE_VERSION}-bullseye
 
 COPY os/02nocache /etc/apt/apt.conf.d/02nocache
 COPY os/01_nodoc /etc/dpkg/dpkg.cfg.d/01_nodoc

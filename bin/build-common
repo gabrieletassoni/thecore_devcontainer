@@ -7,7 +7,7 @@ DOCKERUSER=gabrieletassoni
 DOCKERTAG="$DOCKERUSER/thecore-common"
 
 # --no-cache --pull
-docker build -f Dockerfile.common -t "${DOCKERTAG}:latest" -t "${DOCKERTAG}:${DOCKERVERSION}" -t "${DOCKERTAG}:${MAJOR}" .
+docker build -f Dockerfile.common --build-arg THECORE_VERSION="${MAJOR}" -t "${DOCKERTAG}:latest" -t "${DOCKERTAG}:${DOCKERVERSION}" -t "${DOCKERTAG}:${MAJOR}" .
 
 source bin/functions.sh
 
