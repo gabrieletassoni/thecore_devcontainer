@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Be sure all the files are owned by working user
+sudo chown -R vscode:vscode * .*
+
 if [[ $1 == "--help" ]]
 then
 echo -e "\e[1mTo create a Thecore APP:\e[0m\n  1) please run \e[31m$0\e[0m\n  2) please answer to the questions posed by the wizard.\n"
@@ -38,232 +41,15 @@ yesno "The WebApp will be called $FULLNAME, is this ok?"
 pattern='^[a-z0-9_-]+$'
 if [[ "$FULLNAME" =~ $pattern ]]
 then
-    # Create arguments (optional and mandatory)
-    args=( )
-    # Ask for type of database needed
-    echo "Which database adapter will be used by the app?"
-    echo -e "\e[31mBe sure to have the correct libraries (drivers/clients) installed in the Operative System.\e[0m"
-    OPTIONS=(mysql postgresql sqlite3 oracle frontbase ibm_db sqlserver jdbcmysql jdbcsqlite3 jdbcpostgresql jdbc)
-    choose
-    DB_TYPE=$CHOICE
-    args+=( --database "$DB_TYPE" )
-
-    # Ask for type of aplication needed
-    echo "Which kind of Thecore App would you like to create?"
-    OPTIONS=("api" "backend" "both")
-    choose
-    APPLICATION_TYPE="$CHOICE"
-    if [[ "$APPLICATION_TYPE" == "api" ]]
-    then
-        args+=( --api )
-    fi
-
     # Actually run the selected Thecore application type
-    rails new . "${args[@]}"
+    rails new . --database=postgresql --asset-pipeline=sprockets --skip-git
 
-    if [[ "$DB_TYPE" == "sqlite3" ]]
-    then
-        DB_CONNECTION_STRING_TEST="${DB_TYPE}:${FULLNAME}_test"
-        DB_CONNECTION_STRING_DEV="${DB_TYPE}:${FULLNAME}_dev"
-        # DB_CONNECTION_STRING_PROD="${DB_TYPE}:${FULLNAME}_prod"
-        echo "Nothing to do"
-    else
-        case $DB_TYPE in
-            mysql)
-                DB_TYPE=mysql2
-                ;;
-            postgresql)
-                DB_TYPE=postgres
-                ;;
-        esac
-        STOPLOOP=true
-        while $STOPLOOP
-        do
-            read -p "Please provide the ADDRESS of the DB: " -r ADDRESS
-            yesno "Is the ADDRESS $ADDRESS correct?"
-            [[ $CHOICE == "yes" ]] && STOPLOOP=false
-        done
-        STOPLOOP=true
-        while $STOPLOOP
-        do
-            read -p "Please provide the PORT of the DB: " -r PORT
-            yesno "Is the ADDRESS $PORT correct?"
-            [[ $CHOICE == "yes" ]] && STOPLOOP=false
-        done
-        STOPLOOP=true
-        while $STOPLOOP
-        do
-            read -p "Please provide the USER of the DB: " -r USER
-            yesno "Is the ADDRESS $USER correct?"
-            [[ $CHOICE == "yes" ]] && STOPLOOP=false
-        done
-        STOPLOOP=true
-        while $STOPLOOP
-        do
-            read -p "Please provide the PASS of the DB: " -r PASS
-            yesno "Is the ADDRESS $PASS correct?"
-            [[ $CHOICE == "yes" ]] && STOPLOOP=false
-        done
+    cp /etc/thecore/.gitignore .gitignore
 
-        DB_CONNECTION_STRING_TEST="${DB_TYPE}://${USER}:${PASS}@${ADDRESS}:${PORT}/${FULLNAME}_test?pool=5"
-        DB_CONNECTION_STRING_DEV="${DB_TYPE}://${USER}:${PASS}@${ADDRESS}:${PORT}/${FULLNAME}_dev?pool=5"
-        # DB_CONNECTION_STRING_PROD="${DB_TYPE}://${USER}:${PASS}@${ADDRESS}:${PORT}/${FULLNAME}_prod?pool=5"
-    fi
-   touch "config/database.yml"
-    cat <<EOF | tee "config/database.yml"
-development:
-  url: ${DB_CONNECTION_STRING_DEV}
-
-test:
-  url: ${DB_CONNECTION_STRING_TEST}
-
-EOF
-  
-    cat <<EOF | tee "app/assets/stylesheets/overrides.scss"
-// Please remove this file if you'd like to override it in an engine.
-// You can override these UI settings:
-
-// \$primary: #1f4068;
-
-// \$background: lighten(\$primary, 51%);
-// \$shadows: darken(\$primary, 10%);
-
-// \$text: darken(\$primary, 40%);
-// \$text-highlight: lighten(\$text, 80%);
-
-// \$link: \$text;
-// \$link-highlight: lighten(\$link, 10%);
-
-// \$element: \$primary;
-// \$element-text: lighten(\$element, 40%);
-// \$element-text-highlight: lighten(\$element-text, 10%);
-// \$element-border: darken(\$element, 10%);
-
-// \$neutral: #706f6f;
-// \$success: #37BC9B;
-// \$info: #3BAFDA;
-// \$danger: #E9573F;
-// \$warning: #F6BB42;
-EOF
-
-    echo "${FULLNAME}" > ".ruby-gemset"
-
-    echo "gem 'rails-erd', group: :development" >> Gemfile
-
-    # Add Thecore base gems
-    if [[ $APPLICATION_TYPE == "api" ]]
-    then
-        echo "gem 'model_driven_api', '~> 2.5', require: 'model_driven_api'" >> Gemfile
-    elif [[ $APPLICATION_TYPE == "backend" ]]
-    then
-        echo "gem 'thecore_ui_rails_admin', '~> 2.7', require: 'thecore_ui_rails_admin'" >> Gemfile
-    elif [[ $APPLICATION_TYPE == "both" ]]
-    then
-        echo "gem 'model_driven_api', '~> 2.5', require: 'model_driven_api'" >> Gemfile
-        echo "gem 'thecore_ui_rails_admin', '~> 2.7', require: 'thecore_ui_rails_admin'" >> Gemfile
-    fi
-
-    # Asking for more gems
-    yesno "Do you want to add more gems to the App?"
-    if [[ $CHOICE == "yes" ]]
-    then
-        STOPLOOP="false"
-        while [[ "$STOPLOOP" == "false" ]]
-        do
-            echo "Please add the name and the semver of the gem."
-            echo "For example: thecore_background_jobs 2.0"
-            echo "this will be translated to gem 'thecore_background_jobs', '~> 2.0', require: 'thecore_background_jobs'"
-            read -r GEMNAME VERSION
-            yesno "Are the gem name and version correct? $GEMNAME $VERSION"
-            if [[ $CHOICE == "yes" ]]
-            then
-                echo "gem '$GEMNAME', '~> $VERSION', require: '$GEMNAME'" >> Gemfile
-            fi
-            yesno "Would you like to add more gems?"
-            if [[ $CHOICE == "no" ]]
-            then
-                STOPLOOP=true
-            fi
-        done
-    fi
-
-    cat > .gitlab-ci.yml << 'EOF'
-image: gabrieletassoni/thecore:2
-
-variables:
-  DISABLE_SPRING: 1
-  IMAGE_TAG_BACKEND: ${CI_REGISTRY_IMAGE}/backend:$CI_COMMIT_TAG
-
-stages:
-  - build
-  - test
-  - lint
-  - dockerize
-  - deploy
-
-build:
-  stage: build
-  cache:
-    paths:
-      - vendor/bundle
-      - node_modules
-      - app/assets
-      - lib/assets
-      - vendor/assets
-      - public/assets
-  # Does not run on untagged branches
-  only:
-    - tags
-  except:
-    - branches
-  script:
-    - /usr/bin/app-compile.sh
-
-build docker image:
-  stage: dockerize
-  when: on_success
-  # Does not run on untagged branches
-  only:
-    - tags
-  except:
-    - branches
-  variables:
-    NETWORK: dummy
-  script:
-    - /usr/bin/docker-build.sh
-
-# All the deploys need to setup the public key into the target machine
-deploy:
-  when: on_success
-  stage: deploy
-  # Does not run on untagged branches
-  only:
-    - tags
-  except:
-    - branches
-  script:
-    - /usr/bin/docker-deploy.sh
-
-EOF
-
-    # Remove auto generated git, I will create a git init in the proper way below
-    rm -rf .git
-    bundle && bundle install && bundle update
-    rails webpacker:install
-    rails active_storage:install
-    rails action_text:install
-    rails action_mailbox:install
-    rails g erd:install
-    yarn install
-    rails db:create
-    rails db:migrate
-    
-    thecore utils add gitignore
-
-    git init
+    git init -b main
     git add . -A
     git commit -a -m "Initial Git"
-    git tag 0.1.0-test
+
     yesno "Would you like to add a remote git repository?"
     if [[ $CHOICE == "yes" ]]
     then
@@ -281,15 +67,50 @@ EOF
             fi
         done
     fi
+    # Add thecore as submodules
+    # TODO: Remove the branch when 3.0 will be a thing
+    git submodule add -b "feature/road-to-3.0.0" https://github.com/gabrieletassoni/model_driven_api.git vendor/submodules/model_driven_api
+    git submodule add -b "feature/road-to-3.0.0" https://github.com/gabrieletassoni/thecore_ui_rails_admin.git vendor/submodules/thecore_ui_rails_admin
 
-    # Pull all the Thecore based gems for editing (if needed)
-    thecore get repos
+    # Add to the Gemfile all the needed gems
+    echo "gem 'rails-erd', group: :development" >> Gemfile
+    echo "gem 'rails_admin'" >> Gemfile
+    echo "gem 'sassc-rails'" >> Gemfile
+    echo "gem 'model_driven_api', '~> 3.0', require: 'model_driven_api', path: 'vendor/submodules/model_driven_api'" >> Gemfile
+    echo "gem 'thecore_ui_rails_admin', '~> 3.0', require: 'thecore_ui_rails_admin', path: 'vendor/submodules/thecore_ui_rails_admin'" >> Gemfile
+
+    bundle update
+
+    # Install the gems
+    rails g rails_admin:install --asset=sprockets
+    rails active_storage:install
+    rails action_text:install
+    rails action_mailbox:install
+    rails g erd:install
+
+    mv Gemfile Gemfile.base
+    echo "eval File.read('Gemfile.base')" > Gemfile
+
+    cp /etc/thecore/.gitlab-ci.yml .gitlab-ci.yml
+
+    # Remove auto generated git, I will create a git init in the proper way below
+    rails db:create
+    rails db:migrate
+    rails thecore:db:seed
+    
+    echo "0.0.1" > version
+
+    git add . -A
+    git commit -a -m "Thecorization completed"
 else
     echo -e "\e[31m\e[1mERROR"'!'"\e[0m The name can only contain lowercase letters, numbers, - and _: \e[31m\e[1mplease rename\e[0m\e[31m this project's folder to match the given constraint\e[0m." 
     exit 1
 fi
 
-mkdir -p installers
+mkdir -p vendor/custombuilds
+mkdir -p vendor/deploytargets
+
+touch vendor/deploytargets/.keep vendor/custombuilds/.keep
 
 echo "New Thecore App: ${FULLNAME} created."
 

@@ -13,7 +13,6 @@ thecore bundle update|This command update Gemfile.lock for main app and all cust
 
 thecore deploy|This command will ask for env target for the deploymenta and tags the git thus to have the Gitlab pipeline run on the right target.
 
-thecore get repos|This command will download the source code repositories which are Thecore related, to allow for customization of the bases.
 thecore enhance engine|This command will transform a normal Ruby on Rails Gem into a full fledged Thecore Library.
 
 thecore create config test deployment|This command creates a test configuration for a customer to be used with docker targets

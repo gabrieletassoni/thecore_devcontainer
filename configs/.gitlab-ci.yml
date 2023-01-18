@@ -1,0 +1,61 @@
+image: gabrieletassoni/vscode-devcontainers-thecore:3
+
+variables:
+  DISABLE_SPRING: 1
+
+stages:
+  - build
+  - test
+  - delivery
+  - deploy
+
+# Caching the built dependencies and assets precompilations to reuse in 
+# later runs of the pipeline to avoid to recompile already compiled things
+cache:
+  key: spot2cache
+  paths:
+    - vendor/bundle
+    - node_modules
+    - app/assets
+    - lib/assets
+    - public/assets
+
+build:
+  stage: build
+  # Does not run on untagged branches
+  only:
+    - tags
+  except:
+    - branches
+  script:
+    - bundle config set gems.bancolini.com "$BANCOLINI_GEMS_CREDENTIALS"
+    - sudo -E /usr/bin/app-compile.sh
+
+# All the deploys need to setup the public key into the target machine
+to-dev:
+  when: on_success
+  stage: delivery
+  cache: []
+  # Does not run on untagged branches
+  only:
+    - tags
+  except:
+    - branches
+  variables:
+    TARGETENV: dev
+  script:
+    # Force automatic deploy in dev
+    - /usr/bin/docker-deploy.sh
+
+# Create continous delivery
+to-prod:
+  when: manual
+  stage: deploy
+  cache: []
+  # Does not run on untagged branches
+  only:
+    - tags
+  except:
+    - branches
+  script:
+    - /usr/bin/docker-deploy.sh

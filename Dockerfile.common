@@ -8,6 +8,7 @@ COPY os/01_nodoc /etc/dpkg/dpkg.cfg.d/01_nodoc
 COPY scripts/ /usr/bin/
 COPY docker /etc/thecore/docker
 COPY help /etc/thecore/
+COPY configs/ /etc/thecore/
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
