@@ -93,8 +93,11 @@ GEMSPEC_FILE="$(find . -name "*.gemspec"|tail -n1)"
 GEMNAME=$(basename -- "$GEMSPEC_FILE")
 # extension="${GEMNAME##*.}"
 GEMNAME="${GEMNAME%.*}"
-if [[ -e bin/rails ]]
+if ! command -v rails &> /dev/null
 then
+  echo "rails command could not be found"
+  exit
+else
   read -rp "Please enter a model declaration (i.e. ModelName title:string:index active:boolean due_at:datetime):" MODEL_DECLARATION
   MODEL_ARRAY=($MODEL_DECLARATION) # ex. ModelName title:string:index active:boolean due_at:datetime reviewable:references{polymorphic} user:references
   MODEL_CAMEL_CASE=${MODEL_ARRAY[0]} # 
@@ -107,7 +110,7 @@ then
   POLYMORPHICS=$(ruby -e "puts('$MODEL_DECLARATION'.split.map do |m| m.match(/^(.+).references.polymorphic.$/)[1] if m.include? 'polymorphic' end.compact.join(' '))")
 
   echo "Generating the model: rails way"
-  bin/rails g model ${MODEL_ARRAY[@]} -s
+  rails g model ${MODEL_ARRAY[@]} -s
   # Download this entry's template for api and railsadmin
   mkdir -p "app/models/concerns/api/" "app/models/concerns/rails_admin/"
   # API + Rails Admin Concerns
