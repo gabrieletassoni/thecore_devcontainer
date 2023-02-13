@@ -73,17 +73,19 @@ then
   exit 4
 fi
 
-mkdir -p vendor/custom
+SUBMODULES_DIR=vendor/submodules
+
+mkdir -p $SUBMODULES_DIR
 # Adding to submodules
 # rm -f .submodules
 touch .submodules
 ROOTDIR=$(pwd)
-for conffile in vendor/custom/*
+for conffile in $SUBMODULES_DIR/*
 do
   # Rebuilding the submodules
-  echo -e "[submodule \"$conffile\"]\n    path = vendor/custom/$conffile\n    url = $ENGINE_GEM_REPO\n" >> "$ROOTDIR/.submodules"
+  echo -e "[submodule \"$conffile\"]\n    path = $SUBMODULES_DIR/$conffile\n    url = $ENGINE_GEM_REPO\n" >> "$ROOTDIR/.submodules"
 done
-cd vendor/custom
+cd $SUBMODULES_DIR
 
 rails plugin new "$ENGINE_NAME" -fG --full
 
