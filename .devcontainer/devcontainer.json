@@ -16,7 +16,8 @@
 				"rogalmic.bash-debug",
 				"shakram02.bash-beautify",
 				"foxundermoon.shell-format",
-				"timonwong.shellcheck"
+				"timonwong.shellcheck",
+				"eamodio.gitlens"
 			],
 		}
 	},

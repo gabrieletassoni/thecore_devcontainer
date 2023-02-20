@@ -86,6 +86,20 @@ then
     echo "gem 'cancancan'" >> Gemfile
     echo "vendor/bundle" >> .gitignore
 
+    # Install the gems
+    bundle install
+    rails generate devise:install
+    rails g rails_admin:install app --asset=sprockets
+    # Rails Admin added sassc gem, so I need to bundle install before going on
+    bundle install
+    rails active_storage:install
+    rails action_text:install
+    # To setup newly added imge_processing gem
+    bundle install
+    rails action_mailbox:install
+    rails g cancan:ability
+    rails g erd:install
+
     echo "gem 'model_driven_api', '~> 3.0', require: 'model_driven_api', path: 'vendor/submodules/model_driven_api'" >> Gemfile
     echo "gem 'thecore_ui_rails_admin', '~> 3.0', require: 'thecore_ui_rails_admin', path: 'vendor/submodules/thecore_ui_rails_admin'" >> Gemfile
     echo "gem 'thecore_backend_commons', '~> 3.0', require: 'thecore_backend_commons', path: 'vendor/submodules/thecore_backend_commons'" >> Gemfile
@@ -95,16 +109,7 @@ then
     echo "gem 'thecore_background_jobs', '~> 3.0', require: 'thecore_background_jobs', path: 'vendor/submodules/thecore_background_jobs'" >> Gemfile
     echo "gem 'thecore_ui_commons', '~> 3.0', require: 'thecore_ui_commons', path: 'vendor/submodules/thecore_ui_commons'" >> Gemfile
 
-    # Install the gems
     bundle install
-    rails generate devise:install
-    rails g rails_admin:install app --asset=sprockets
-    rails active_storage:install
-    rails action_text:install
-    bundle install
-    rails action_mailbox:install
-    rails g cancan:ability
-    rails g erd:install
 
     mv Gemfile Gemfile.base
     echo "eval File.read('Gemfile.base')" > Gemfile
