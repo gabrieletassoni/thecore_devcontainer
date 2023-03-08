@@ -100,14 +100,14 @@ then
     rails g cancan:ability
     rails g erd:install
 
-    echo "gem 'model_driven_api', '~> 3.0', require: 'model_driven_api', path: 'vendor/submodules/model_driven_api'" >> Gemfile
-    echo "gem 'thecore_ui_rails_admin', '~> 3.0', require: 'thecore_ui_rails_admin', path: 'vendor/submodules/thecore_ui_rails_admin'" >> Gemfile
-    echo "gem 'thecore_backend_commons', '~> 3.0', require: 'thecore_backend_commons', path: 'vendor/submodules/thecore_backend_commons'" >> Gemfile
-    echo "gem 'thecore_auth_commons', '~> 3.0', require: 'thecore_auth_commons', path: 'vendor/submodules/thecore_auth_commons'" >> Gemfile
-    echo "gem 'thecore_settings', '~> 3.0', require: 'thecore_settings', path: 'vendor/submodules/thecore_settings'" >> Gemfile
-    echo "gem 'thecore_print_commons', '~> 3.0', require: 'thecore_print_commons', path: 'vendor/submodules/thecore_print_commons'" >> Gemfile
-    echo "gem 'thecore_background_jobs', '~> 3.0', require: 'thecore_background_jobs', path: 'vendor/submodules/thecore_background_jobs'" >> Gemfile
-    echo "gem 'thecore_ui_commons', '~> 3.0', require: 'thecore_ui_commons', path: 'vendor/submodules/thecore_ui_commons'" >> Gemfile
+    echo "gem 'model_driven_api', '~> 3.0', path: 'vendor/submodules/model_driven_api'" >> Gemfile
+    echo "gem 'thecore_ui_rails_admin', '~> 3.0', path: 'vendor/submodules/thecore_ui_rails_admin'" >> Gemfile
+    echo "gem 'thecore_backend_commons', '~> 3.0', path: 'vendor/submodules/thecore_backend_commons'" >> Gemfile
+    echo "gem 'thecore_auth_commons', '~> 3.0', path: 'vendor/submodules/thecore_auth_commons'" >> Gemfile
+    echo "gem 'thecore_settings', '~> 3.0', path: 'vendor/submodules/thecore_settings'" >> Gemfile
+    echo "gem 'thecore_print_commons', '~> 3.0', path: 'vendor/submodules/thecore_print_commons'" >> Gemfile
+    echo "gem 'thecore_background_jobs', '~> 3.0', path: 'vendor/submodules/thecore_background_jobs'" >> Gemfile
+    echo "gem 'thecore_ui_commons', '~> 3.0', path: 'vendor/submodules/thecore_ui_commons'" >> Gemfile
 
     bundle install
 
