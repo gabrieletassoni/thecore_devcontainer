@@ -5,6 +5,7 @@
 	"workspaceFolder": "/workspaces/thecore_devcontainer/",
 
 	"initializeCommand": "mkdir -p ~/.docker && touch ~/.docker/config.json",
+	"postAttachCommand": "sudo chown -R vscode:vscode ~",
 	
 	"customizations": {
 		// Configure properties specific to VS Code.
