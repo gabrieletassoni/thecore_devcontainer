@@ -6,11 +6,11 @@ Build images based on the latest Ruby on Rails needed and adds all the tools man
 
 Please login with `docker login` to docker hub.
 
-Then run the `bin/build` command. This will build the [devcontainer image](https://hub.docker.com/repository/docker/gabrieletassoni/vscode-devcontainers-thecore-frontend) with the latest packages and tools.
+Then run the `bin/build` command. This will build the [devcontainer image](https://hub.docker.com/repository/docker/gabrieletassoni/vscode-devcontainers-thecore) with the latest packages and tools.
 
 This script also creates these images:
-- https://hub.docker.com/repository/docker/gabrieletassoni/thecore-frontend
-- https://hub.docker.com/repository/docker/gabrieletassoni/thecore-frontend-common
+- https://hub.docker.com/repository/docker/gabrieletassoni/thecore-common
+- https://hub.docker.com/repository/docker/gabrieletassoni/thecore
 
 ## To create a new major version
 
