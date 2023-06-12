@@ -2,17 +2,18 @@ ARG THECORE_VERSION
 FROM gabrieletassoni/thecore-common:${THECORE_VERSION}
 
 USER root
-
-RUN mkdir -p /app/vendor/bundle
-WORKDIR /app
-
-# Install Rails dependecies
-RUN gem install bundler \
-    && bundle config set without development test \
-    && bundle config build.nokogiri --use-system-libraries \
-    && bundle config set path /app/vendor/bundle 
-
 # Add the entrypoints
 RUN mkdir -p /bin/thecore
 COPY docker/entrypoint*.sh /bin/thecore/
 RUN chmod +x /bin/thecore/entrypoint*.sh
+
+RUN mkdir -p /app/vendor/bundle
+
+WORKDIR /app
+
+# Install Rails dependecies
+RUN gem install bundler \
+    && export BUNDLE_APP_CONFIG=/app/vendor/bundle \
+    && bundle config set path /app/vendor/bundle \
+    && bundle config set without development test \
+    && bundle config build.nokogiri --use-system-libraries

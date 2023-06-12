@@ -20,18 +20,18 @@ RUN echo \
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update && apt-get -y install --no-install-recommends \
-        docker-ce docker-ce-cli containerd.io docker-compose-plugin \
+        docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin \
         git-flow \
         graphviz \
         python3-pip \
     # Clean up
-    && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* \
-    && which docker \
-    && docker compose version \
-    && python3 -m pip install semgrep
+    && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* 
 
 # Add at least a version of rails to work with
 RUN gem install rails foreman
+
+RUN mkdir -p /usr/local/bundle \
+    && chmod -R 1777 /usr/local/bundle
 
 RUN mkdir -p /etc/thecore/templates /etc/thecore/repos.conf.d
 COPY bin/increment_version.sh /usr/bin/increment_version.sh
@@ -53,7 +53,7 @@ RUN echo 'export PS1="\e[32m\u\e[0m ► \e[96m\W\e[0m [\e[31m\$(git rev-parse --
     && echo 'export COMPOSE_PROJECT_NAME=thecore_test' >> ~/.bashrc \
     && echo 'export CODEBIN=$(find $HOME/.vscode-server/bin/* -maxdepth 1 -mindepth 1 -name bin)' >> ~/.bashrc \
     && echo 'export PATH=$GEM_HOME/bin:$PATH:$APPBIN:$CODEBIN' >> ~/.bashrc \
-    && tail ~/.bashrc \
+    && echo 'sudo chown -R vscode:vscode ~' >> ~/.bashrc \
     && bundle config set path /workspaces/project/backend/vendor/bundle
 
 WORKDIR /workspaces/project
