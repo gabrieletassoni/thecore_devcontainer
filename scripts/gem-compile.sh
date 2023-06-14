@@ -27,7 +27,12 @@ else
     git config --local user.email "${GITLAB_EMAIL:-noreply@alchemic.it}"
     git config --local user.name "${GITLAB_USER_NAME:-AlchemicIT}"
     git tag -a $version -m "Version $version"
-    git push --tags "$GITLAB_OAUTH_TARGET"
+    if $GITLAB_OAUTH_TARGET
+    then
+        git push --tags "$GITLAB_OAUTH_TARGET"
+    else
+        git push --tags
+    fi
     gem build *.gemspec
     if $GITLAB_GEM_REPO_TARGET
     then

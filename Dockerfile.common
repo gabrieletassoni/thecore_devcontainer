@@ -14,10 +14,11 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
     && apt-get -y dist-upgrade --no-install-recommends
 
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
-    && apt-get install -y nodejs
+# These are no more needed in thecore 3 since using sprockets
+# RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
+#     && apt-get install -y nodejs
 
-RUN npm install --global yarn
+# RUN npm install --global yarn
 
 RUN apt-get -y install --no-install-recommends \
         iputils-ping \
