@@ -12,10 +12,9 @@ stages:
 # Caching the built dependencies and assets precompilations to reuse in 
 # later runs of the pipeline to avoid to recompile already compiled things
 cache:
-  key: spot2cache
+  key: thecore3cache
   paths:
     - vendor/bundle
-    - node_modules
     - app/assets
     - lib/assets
     - public/assets
@@ -28,7 +27,6 @@ build:
   except:
     - branches
   script:
-    - bundle config set gems.bancolini.com "$BANCOLINI_GEMS_CREDENTIALS"
     - sudo -E /usr/bin/app-compile.sh
 
 # All the deploys need to setup the public key into the target machine
