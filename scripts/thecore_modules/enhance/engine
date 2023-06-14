@@ -142,7 +142,7 @@ grep sqlite3 Gemfile || echo "gem 'sqlite3'" >> Gemfile
 # Add CI CD Automation
 # GITLAB
 cat > .gitlab-ci.yml << EOL
-image: ruby:3.2.0
+image: gabrieletassoni/vscode-devcontainers-thecore:3
 
 variables:
     GITLAB_EMAIL: ""
@@ -162,6 +162,7 @@ build_gem:
     stage: build
     script:
         - /usr/bin/gem-compile.sh
+
 EOL
 
 # GITHUB
