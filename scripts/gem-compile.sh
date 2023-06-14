@@ -3,6 +3,7 @@
 echo Getting the version from the gemspec file
 version=$(grep -oP 'VERSION = "\K[^"]+' lib/*/version.rb | awk -F'.' '{print $1"."$2"."$3}')
 echo Obtain the list of local tags
+git config --global --add safe.directory $CI_PROJECT_DIR
 local_tags=$(git tag)
 echo $local_tags
 echo Obtain the list of remote tags
@@ -27,18 +28,18 @@ else
     git config --local user.email "${GITLAB_EMAIL:-noreply@alchemic.it}"
     git config --local user.name "${GITLAB_USER_NAME:-AlchemicIT}"
     git tag -a $version -m "Version $version"
-    if $GITLAB_OAUTH_TARGET
+    if [ -z "$GITLAB_OAUTH_TARGET" ]
     then
-        git push --tags "$GITLAB_OAUTH_TARGET"
-    else
         git push --tags
+    else
+        git push --tags "$GITLAB_OAUTH_TARGET"
     fi
     gem build *.gemspec
-    if $GITLAB_GEM_REPO_TARGET
+    if [ -z "$GITLAB_GEM_REPO_TARGET" ]
     then
+        gem push
+    else
         gem install geminabox
         gem inabox *.gem -g "$GITLAB_GEM_REPO_TARGET"
-    else
-        gem push
     fi
 fi
