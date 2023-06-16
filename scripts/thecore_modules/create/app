@@ -69,15 +69,15 @@ then
     fi
     # Add thecore as submodules
     # TODO: Remove the branch when 3.0 will be a thing
-    git submodule add -b "feature/road-to-3.0.0" https://github.com/gabrieletassoni/model_driven_api.git vendor/submodules/model_driven_api
-    git submodule add -b "feature/road-to-3.0.0" https://github.com/gabrieletassoni/thecore_ui_rails_admin.git vendor/submodules/thecore_ui_rails_admin
+    # git submodule add -b "feature/road-to-3.0.0" https://github.com/gabrieletassoni/model_driven_api.git vendor/submodules/model_driven_api
+    # git submodule add -b "feature/road-to-3.0.0" https://github.com/gabrieletassoni/thecore_ui_rails_admin.git vendor/submodules/thecore_ui_rails_admin
 
-    git submodule add -b "feature/road-to-3.0.0" https://github.com/gabrieletassoni/thecore_backend_commons.git vendor/submodules/thecore_backend_commons
-    git submodule add -b "feature/road-to-3.0.0" https://github.com/gabrieletassoni/thecore_auth_commons.git vendor/submodules/thecore_auth_commons
-    git submodule add -b "feature/road-to-3.0.0" https://github.com/gabrieletassoni/thecore_settings.git vendor/submodules/thecore_settings
-    git submodule add -b "feature/road-to-3.0.0" https://github.com/gabrieletassoni/thecore_print_commons.git vendor/submodules/thecore_print_commons
-    git submodule add -b "feature/thecore3-migration" https://github.com/gabrieletassoni/thecore_background_jobs.git vendor/submodules/thecore_background_jobs
-    git submodule add -b "feature/road-to-3.0.0" https://github.com/gabrieletassoni/thecore_ui_commons.git vendor/submodules/thecore_ui_commons
+    # git submodule add -b "feature/road-to-3.0.0" https://github.com/gabrieletassoni/thecore_backend_commons.git vendor/submodules/thecore_backend_commons
+    # git submodule add -b "feature/road-to-3.0.0" https://github.com/gabrieletassoni/thecore_auth_commons.git vendor/submodules/thecore_auth_commons
+    # git submodule add -b "feature/road-to-3.0.0" https://github.com/gabrieletassoni/thecore_settings.git vendor/submodules/thecore_settings
+    # git submodule add -b "feature/road-to-3.0.0" https://github.com/gabrieletassoni/thecore_print_commons.git vendor/submodules/thecore_print_commons
+    # git submodule add -b "feature/thecore3-migration" https://github.com/gabrieletassoni/thecore_background_jobs.git vendor/submodules/thecore_background_jobs
+    # git submodule add -b "feature/road-to-3.0.0" https://github.com/gabrieletassoni/thecore_ui_commons.git vendor/submodules/thecore_ui_commons
 
     # Add to the Gemfile all the needed gems
     echo "gem 'rails-erd', group: :development" >> Gemfile
@@ -100,15 +100,9 @@ then
     rails g cancan:ability
     rails g erd:install
 
-    echo "gem 'model_driven_api', '~> 3.0', path: 'vendor/submodules/model_driven_api'" >> Gemfile
-    echo "gem 'thecore_ui_rails_admin', '~> 3.0', path: 'vendor/submodules/thecore_ui_rails_admin'" >> Gemfile
-    echo "gem 'thecore_backend_commons', '~> 3.0', path: 'vendor/submodules/thecore_backend_commons'" >> Gemfile
-    echo "gem 'thecore_auth_commons', '~> 3.0', path: 'vendor/submodules/thecore_auth_commons'" >> Gemfile
-    echo "gem 'thecore_settings', '~> 3.0', path: 'vendor/submodules/thecore_settings'" >> Gemfile
-    echo "gem 'thecore_print_commons', '~> 3.0', path: 'vendor/submodules/thecore_print_commons'" >> Gemfile
-    echo "gem 'thecore_background_jobs', '~> 3.0', path: 'vendor/submodules/thecore_background_jobs'" >> Gemfile
-    echo "gem 'thecore_ui_commons', '~> 3.0', path: 'vendor/submodules/thecore_ui_commons'" >> Gemfile
-
+    echo "gem 'model_driven_api', '~> 3.0' #, path: 'vendor/submodules/model_driven_api'" >> Gemfile
+    echo "gem 'thecore_ui_rails_admin', '~> 3.0' #, path: 'vendor/submodules/thecore_ui_rails_admin'" >> Gemfile
+    
     bundle install
 
     mv Gemfile Gemfile.base
