@@ -32,6 +32,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: postgres
+    volumes:
+      - /var/docker/persistence/${COMPOSE_PROJECT_NAME}/db:/var/lib/postgresql/data
     healthcheck: 
       interval: 1s
       retries: 30
@@ -40,7 +42,7 @@ services:
 
   cache:
     image: redis:latest
-    entrypoint: "redis-server --appendonly yes"
+    entrypoint: "redis-server"
     restart: unless-stopped
     healthcheck: 
       interval: 1s
@@ -60,8 +62,8 @@ services:
     environment:
       <<: *vars
     volumes:
-      - /root/persistence/${COMPOSE_PROJECT_NAME}/storage:/app/storage
-      - /root/persistence/${COMPOSE_PROJECT_NAME}/imports:/app/tmp/imports
+      - /var/docker/persistence/${COMPOSE_PROJECT_NAME}/storage:/app/storage
+      - /var/docker/persistence/${COMPOSE_PROJECT_NAME}/imports:/app/tmp/imports
     healthcheck:
       test: "${DOCKER_HEALTHCHECK_TEST:-curl --fail http://localhost:3000/}"
       interval: "60s"
@@ -82,8 +84,8 @@ services:
     environment:
       <<: *vars
     volumes:
-      - /root/persistence/${COMPOSE_PROJECT_NAME}/storage:/app/storage
-      - /root/persistence/${COMPOSE_PROJECT_NAME}/imports:/app/tmp/imports
+      - /var/docker/persistence/${COMPOSE_PROJECT_NAME}/storage:/app/storage
+      - /var/docker/persistence/${COMPOSE_PROJECT_NAME}/imports:/app/tmp/imports
     healthcheck:
       test: "${DOCKER_HEALTHCHECK_TEST:-bundle exec sidekiqmon|grep $(hostname)}"
       interval: "60s"
