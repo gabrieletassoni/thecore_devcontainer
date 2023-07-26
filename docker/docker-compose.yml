@@ -33,7 +33,7 @@ services:
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-      - /var/docker/persistence/${COMPOSE_PROJECT_NAME}/db:/var/lib/postgresql/data
+      - /root/persistence/${COMPOSE_PROJECT_NAME}/db:/var/lib/postgresql/data
     healthcheck: 
       interval: 1s
       retries: 30
@@ -62,8 +62,8 @@ services:
     environment:
       <<: *vars
     volumes:
-      - /var/docker/persistence/${COMPOSE_PROJECT_NAME}/storage:/app/storage
-      - /var/docker/persistence/${COMPOSE_PROJECT_NAME}/imports:/app/tmp/imports
+      - /root/persistence/${COMPOSE_PROJECT_NAME}/storage:/app/storage
+      - /root/persistence/${COMPOSE_PROJECT_NAME}/imports:/app/tmp/imports
     healthcheck:
       test: "${DOCKER_HEALTHCHECK_TEST:-curl --fail http://localhost:3000/}"
       interval: "60s"
@@ -84,8 +84,8 @@ services:
     environment:
       <<: *vars
     volumes:
-      - /var/docker/persistence/${COMPOSE_PROJECT_NAME}/storage:/app/storage
-      - /var/docker/persistence/${COMPOSE_PROJECT_NAME}/imports:/app/tmp/imports
+      - /root/persistence/${COMPOSE_PROJECT_NAME}/storage:/app/storage
+      - /root/persistence/${COMPOSE_PROJECT_NAME}/imports:/app/tmp/imports
     healthcheck:
       test: "${DOCKER_HEALTHCHECK_TEST:-bundle exec sidekiqmon|grep $(hostname)}"
       interval: "60s"
