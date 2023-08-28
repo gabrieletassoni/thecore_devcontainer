@@ -39,7 +39,7 @@ else
     then
         gem push
     else
-        gem install geminabox
+        sudo gem install geminabox
         gem inabox *.gem -g "$GITLAB_GEM_REPO_TARGET"
     fi
 fi
