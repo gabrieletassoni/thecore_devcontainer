@@ -1,6 +1,6 @@
 # ARG THECORE_VERSION
 # FROM ruby:${THECORE_VERSION}-bullseye
-FROM ruby:2-bullseye
+FROM ruby:3-bullseye
 
 COPY os/02nocache /etc/apt/apt.conf.d/02nocache
 COPY os/01_nodoc /etc/dpkg/dpkg.cfg.d/01_nodoc
@@ -14,12 +14,6 @@ COPY configs/ /etc/thecore/
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
     && apt-get -y dist-upgrade --no-install-recommends
-
-# These are no more needed in thecore 3 since using sprockets
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
-    && apt-get install -y nodejs
-
-RUN npm install --global yarn
 
 RUN apt-get -y install --no-install-recommends \
         iputils-ping \

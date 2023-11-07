@@ -28,7 +28,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* 
 
 # Add at least a version of rails to work with
-RUN gem install rails:'~> 6.1.0' foreman rufo
+RUN gem install rails:'~> 7.0.4' foreman rufo
 
 RUN mkdir -p /usr/local/bundle \
     && chmod -R 1777 /usr/local/bundle
