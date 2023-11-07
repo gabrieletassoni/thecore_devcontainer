@@ -1,5 +1,6 @@
-ARG THECORE_VERSION
-FROM ruby:${THECORE_VERSION}-bullseye
+# ARG THECORE_VERSION
+# FROM ruby:${THECORE_VERSION}-bullseye
+FROM ruby:3-bullseye
 
 COPY os/02nocache /etc/apt/apt.conf.d/02nocache
 COPY os/01_nodoc /etc/dpkg/dpkg.cfg.d/01_nodoc

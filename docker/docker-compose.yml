@@ -26,7 +26,7 @@ x-vars: &vars
 
 services: 
   db:
-    image: postgres:latest
+    image: postgres:15
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
