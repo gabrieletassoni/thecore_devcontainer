@@ -1,4 +1,4 @@
-image: gabrieletassoni/vscode-devcontainers-thecore:3
+image: gabrieletassoni/vscode-devcontainers-thecore:2
 
 variables:
   DISABLE_SPRING: 1

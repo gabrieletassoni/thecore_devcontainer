@@ -1,4 +1,4 @@
-FROM gabrieletassoni/thecore:3
+FROM gabrieletassoni/thecore:2
 
 # Copy the Rails Appplication leaving out the .dockrignored file
 ADD . /app
