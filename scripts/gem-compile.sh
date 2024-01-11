@@ -39,7 +39,7 @@ else
     then
         gem push
     else
-        sudo gem install geminabox
-        gem inabox *.gem -g "$GITLAB_GEM_REPO_TARGET"
+        # This needs also the env var GEM_HOST_API_KEY to be set with the credentials from a valid user.
+        gem push --host "$GITLAB_GEM_REPO_TARGET" *.gem
     fi
 fi
