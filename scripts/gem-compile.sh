@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 echo Getting the version from the gemspec file
-version=$(grep -oP 'VERSION = "\K[^"]+' lib/*/version.rb | awk -F'.' '{print $1"."$2"."$3}')
+version=$(find ./lib -name version.rb -exec grep -oP 'VERSION = "\K[^"]+' {} \; | awk -F'.' '{print $1"."$2"."$3}')
 echo Obtain the list of local tags
 git config --global --add safe.directory $CI_PROJECT_DIR
 local_tags=$(git tag)
