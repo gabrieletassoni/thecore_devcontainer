@@ -3,9 +3,9 @@ FROM gabrieletassoni/thecore-common:${THECORE_VERSION}
 
 USER root
 # Add the entrypoints
-RUN mkdir -p /bin/thecore
-COPY docker/entrypoint*.sh /bin/thecore/
-RUN chmod +x /bin/thecore/entrypoint*.sh
+RUN mkdir -p "/bin/thecore_container"
+COPY docker/entrypoint*.sh "/bin/thecore_container"
+RUN chmod +x /bin/thecore_container/entrypoint*.sh
 
 RUN mkdir -p /app/vendor/bundle
 

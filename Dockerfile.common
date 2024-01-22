@@ -1,6 +1,5 @@
 # ARG THECORE_VERSION
-# FROM ruby:${THECORE_VERSION}-bullseye
-FROM ruby:3.3.0-bullseye
+FROM ruby:3.3-bookworm
 
 COPY os/02nocache /etc/apt/apt.conf.d/02nocache
 COPY os/01_nodoc /etc/dpkg/dpkg.cfg.d/01_nodoc
@@ -51,7 +50,7 @@ RUN apt-get -y install --no-install-recommends \
         libgcc1 \
         libgssapi-krb5-2 \
         libicu[0-9][0-9] \
-        liblttng-ust0 \
+        liblttng-ust1 \
         libstdc++6 \
         zlib1g \
         locales \
@@ -59,7 +58,7 @@ RUN apt-get -y install --no-install-recommends \
         ncdu \
         man-db \
         strace \
-        libssl1.1 \
+        libssl3 \
         gridsite-clients \
         geoip-database \
         libgirepository1.0-dev \

@@ -24,7 +24,7 @@ x-common-vars: &commmon-vars
 
 services:
   db:
-    image: postgres:latest
+    image: postgres:15-bookworm
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
@@ -54,7 +54,7 @@ services:
     depends_on:
     - db
     - redis
-    entrypoint: /bin/thecore/entrypoint.sh
+    entrypoint: /bin/thecore_container/entrypoint.sh
     environment: 
         <<: *commmon-vars
     healthcheck:
@@ -70,7 +70,7 @@ services:
     - db
     - redis
     - backend
-    entrypoint: /bin/thecore/entrypoint-sidekiq.sh
+    entrypoint: /bin/thecore_container/entrypoint-sidekiq.sh
     environment: 
         <<: *commmon-vars
     healthcheck:

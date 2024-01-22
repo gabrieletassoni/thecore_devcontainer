@@ -26,7 +26,7 @@ x-vars: &vars
 
 services: 
   db:
-    image: postgres:15
+    image: postgres:15-bookworm
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
@@ -58,7 +58,7 @@ services:
         condition: service_healthy
       cache:
         condition: service_healthy
-    entrypoint: /bin/thecore/entrypoint.sh
+    entrypoint: /bin/thecore_container/entrypoint.sh
     environment:
       <<: *vars
     volumes:
@@ -80,7 +80,7 @@ services:
         condition: service_healthy
       backend:
         condition: service_healthy
-    entrypoint: /bin/thecore/entrypoint-sidekiq.sh
+    entrypoint: /bin/thecore_container/entrypoint-sidekiq.sh
     environment:
       <<: *vars
     volumes:
