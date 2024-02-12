@@ -53,8 +53,13 @@ RUN echo 'export PS1="\e[32m\u\e[0m ► \e[96m\W\e[0m [\e[31m\$(git rev-parse --
     && echo 'export COMPOSE_PROJECT_NAME=thecore_test' >> ~/.bashrc \
     && echo 'export CODEBIN=$(find $HOME/.vscode-server/bin/* -maxdepth 1 -mindepth 1 -name bin)' >> ~/.bashrc \
     && echo 'export PATH=$GEM_HOME/bin:$PATH:$APPBIN:$CODEBIN' >> ~/.bashrc \
+    && echo 'export BUNDLE_APP_CONFIG=/workspaces/project/backend/.bundle' >> ~/.bashrc \
     && echo "mkdir -p ~/.bundle && touch ~/.bundle/config" >> ~/.bashrc \
+    && echo "mkdir -p /workspaces/project/backend/.bundle && touch /workspaces/project/backend/.bundle/config" >> ~/.bashrc \
     && echo 'sudo chown -R vscode:vscode ~' >> ~/.bashrc \
+    && echo 'sudo chown -R vscode:vscode /workspaces/project/backend' >> ~/.bashrc \
     && bundle config set path /workspaces/project/backend/vendor/bundle
 
 WORKDIR /workspaces/project
+
+COPY build/thecore.vsix /etc/thecore/

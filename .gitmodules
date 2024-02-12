@@ -1,0 +1,4 @@
+[submodule "submodules/thecore_code_extension"]
+	path = submodules/thecore_code_extension
+	url = git@github.com:gabrieletassoni/thecore_code_extension.git
+	branch = release/3

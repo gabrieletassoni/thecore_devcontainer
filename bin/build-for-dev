@@ -6,6 +6,14 @@ DOCKERUSER=gabrieletassoni
 # DOCKERVERSION=$(date +"%Y%m%d")
 DOCKERTAG=$DOCKERUSER/vscode-devcontainers-thecore
 
+# Copy latest vsix file from the folder submodules/thecore_code_extension to build folder
+mkdir -p build
+cp submodules/thecore_code_extension/thecore-*.vsix build/
+# The vsix files in the build directory use semantic versioning in the filename, like thecore-3.0.0.vsix, so we can get the latest
+# one frome the filename and rename it to thecore.vsix
+latest_vsix=$(ls -t build/thecore-*.vsix|sort|tail -1)
+mv "$latest_vsix" build/thecore.vsix
+
 # --no-cache --pull 
 docker build -f Dockerfile.dev --build-arg THECORE_VERSION="${MAJOR}" -t "${DOCKERTAG}:latest" -t "${DOCKERTAG}:${DOCKERVERSION}" -t "${DOCKERTAG}:${MAJOR}" .
 
