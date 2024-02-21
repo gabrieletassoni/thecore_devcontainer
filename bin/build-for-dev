@@ -6,13 +6,35 @@ DOCKERUSER=gabrieletassoni
 # DOCKERVERSION=$(date +"%Y%m%d")
 DOCKERTAG=$DOCKERUSER/vscode-devcontainers-thecore
 
-# Copy latest vsix file from the folder submodules/thecore_code_extension to build folder
+# Check in the submodules directory if there a filders which contain a vs code extension
+# if there are, cd into them ad run the vsce package command to create the vsix file
+# Then if the vsix file is created, copy it to the build folder in the root of the project
+# Cleanup the build folder from old files
 mkdir -p build
-cp submodules/thecore_code_extension/thecore-*.vsix build/
-# The vsix files in the build directory use semantic versioning in the filename, like thecore-3.0.0.vsix, so we can get the latest
-# one frome the filename and rename it to thecore.vsix
-latest_vsix=$(ls -t build/thecore-*.vsix|sort|tail -1)
-mv "$latest_vsix" build/thecore.vsix
+rm -f build/*.vsix
+
+# Copy latest vsix file from the folder submodules/thecore_code_extension to build folder
+cd submodules
+for d in */ ; do
+    echo "Checking if $d is a vs code extension"
+    if [ -f "$d/extension.js" ]; then
+        echo "Found a vs code extension in $d"
+        cd $d
+        echo "Running vsce package"
+        vsce package
+
+        # If the vsce package command was successful, copy the vsix file to the build folder
+        for file in *.vsix; do
+            if [ -f "$file" ]; then
+                # Copy the file renaming it to thecore.vsix
+                echo "Copying vsix file to build folder"
+                mv ./*.vsix ../../build/thecore.vsix
+            fi
+        done
+        cd ..
+    fi
+done
+cd ..
 
 # --no-cache --pull 
 docker build -f Dockerfile.dev --build-arg THECORE_VERSION="${MAJOR}" -t "${DOCKERTAG}:latest" -t "${DOCKERTAG}:${DOCKERVERSION}" -t "${DOCKERTAG}:${MAJOR}" .
