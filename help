@@ -1,2 +1,0 @@
-thecore create app|This command will create a new scaffold for a Thecore application.
-thecore deploy|This command will ask for env target for the deployment and tags the git thus to have the Gitlab pipeline run on the right target.

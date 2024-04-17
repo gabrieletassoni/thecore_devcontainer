@@ -33,10 +33,6 @@ RUN gem install rails:'~> 7.1.2' foreman rufo
 RUN mkdir -p /usr/local/bundle \
     && chmod -R 1777 /usr/local/bundle
 
-RUN mkdir -p /etc/thecore/templates /etc/thecore/repos.conf.d
-COPY bin/increment_version.sh /usr/bin/increment_version.sh
-COPY repos /etc/thecore/repos.conf.d
-COPY localdockerbuild /etc/thecore/localdockerbuild
 # Creating the git clones of thecore gems.
 # Useful to have them already inside the dev environment if the need to customize them arises.
 # Otherwise the gem installed ones will suffice to the needs of thecore development.
