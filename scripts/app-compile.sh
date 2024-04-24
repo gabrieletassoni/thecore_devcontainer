@@ -49,7 +49,7 @@ else
     SECRET_KEY_BASE=dummy RAILS_ENV=production DATABASE_URL=nulldb:fake ./bin/rails --trace assets:precompile
     rm -rf tmp/cache/* /tmp/*
 
-    export IMAGE_TAG_BACKEND=${CI_REGISTRY_IMAGE}/backend:$CI_COMMIT_TAG
+    export IMAGE_TAG_BACKEND=${CI_REGISTRY_IMAGE}/backend:$version
     echo "Building $IMAGE_TAG_BACKEND"
     /usr/bin/docker-build.sh "/etc/thecore/docker/Dockerfile" $version
 
@@ -68,7 +68,7 @@ else
         SECRET_KEY_BASE=dummy RAILS_ENV=production DATABASE_URL=nulldb:fake ./bin/rails --trace assets:precompile
         rm -rf tmp/cache/* /tmp/*
 
-        export IMAGE_TAG_BACKEND=${CI_REGISTRY_IMAGE}/backend-$(basename "$DIRNAME"):$CI_COMMIT_TAG
+        export IMAGE_TAG_BACKEND=${CI_REGISTRY_IMAGE}/backend-$(basename "$DIRNAME"):$version
         echo "Building $IMAGE_TAG_BACKEND"
         /usr/bin/docker-build.sh "$file" $version
     done
