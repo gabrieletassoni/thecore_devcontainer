@@ -41,8 +41,7 @@ services:
       timeout: 3s
 
   cache:
-    image: redis:latest
-    entrypoint: "redis-server"
+    image: eqalpha/keydb
     restart: unless-stopped
     healthcheck: 
       interval: 1s
