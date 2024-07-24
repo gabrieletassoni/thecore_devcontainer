@@ -1,4 +1,4 @@
-ARG THECORE_VERSION
+ARG THECORE_VERSION=3
 FROM gabrieletassoni/thecore-common:${THECORE_VERSION}
 
 # Install base packages and latest debian keyrings

@@ -1,6 +1,12 @@
 #!/bin/bash -e
 
-source bin/version.sh
+# shellcheck source=bin/version.sh
+MAJOR=$(head -1 version)
+MINOR=$(date +"%Y")
+PATCH=$(date +"%-m")
+BUILD=$(date +"%-d")
+
+DOCKERVERSION="$MAJOR.$MINOR.$PATCH.$BUILD"
 
 DOCKERUSER=gabrieletassoni
 # DOCKERVERSION=$(date +"%Y%m%d")
@@ -9,6 +15,7 @@ DOCKERTAG="$DOCKERUSER/thecore"
 # --no-cache --pull
 docker build -f Dockerfile.deploy --build-arg THECORE_VERSION="${MAJOR}" -t "${DOCKERTAG}:latest" -t "${DOCKERTAG}:${DOCKERVERSION}" -t "${DOCKERTAG}:${MAJOR}" .
 
+# shellcheck source=bin/functions.sh
 source bin/functions.sh
 
 exit 0
