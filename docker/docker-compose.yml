@@ -13,6 +13,7 @@ x-vars: &vars
   REDIS_URL: redis://cache
   DATABASE_URL: postgres://postgres:postgres@db/postgres?pool=${DATABASE_POOL:-30}
   ALLOW_MULTISESSIONS: "true"
+  RAILS_MAX_THREADS: 5
   # Derived
   SECRET_KEY_BASE: ${SECRET_KEY_BASE}
   ADMIN_PASSWORD: ${ADMIN_PASSWORD}
