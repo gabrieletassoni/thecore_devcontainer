@@ -30,7 +30,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 # Add at least a version of rails to work with
 RUN gem update --system \
     && gem update rake \
-    && gem install rails:'~> 7.1' foreman rufo
+    && gem install rails:'~> 7.1' foreman rufo ruby-lsp
 
 RUN mkdir -p /usr/local/bundle \
     && chmod -R 1777 /usr/local/bundle
