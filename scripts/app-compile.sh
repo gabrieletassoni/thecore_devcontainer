@@ -46,8 +46,11 @@ else
     bundle config get path
     echo "Compiling the default image"
     bundle install
-    SECRET_KEY_BASE=dummy RAILS_ENV=production DATABASE_URL=nulldb:fake ./bin/rails --trace assets:precompile
-    # RAILS_ENV=production ./bin/rails --trace assets:precompile
+        
+    echo "Compiling the default assets (/ and /backend)"
+    SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=production DATABASE_URL=nulldb:fake RAILS_RELATIVE_URL_ROOT=/ ASSETS_PREFIX=/assets ./bin/rails --trace assets:precompile
+    SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=production DATABASE_URL=nulldb:fake RAILS_RELATIVE_URL_ROOT=/backend ASSETS_PREFIX=/backend/assets ./bin/rails --trace assets:precompile
+
     rm -rf tmp/cache/* /tmp/*
 
     export IMAGE_TAG_BACKEND=${CI_REGISTRY_IMAGE}/backend:$version
