@@ -19,10 +19,13 @@ then
     echo -e "\e[32m- Doing DB seed\e[0m"
     if bundle exec ./bin/rails thecore:db:seed
     then
-        # Only if all the migrations are ok, run the server
-        echo -e "\e[32m- - Everything was ok, starting the rails server\e[0m"
-        rm -f tmp/pids/server.pid
-        bundle exec ./bin/rails s -p 3000 -b '0.0.0.0'
+        echo -e "\e[32m- - Doing Assets Precompile\e[0m"
+        if bundle exec ./bin/rails assets:precompile
+        then
+            echo -e "\e[32m- - - Everything was ok, starting the rails server\e[0m"
+            rm -f tmp/pids/server.pid
+            bundle exec ./bin/rails s -p 3000 -b '0.0.0.0'
+        fi
     fi
 fi
 
