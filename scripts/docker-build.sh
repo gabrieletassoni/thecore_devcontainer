@@ -16,7 +16,7 @@ docker build -f "$DOCKERFILE_LOCATION" --no-cache --pull -t "${IMAGE_TAG_BACKEND
     --build-arg "CI_COMMIT_TAG=$2" .
 
 echo "Login at $CI_REGISTRY"
-docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
 
 echo "Pushing Image $IMAGE_TAG_BACKEND"
 docker image push "${IMAGE_TAG_BACKEND}"
