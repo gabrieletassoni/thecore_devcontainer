@@ -4,3 +4,8 @@ FROM gabrieletassoni/thecore:3
 ADD . /app
 
 SHELL ["/bin/bash", "-c"]
+
+RUN bundle config set path "/app/vendor/bundle" \
+    && bundle config get path \
+    && bundle install \
+    && rm -rf tmp/cache/* /tmp/*
