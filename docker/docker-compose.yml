@@ -25,6 +25,7 @@ x-vars: &vars
   BACKEND_URL: https://${BE_SUBDOMAIN}.${BASE_DOMAIN}
   FRONTEND_DOMAIN: ${FE_SUBDOMAIN}.${BASE_DOMAIN}
   FRONTEND_URL: https://${FE_SUBDOMAIN}.${BASE_DOMAIN}
+  RAILS_LOG_LEVEL: ${RAILS_LOG_LEVEL:-info}
 
 services: 
   db:
