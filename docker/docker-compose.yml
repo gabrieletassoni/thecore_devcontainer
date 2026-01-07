@@ -30,6 +30,12 @@ x-vars: &vars
 services: 
   db:
     image: postgres:15-bookworm
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        mode: "non-blocking"
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
@@ -45,6 +51,12 @@ services:
 
   cache:
     image: eqalpha/keydb
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        mode: "non-blocking"
     restart: unless-stopped
     healthcheck: 
       interval: 1s
@@ -54,6 +66,12 @@ services:
 
   backend:
     image: ${IMAGE_TAG_BACKEND}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        mode: "non-blocking"
     restart: unless-stopped
     depends_on:
       db:
@@ -74,6 +92,12 @@ services:
 
   worker:
     image: ${IMAGE_TAG_BACKEND}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        mode: "non-blocking"
     restart: unless-stopped
     depends_on:
       db:
