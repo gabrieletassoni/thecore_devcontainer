@@ -1,51 +1,32 @@
 #!/bin/bash -e
 
 # shellcheck source=bin/version.sh
-MAJOR=$(head -1 version)
-MINOR=$(date +"%Y")
-PATCH=$(date +"%-m")
-BUILD=$(date +"%-d")
-
-DOCKERVERSION="$MAJOR.$MINOR.$PATCH.$BUILD"
+source bin/version.sh
 
 DOCKERUSER=gabrieletassoni
-# DOCKERVERSION=$(date +"%Y%m%d")
 DOCKERTAG=$DOCKERUSER/vscode-devcontainers-thecore
 
-# Check in the submodules directory if there a filders which contain a vs code extension
-# if there are, cd into them ad run the vsce package command to create the vsix file
-# Then if the vsix file is created, copy it to the build folder in the root of the project
-# Cleanup the build folder from old files
+# Package any VS Code extensions found in submodules/ and copy them to build/
 mkdir -p build
 rm -f build/*.vsix
 
-# Copy latest vsix file from the folder submodules/thecore_code_extension to build folder
-cd submodules
-for d in */ ; do
-    echo "Checking if $d is a vs code extension"
-    if [ -f "$d/extension.js" ]; then
-        echo "Found a vs code extension in $d"
-        cd $d
-        echo "Running vsce package"
-        vsce package
-
-        # If the vsce package command was successful, copy the vsix file to the build folder
-        for file in *.vsix; do
-            if [ -f "$file" ]; then
-                # Copy the file renaming it to thecore.vsix
-                echo "Copying vsix file to build folder"
-                mv ./*.vsix ../../build/thecore.vsix
-            fi
-        done
-        cd ..
+for d in submodules/*/; do
+    if [ -f "${d}extension.js" ]; then
+        echo "Found VS Code extension in ${d}, packaging..."
+        # Use a subshell to avoid changing the working directory of the parent script
+        (
+            cd "$d"
+            vsce package
+            mv ./*.vsix ../../build/thecore.vsix
+        )
+        echo "Packaged ${d} -> build/thecore.vsix"
     fi
 done
-cd ..
 
-# --no-cache --pull 
+# --no-cache --pull
 docker build -f Dockerfile.dev --build-arg THECORE_VERSION="${MAJOR}" -t "${DOCKERTAG}:latest" -t "${DOCKERTAG}:${DOCKERVERSION}" -t "${DOCKERTAG}:${MAJOR}" .
 
-# shellcheck source=bin/functions.sh
-source bin/functions.sh
+# shellcheck source=bin/docker-push.sh
+source bin/docker-push.sh
 
 exit 0
