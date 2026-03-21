@@ -13,6 +13,8 @@ x-vars: &vars
   REDIS_URL: redis://cache
   DATABASE_URL: postgres://postgres:postgres@db/postgres?pool=${DATABASE_POOL:-30}
   ALLOW_MULTISESSIONS: "true"
+  RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-5}
+  SESSION_TIMEOUT_IN_MINUTES: ${SESSION_TIMEOUT_IN_MINUTES:-31}
   # Derived
   SECRET_KEY_BASE: ${SECRET_KEY_BASE}
   ADMIN_PASSWORD: ${ADMIN_PASSWORD}
@@ -23,10 +25,17 @@ x-vars: &vars
   BACKEND_URL: https://${BE_SUBDOMAIN}.${BASE_DOMAIN}
   FRONTEND_DOMAIN: ${FE_SUBDOMAIN}.${BASE_DOMAIN}
   FRONTEND_URL: https://${FE_SUBDOMAIN}.${BASE_DOMAIN}
+  RAILS_LOG_LEVEL: ${RAILS_LOG_LEVEL:-info}
 
 services: 
   db:
-    image: postgres:15
+    image: postgres:15-bookworm
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        mode: "non-blocking"
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
@@ -41,8 +50,13 @@ services:
       timeout: 3s
 
   cache:
-    image: redis:latest
-    entrypoint: "redis-server"
+    image: eqalpha/keydb
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        mode: "non-blocking"
     restart: unless-stopped
     healthcheck: 
       interval: 1s
@@ -52,13 +66,19 @@ services:
 
   backend:
     image: ${IMAGE_TAG_BACKEND}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        mode: "non-blocking"
     restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
       cache:
         condition: service_healthy
-    entrypoint: /bin/thecore/entrypoint.sh
+    entrypoint: /bin/thecore_container/entrypoint.sh
     environment:
       <<: *vars
     volumes:
@@ -72,6 +92,12 @@ services:
 
   worker:
     image: ${IMAGE_TAG_BACKEND}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        mode: "non-blocking"
     restart: unless-stopped
     depends_on:
       db:
@@ -80,7 +106,7 @@ services:
         condition: service_healthy
       backend:
         condition: service_healthy
-    entrypoint: /bin/thecore/entrypoint-sidekiq.sh
+    entrypoint: /bin/thecore_container/entrypoint-sidekiq.sh
     environment:
       <<: *vars
     volumes:

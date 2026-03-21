@@ -18,7 +18,9 @@
 				"shakram02.bash-beautify",
 				"foxundermoon.shell-format",
 				"timonwong.shellcheck",
-				"eamodio.gitlens"
+				"eamodio.gitlens",
+				"github.vscode-github-actions",
+				"Anthropic.claude-code"
 			],
 		}
 	},

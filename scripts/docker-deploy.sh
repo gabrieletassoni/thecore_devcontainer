@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
-echo "COMMIT TAG: ${CI_COMMIT_TAG}"
-VERSION=${CI_COMMIT_TAG}
+echo "Getting current version"
+VERSION=$(tr -d '\n' < version)
 
 # Used to not have conflicting installations
 UUID=$(cat /proc/sys/kernel/random/uuid)
@@ -62,9 +62,9 @@ do
             echo "  - found $CUSTOMER doing the remote up thing on $DOCKER_HOST"
             if [[ -f "$PROVIDER"/image ]]
             then
-                IMAGE_TAG_BACKEND=${CI_REGISTRY_IMAGE}/backend-$(head -c -1 "$PROVIDER"/image):$CI_COMMIT_TAG
+                IMAGE_TAG_BACKEND=${CI_REGISTRY_IMAGE}/backend-$(head -c -1 "$PROVIDER"/image):$VERSION
             else
-                IMAGE_TAG_BACKEND=${CI_REGISTRY_IMAGE}/backend:$CI_COMMIT_TAG
+                IMAGE_TAG_BACKEND=${CI_REGISTRY_IMAGE}/backend:$VERSION
             fi
             export IMAGE_TAG_BACKEND
             ssh "$DOCKER_HOST_DOMAIN" -p "$DOCKER_HOST_PORT" "

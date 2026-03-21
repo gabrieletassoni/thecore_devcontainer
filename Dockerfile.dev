@@ -1,4 +1,4 @@
-ARG THECORE_VERSION
+ARG THECORE_VERSION=3
 FROM gabrieletassoni/thecore-common:${THECORE_VERSION}
 
 # Install base packages and latest debian keyrings
@@ -28,15 +28,13 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* 
 
 # Add at least a version of rails to work with
-RUN gem install rails:'~> 6.1.0' foreman rufo
+RUN gem update --system \
+    && gem update rake \
+    && gem install rails:'~> 7.2' foreman rufo rubocop ruby-lsp
 
 RUN mkdir -p /usr/local/bundle \
     && chmod -R 1777 /usr/local/bundle
 
-RUN mkdir -p /etc/thecore/templates /etc/thecore/repos.conf.d
-COPY bin/increment_version.sh /usr/bin/increment_version.sh
-COPY repos /etc/thecore/repos.conf.d
-COPY localdockerbuild /etc/thecore/localdockerbuild
 # Creating the git clones of thecore gems.
 # Useful to have them already inside the dev environment if the need to customize them arises.
 # Otherwise the gem installed ones will suffice to the needs of thecore development.
@@ -47,14 +45,18 @@ RUN useradd -ms /bin/bash vscode \
 
 USER vscode
 
-RUN echo 'export PS1="\e[32m\u\e[0m ► \e[96m\W\e[0m [\e[31m\$(git rev-parse --abbrev-ref HEAD 2>/dev/null)\e[0m:\e[33m\$(git describe --tags --abbrev=0 2>/dev/null)\e[0m] \$ "' >> ~/.bashrc \
-    && echo '/usr/bin/thecore' >> ~/.bashrc \
+RUN echo 'export PS1="\e[32m\u\e[0m ► \e[96m\W\e[0m [\e[31m\$(git rev-parse --abbrev-ref HEAD 2>/dev/null)\e[0m:\e[33m\$(tr -d '\n' < /workspaces/project/backend/version)\e[0m] \$ "' >> ~/.bashrc \
     && echo 'export APPBIN=/workspaces/project/backend/bin' >> ~/.bashrc \
     && echo 'export COMPOSE_PROJECT_NAME=thecore_test' >> ~/.bashrc \
     && echo 'export CODEBIN=$(find $HOME/.vscode-server/bin/* -maxdepth 1 -mindepth 1 -name bin)' >> ~/.bashrc \
     && echo 'export PATH=$GEM_HOME/bin:$PATH:$APPBIN:$CODEBIN' >> ~/.bashrc \
+    && echo 'export BUNDLE_APP_CONFIG=/workspaces/project/backend/.bundle' >> ~/.bashrc \
     && echo "mkdir -p ~/.bundle && touch ~/.bundle/config" >> ~/.bashrc \
+    && echo "mkdir -p /workspaces/project/backend/.bundle && touch /workspaces/project/backend/.bundle/config" >> ~/.bashrc \
     && echo 'sudo chown -R vscode:vscode ~' >> ~/.bashrc \
+    && echo 'sudo chown -R vscode:vscode /workspaces/project/backend' >> ~/.bashrc \
     && bundle config set path /workspaces/project/backend/vendor/bundle
 
 WORKDIR /workspaces/project
+
+COPY build/thecore.vsix /etc/thecore/

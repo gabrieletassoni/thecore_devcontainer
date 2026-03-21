@@ -1,6 +1,5 @@
 # ARG THECORE_VERSION
-# FROM ruby:${THECORE_VERSION}-bullseye
-FROM ruby:2-bullseye
+FROM ruby:3.3-bookworm
 
 COPY os/02nocache /etc/apt/apt.conf.d/02nocache
 COPY os/01_nodoc /etc/dpkg/dpkg.cfg.d/01_nodoc
@@ -8,69 +7,71 @@ COPY os/01_nodoc /etc/dpkg/dpkg.cfg.d/01_nodoc
 # Add to the container thecore specific scripts
 COPY scripts/ /usr/bin/
 COPY docker /etc/thecore/docker
-COPY help /etc/thecore/
-COPY configs/ /etc/thecore/
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
     && apt-get -y dist-upgrade --no-install-recommends
 
-# These are no more needed in thecore 3 since using sprockets
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
-    && apt-get install -y nodejs
+RUN apt -y install --no-install-recommends \
+    iputils-ping \
+    poppler-utils \
+    libvips-tools \
+    libvips-dev \
+    imagemagick \
+    software-properties-common \
+    build-essential \
+    freetds-dev \
+    libcups2-dev \
+    apt \
+    git \
+    openssh-client \
+    gnupg \
+    iproute2 \
+    procps \
+    lsof \
+    htop \
+    net-tools \
+    psmisc \
+    wget \
+    rsync \
+    ca-certificates \
+    unzip \
+    zip \
+    nano \
+    vim-tiny \
+    less \
+    jq \
+    lsb-release \
+    apt-transport-https \
+    dialog \
+    libc6 \
+    libgcc1 \
+    libgssapi-krb5-2 \
+    libicu-dev \
+    liblttng-ust1 \
+    libstdc++6 \
+    zlib1g \
+    locales \
+    locales-all \
+    sudo \
+    ncdu \
+    man-db \
+    strace \
+    libssl3 \
+    gridsite-clients \
+    geoip-database \
+    libgirepository1.0-dev \
+    smbclient
 
-RUN npm install --global yarn
-
-RUN apt-get -y install --no-install-recommends \
-        iputils-ping \
-        poppler-utils \
-        libvips-tools \
-        libvips-dev \
-        imagemagick \
-        software-properties-common \
-        build-essential \
-        freetds-dev \
-        libcups2-dev \
-        apt-utils \
-        git \
-        openssh-client \
-        gnupg2 \
-        iproute2 \
-        procps \
-        lsof \
-        htop \
-        net-tools \
-        psmisc \
-        wget \
-        rsync \
-        ca-certificates \
-        unzip \
-        zip \
-        nano \
-        vim-tiny \
-        less \
-        jq \
-        lsb-release \
-        apt-transport-https \
-        dialog \
-        libc6 \
-        libgcc1 \
-        libgssapi-krb5-2 \
-        libicu[0-9][0-9] \
-        liblttng-ust0 \
-        libstdc++6 \
-        zlib1g \
-        locales \
-        sudo \
-        ncdu \
-        man-db \
-        strace \
-        libssl1.1 \
-        gridsite-clients \
-        geoip-database \
-        libgirepository1.0-dev \
-    && apt-get autoremove -y && apt-get clean -y \
+        
+RUN apt autoremove -y && apt clean -y \
     && rm -rf /var/lib/apt/lists/* && rm -rf /var/cache/apt/archives \
-    && rm -rf /usr/share/doc/ && rm -rf /usr/share/man/ && rm -rf /usr/share/locale/
+    && rm -rf /usr/share/doc/ && rm -rf /usr/share/man/ 
+    
+    # && rm -rf /usr/share/locale/
+
+ENV LC_ALL=en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US.UTF-8
 
 EXPOSE 3000

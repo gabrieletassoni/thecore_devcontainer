@@ -1,29 +1,28 @@
 #!/bin/bash -e
 
-cd /app || exit
+cd /app || exit 1
 
-echo -e "\e[32mDATABASE_URL $DATABASE_URL\e[0m"
-
+echo -e "\e[32mDATABASE_URL: $DATABASE_URL\e[0m"
 echo -e "\e[32mUser running this script\e[0m"
 id
-
-echo -e "\e[32mBundle config get path\e[0m"
+echo -e "\e[32mBundle config path\e[0m"
 bundle config get path
 
-echo -e "\e[32mCreate Database\e[0m"
+echo -e "\e[32mCreating database...\e[0m"
 bundle exec ./bin/rails db:create
 
-echo -e "\e[32mDoing DB migration\e[0m"
-if bundle exec ./bin/rails db:migrate
-then
-    echo -e "\e[32m- Doing DB seed\e[0m"
-    if bundle exec ./bin/rails thecore:db:seed
-    then
-        # Only if all the migrations are ok, run the server
-        echo -e "\e[32m- - Everything was ok, starting the rails server\e[0m"
-        rm -f tmp/pids/server.pid
-        bundle exec ./bin/rails s -p 3000 -b '0.0.0.0'
-    fi
-fi
+echo -e "\e[32mRunning migrations...\e[0m"
+bundle exec ./bin/rails db:migrate
 
-exit 0
+echo -e "\e[32mSeeding database...\e[0m"
+bundle exec ./bin/rails thecore:db:seed
+
+echo -e "\e[32mClobbering assets...\e[0m"
+bundle exec ./bin/rails assets:clobber
+
+echo -e "\e[32mPrecompiling assets...\e[0m"
+bundle exec ./bin/rails assets:precompile
+
+echo -e "\e[32mStarting Rails server...\e[0m"
+rm -f tmp/pids/server.pid
+exec bundle exec ./bin/rails s -p 3000 -b '0.0.0.0'
