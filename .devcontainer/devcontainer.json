@@ -19,7 +19,8 @@
 				"foxundermoon.shell-format",
 				"timonwong.shellcheck",
 				"eamodio.gitlens",
-				"github.vscode-github-actions"
+				"github.vscode-github-actions",
+				"Anthropic.claude-code"
 			],
 		}
 	},
