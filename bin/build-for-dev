@@ -16,6 +16,7 @@ for d in submodules/*/; do
         # Use a subshell to avoid changing the working directory of the parent script
         (
             cd "$d"
+            yarn install --frozen-lockfile
             vsce package
             mv ./*.vsix ../../build/thecore.vsix
         )
