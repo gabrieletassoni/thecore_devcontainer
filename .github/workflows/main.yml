@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build-and-push-to-docker-hub:
@@ -44,3 +44,21 @@ jobs:
 
       - name: Build and push to Docker Hub
         run: ./bin/build
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          source bin/version.sh
+          if gh release view "${DOCKERVERSION}" > /dev/null 2>&1; then
+            echo "Release ${DOCKERVERSION} already exists, skipping."
+          else
+            gh release create "${DOCKERVERSION}" \
+              --title "Release ${DOCKERVERSION}" \
+              --latest \
+              --notes "Docker images published to Docker Hub:
+          - \`gabrieletassoni/thecore-common:${DOCKERVERSION}\`
+          - \`gabrieletassoni/vscode-devcontainers-thecore:${DOCKERVERSION}\`
+          - \`gabrieletassoni/thecore:${DOCKERVERSION}\`" \
+              --target "${{ github.sha }}"
+          fi
