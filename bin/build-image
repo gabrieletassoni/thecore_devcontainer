@@ -1,0 +1,41 @@
+#!/bin/bash -e
+# bin/build-image IMAGE_NAME DOCKERFILE [PRE_BUILD_HOOK]
+#
+# Builds and pushes one Docker image with the standard three-tag strategy.
+#
+# IMAGE_NAME      Short name appended to DOCKERUSER (e.g. "thecore-common")
+# DOCKERFILE      Path to the Dockerfile, relative to the repo root
+# PRE_BUILD_HOOK  Optional path to a script run in a subshell before docker build
+#
+# DOCKERUSER defaults to "gabrieletassoni"; override via env var for forks.
+#
+# Exits non-zero if: args are missing, dockerfile not found, hook not found,
+# docker build fails, or docker push fails.
+
+# shellcheck source=bin/version.sh
+source bin/version.sh
+
+DOCKERUSER="${DOCKERUSER:-gabrieletassoni}"
+
+IMAGE_NAME="${1:?build-image: <image-name> required (e.g. thecore-common)}"
+DOCKERFILE="${2:?build-image: <dockerfile-path> required (e.g. Dockerfile.common)}"
+PRE_BUILD_HOOK="${3:-}"
+
+[[ -f "$DOCKERFILE" ]] || { echo "build-image: dockerfile not found: $DOCKERFILE" >&2; exit 1; }
+
+if [[ -n "$PRE_BUILD_HOOK" ]]; then
+    [[ -f "$PRE_BUILD_HOOK" ]] || { echo "build-image: hook not found: $PRE_BUILD_HOOK" >&2; exit 1; }
+    bash "$PRE_BUILD_HOOK"
+fi
+
+export DOCKERTAG="$DOCKERUSER/$IMAGE_NAME"
+
+docker build -f "$DOCKERFILE" \
+    --build-arg THECORE_VERSION="${MAJOR}" \
+    -t "${DOCKERTAG}:latest" \
+    -t "${DOCKERTAG}:${DOCKERVERSION}" \
+    -t "${DOCKERTAG}:${MAJOR}" \
+    .
+
+# shellcheck source=bin/docker-push.sh
+source bin/docker-push.sh

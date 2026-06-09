@@ -44,7 +44,7 @@ thecore_devcontainer/
 │   ├── docker-compose.yml     # Production stack: db, cache, backend, worker
 │   ├── docker-compose.net.yml # Adds nginx-proxy + Let's Encrypt
 │   ├── docker-compose.build.yml
-│   ├── entrypoint.sh          # Rails startup: db:create, migrate, seed, assets, server
+│   ├── entrypoint.sh          # Rails startup: db:create, migrate, [seed if SEED_ON_START=true], [assets unless compiled], server
 │   └── entrypoint-sidekiq.sh  # Sidekiq worker startup
 ├── os/
 │   ├── 02nocache              # Disables APT caching (copied into images)
@@ -91,12 +91,16 @@ Each image is tagged `:latest`, `:MAJOR`, and `:MAJOR.YEAR.MONTH.DAY`.
 ./bin/build-for-deploy   # deploy image only
 ```
 
+### Deep Module: `bin/build-image`
+
+`bin/build-image IMAGE_NAME DOCKERFILE [PRE_BUILD_HOOK]` is the single build-and-push module. All three entry points delegate to it. It owns: DOCKERUSER, tagging strategy (`:latest`, `:MAJOR`, `:DOCKERVERSION`), build-arg injection, and push mechanics. Override `DOCKERUSER` via env var for forks.
+
 ### Conventions
 
 - All build scripts use `#!/bin/bash -e` (exit on first error).
-- Shared helpers are **sourced** (`source bin/version.sh`, `source bin/docker-push.sh`), not called as subprocesses — they rely on the parent shell's environment.
-- `bin/build-for-dev` discovers VS Code extensions in `submodules/*/` by looking for `extension.js`, runs `yarn install --frozen-lockfile && vsce package`, outputs `build/thecore.vsix`, which is then `COPY`-ed into the dev image at `/etc/thecore/`.
-- All three `docker build` commands pass `--build-arg THECORE_VERSION="${MAJOR}"`.
+- `bin/build-image` is the only caller of `bin/version.sh` and `bin/docker-push.sh`; individual build scripts no longer source these directly.
+- Pre-build hooks live in `bin/hooks/`. Currently: `bin/hooks/package-vscode-extension.sh` (discovers VS Code extensions in `submodules/*/`, runs `vsce package`, outputs `build/thecore.vsix`).
+- All `docker build` commands pass `--build-arg THECORE_VERSION="${MAJOR}"` (enforced inside `bin/build-image`).
 
 ---
 
@@ -125,6 +129,7 @@ Multi-customer, multi-provider deployment via SSH:
 - Optionally reads `vendor/deploytargets/PROVIDER/image` to build a custom `IMAGE_TAG_BACKEND`.
 - Connects via SSH, rsyncs `docker-compose.yml` + `docker-compose.net.yml`, runs `docker compose up -d`.
 - Set `$TARGETENV` to target non-production environments.
+- Set `DRY_RUN=1` to print all SSH and rsync commands without executing them (useful for verifying deploy logic in CI preview or locally).
 
 ### `gem-compile.sh`
 Builds and pushes a Ruby gem:

@@ -30,23 +30,25 @@ Three images are produced:
 thecore_devcontainer/
 ├── bin/                    # Build orchestration scripts
 │   ├── build               # Main entry point: runs all three builds sequentially
-│   ├── build-common        # Builds thecore-common image
-│   ├── build-for-dev       # Packages VS Code extension + builds dev image
-│   ├── build-for-deploy    # Builds production deploy image
-│   ├── version.sh          # Exports versioning variables (sourced by build scripts)
-│   ├── docker-push.sh      # Pushes built images to Docker Hub (sourced after build)
-│   └── increment_version.sh
+│   ├── build-image         # Deep module: owns tagging, DOCKERUSER, build-arg, push
+│   ├── build-common        # Delegates to build-image (thecore-common)
+│   ├── build-for-dev       # Delegates to build-image (dev image + VS Code extension hook)
+│   ├── build-for-deploy    # Delegates to build-image (thecore deploy image)
+│   ├── hooks/
+│   │   └── package-vscode-extension.sh  # Pre-build hook: vsce package → build/thecore.vsix
+│   ├── version.sh          # Exports versioning variables (sourced only by build-image)
+│   └── docker-push.sh      # Pushes built images to Docker Hub (sourced only by build-image)
 ├── docker/                 # Production runtime configs
 │   ├── Dockerfile          # (unused base; actual builds use root Dockerfiles)
 │   ├── docker-compose.yml  # Production services: db, cache, backend, worker
 │   ├── docker-compose.net.yml  # Adds nginx-proxy + Let's Encrypt support
 │   ├── docker-compose.build.yml
-│   ├── entrypoint.sh       # Rails startup: db:create, migrate, seed, assets, server
+│   ├── entrypoint.sh       # Rails startup: db:create, migrate, [seed]*, [assets]*, server
 │   └── entrypoint-sidekiq.sh  # Sidekiq worker startup
 ├── scripts/                # Utility scripts copied into images at /usr/bin/
 │   ├── app-compile.sh      # Builds application Docker image
 │   ├── docker-build.sh     # Docker build wrapper
-│   ├── docker-deploy.sh    # Deploys to remote Docker hosts via SSH
+│   ├── docker-deploy.sh    # Deploys to remote Docker hosts via SSH (DRY_RUN=1 supported)
 │   └── gem-compile.sh      # Builds and pushes Ruby gems
 ├── os/                     # APT/dpkg config copied into images
 │   ├── 02nocache           # Disables APT caching
@@ -57,7 +59,7 @@ thecore_devcontainer/
 │   ├── Dockerfile          # Docker-in-Docker setup for VS Code
 │   ├── devcontainer.json
 │   └── library-scripts/
-├── .github/workflows/main.yml  # CI: weekly build + manual trigger
+├── .github/workflows/main.yml  # CI: push to release/3, weekly, or manual trigger
 ├── Dockerfile.common       # Base image definition
 ├── Dockerfile.dev          # Dev image definition
 ├── Dockerfile.deploy       # Deploy image definition
@@ -65,6 +67,8 @@ thecore_devcontainer/
 ├── version                 # Single line: current major version number (e.g. "3")
 └── README.md
 ```
+
+_* `[seed]` = opt-in via `SEED_ON_START=true`; `[assets]` = skipped if `public/assets` exists, force with `RECOMPILE_ASSETS=true`._
 
 ## Versioning Scheme
 
@@ -91,9 +95,12 @@ docker login
 ./bin/build-common       # thecore-common
 ./bin/build-for-dev      # vscode-devcontainers-thecore (also packages VS Code extension)
 ./bin/build-for-deploy   # thecore
+
+# Override Docker Hub username (default: gabrieletassoni)
+DOCKERUSER=myorg ./bin/build
 ```
 
-`bin/build-for-dev` automatically discovers and packages any VS Code extension found in `submodules/*/` (looks for `extension.js`) using `vsce`, outputting to `build/thecore.vsix`.
+All three entry points delegate to `bin/build-image IMAGE_NAME DOCKERFILE [PRE_BUILD_HOOK]`, which owns tagging (`:latest`, `:MAJOR`, `:DOCKERVERSION`), `DOCKERUSER`, and push mechanics. The VS Code extension is packaged via `bin/hooks/package-vscode-extension.sh`, which discovers any extension in `submodules/*/` (looks for `extension.js`) using `vsce`, outputting to `build/thecore.vsix`.
 
 ### Creating a New Major Version
 
@@ -106,9 +113,9 @@ docker login
 ### CI/CD
 
 GitHub Actions (`.github/workflows/main.yml`) runs:
-- **Trigger**: Every Sunday at midnight UTC, or manually via `workflow_dispatch`
+- **Trigger**: Push to `release/3`, every Sunday at midnight UTC, or manually via `workflow_dispatch`
 - **Required secrets**: `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`
-- **Steps**: Docker login → checkout with submodules → Node.js 20 setup → `./bin/build`
+- **Steps**: Docker login → checkout with submodules → Node.js 22 + `vsce` setup → `./bin/build` → GitHub Release creation
 
 No additional configuration is needed beyond the secrets.
 
@@ -116,16 +123,30 @@ No additional configuration is needed beyond the secrets.
 
 ### Shell Scripts
 
-- All scripts use `#!/bin/bash -e` (exit on error)
-- Build scripts **source** shared helpers rather than calling them as subprocesses:
-  - `source bin/version.sh` — sets `$MAJOR`, `$DOCKERVERSION`, etc.
-  - `source bin/docker-push.sh` — pushes `$DOCKERTAG` with all version tags
+- All scripts use `#!/bin/bash -e` (exit on first error)
+- `bin/build-image` is the **only** caller of `bin/version.sh` and `bin/docker-push.sh`; individual build scripts no longer source these directly
 - Shellcheck annotations (`# shellcheck source=...`) are used for static analysis
 - Scripts are designed to be run from the repository root
 
+### Build Pipeline
+
+The three entry points (`build-common`, `build-for-dev`, `build-for-deploy`) are thin callers — one line each:
+
+```bash
+bin/build-image IMAGE_NAME DOCKERFILE [PRE_BUILD_HOOK]
+```
+
+`bin/build-image` owns:
+- `DOCKERUSER` (default: `gabrieletassoni`, override via env)
+- Three-tag strategy: `:latest`, `:MAJOR`, `:DOCKERVERSION`
+- `--build-arg THECORE_VERSION="${MAJOR}"` injection
+- Sourcing `bin/version.sh` and `bin/docker-push.sh`
+- Pre-build hook invocation (optional third argument, run as a subprocess)
+
+Pre-build hooks live in `bin/hooks/`. Currently: `bin/hooks/package-vscode-extension.sh`.
+
 ### Docker Images
 
-- All three images use `--build-arg THECORE_VERSION="${MAJOR}"` for version injection
 - `Dockerfile.dev` builds **on top of** `thecore-common` (not from scratch)
 - `Dockerfile.deploy` also builds on top of `thecore-common`
 - The `scripts/` directory is copied into images at `/usr/bin/` (making scripts globally available)
@@ -136,7 +157,7 @@ No additional configuration is needed beyond the secrets.
 Four services form the production stack:
 - **db**: PostgreSQL 15, data persisted at `/root/persistence/$COMPOSE_PROJECT_NAME/db`
 - **cache**: KeyDB (Redis-compatible), no persistence
-- **backend**: Rails app, entrypoint runs migrations + asset precompile + `rails s`
+- **backend**: Rails app — entrypoint runs `db:create`, `db:migrate`, conditionally seeds and precompiles assets, then `rails s`
 - **worker**: Sidekiq, waits for backend health before starting
 
 Key environment variables required at runtime:
@@ -146,6 +167,8 @@ Key environment variables required at runtime:
 - `COMPOSE_PROJECT_NAME` — Used for volume namespacing
 - `BE_SUBDOMAIN`, `FE_SUBDOMAIN`, `BASE_DOMAIN` — Domain configuration
 - `IMAGE_TAG_BACKEND` — Docker image to deploy
+- `SEED_ON_START` — Set to `true` to run `thecore:db:seed` on container start (default: off)
+- `RECOMPILE_ASSETS` — Set to `true` to force asset recompile even if `public/assets` exists (default: off)
 
 ### Dev Container (vscode-devcontainers-thecore)
 
@@ -163,8 +186,9 @@ This script handles multi-customer, multi-provider deployments:
 - Reads deploy targets from `vendor/deploytargets/PROVIDER/`
 - Each provider directory can have `docker_host` (production) or `docker_TARGETENV_host` (staging, etc.)
 - Each `*.env` file in a provider directory represents one customer deployment
-- Connects via SSH, rsyncs compose files, then runs `docker compose up -d`
+- Connects via SSH (`remote_exec`) and rsyncs (`remote_rsync`) compose files, then runs `docker compose up -d`
 - Set `TARGETENV` environment variable to target non-production environments
+- Set `DRY_RUN=1` to print all SSH and rsync commands without executing (useful for CI previews or local verification)
 
 ## Submodules
 

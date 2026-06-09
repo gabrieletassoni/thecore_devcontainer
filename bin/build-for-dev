@@ -1,33 +1,3 @@
 #!/bin/bash -e
 
-# shellcheck source=bin/version.sh
-source bin/version.sh
-
-DOCKERUSER=gabrieletassoni
-DOCKERTAG=$DOCKERUSER/vscode-devcontainers-thecore
-
-# Package any VS Code extensions found in submodules/ and copy them to build/
-mkdir -p build
-rm -f build/*.vsix
-
-for d in submodules/*/; do
-    if [ -f "${d}extension.js" ]; then
-        echo "Found VS Code extension in ${d}, packaging..."
-        # Use a subshell to avoid changing the working directory of the parent script
-        (
-            cd "$d"
-            yarn install --frozen-lockfile
-            vsce package
-            mv ./*.vsix ../../build/thecore.vsix
-        )
-        echo "Packaged ${d} -> build/thecore.vsix"
-    fi
-done
-
-# --no-cache --pull
-docker build -f Dockerfile.dev --build-arg THECORE_VERSION="${MAJOR}" -t "${DOCKERTAG}:latest" -t "${DOCKERTAG}:${DOCKERVERSION}" -t "${DOCKERTAG}:${MAJOR}" .
-
-# shellcheck source=bin/docker-push.sh
-source bin/docker-push.sh
-
-exit 0
+bin/build-image vscode-devcontainers-thecore Dockerfile.dev bin/hooks/package-vscode-extension.sh
