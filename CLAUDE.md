@@ -190,7 +190,7 @@ This script handles multi-customer, multi-provider deployments:
 
 ## Submodules
 
-The VS Code extension lives in `submodules/thecore_code_extension/` on branch `release/3` (currently at 3.1.7). The extension's `templates/setupDevContainer/devcontainer.json` includes devcontainer features for Node.js LTS, GitHub CLI, and Git LFS.
+The VS Code extension lives in `submodules/thecore_code_extension/` on branch `release/3` (currently at 3.1.8). The extension's `templates/setupDevContainer/devcontainer.json` includes devcontainer features for Node.js LTS, GitHub CLI, Git LFS, Python, and Graphviz (via `apt-packages`).
 
 When cloning this repository, use:
 ```bash
