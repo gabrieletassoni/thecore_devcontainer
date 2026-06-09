@@ -68,7 +68,7 @@ thecore_devcontainer/
 └── README.md
 ```
 
-_* `[seed]` = opt-in via `SEED_ON_START=true`; `[assets]` = skipped if `public/assets` exists, force with `RECOMPILE_ASSETS=true`._
+_Seed and asset precompilation always run on every start (convention over configuration)._
 
 ## Versioning Scheme
 
@@ -157,7 +157,7 @@ Pre-build hooks live in `bin/hooks/`. Currently: `bin/hooks/package-vscode-exten
 Four services form the production stack:
 - **db**: PostgreSQL 15, data persisted at `/root/persistence/$COMPOSE_PROJECT_NAME/db`
 - **cache**: KeyDB (Redis-compatible), no persistence
-- **backend**: Rails app — entrypoint runs `db:create`, `db:migrate`, conditionally seeds and precompiles assets, then `rails s`
+- **backend**: Rails app — entrypoint runs `db:create`, `db:migrate`, `thecore:db:seed`, `assets:precompile`, then `rails s`
 - **worker**: Sidekiq, waits for backend health before starting
 
 Key environment variables required at runtime:
@@ -167,8 +167,6 @@ Key environment variables required at runtime:
 - `COMPOSE_PROJECT_NAME` — Used for volume namespacing
 - `BE_SUBDOMAIN`, `FE_SUBDOMAIN`, `BASE_DOMAIN` — Domain configuration
 - `IMAGE_TAG_BACKEND` — Docker image to deploy
-- `SEED_ON_START` — Set to `true` to run `thecore:db:seed` on container start (default: off)
-- `RECOMPILE_ASSETS` — Set to `true` to force asset recompile even if `public/assets` exists (default: off)
 
 ### Dev Container (vscode-devcontainers-thecore)
 
