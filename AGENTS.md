@@ -26,12 +26,16 @@ These are the non-obvious structural decisions that affect how to implement feat
 
 Pre-build hooks (optional third arg) live in `bin/hooks/` and run as isolated subprocesses, not sourced.
 
-### Docker Entrypoint — Conditional Steps
-`docker/entrypoint.sh` guards two expensive steps:
-- **Seed**: only runs if `SEED_ON_START=true` (idempotent but can be slow — opt-in per container)
-- **Asset precompile**: skipped if `public/assets/` already exists; force with `RECOMPILE_ASSETS=true`
+### Docker Entrypoint — Unconditional Steps
+`docker/entrypoint.sh` runs all steps on every container start — convention over configuration:
+1. `db:create` — idempotent, fast
+2. `db:migrate` — idempotent, fast
+3. `thecore:db:seed` — always runs; seed tasks must be idempotent
+4. `assets:clobber` — clears compiled assets
+5. `assets:precompile` — recompiles from scratch on every start
+6. `rails s` — starts the server
 
-`db:create` and `db:migrate` remain unconditional (idempotent, fast).
+There are no `SEED_ON_START` or `RECOMPILE_ASSETS` env var guards — the entrypoint was simplified (commit `afbd82c`).
 
 ### Deploy Script — DRY_RUN Seam
 `scripts/docker-deploy.sh` exposes a `DRY_RUN=1` environment variable. When set, `remote_exec` and `remote_rsync` log their commands instead of running SSH/rsync. Use this to verify deploy logic in CI previews or local runs without needing SSH access.

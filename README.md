@@ -38,12 +38,7 @@ Format: `MAJOR.YEAR.MONTH.DAY` (e.g. `3.2026.6.9`). The `MAJOR` component is rea
 
 ## Production Environment Variables
 
-Two entrypoint behaviors are opt-in to keep restarts fast:
-
-| Variable | Default | Effect |
-|---|---|---|
-| `SEED_ON_START` | `false` | Set to `true` to run `thecore:db:seed` on start |
-| `RECOMPILE_ASSETS` | `false` | Set to `true` to force asset recompile even if `public/assets` exists |
+The entrypoint always runs `db:create`, `db:migrate`, `thecore:db:seed`, `assets:clobber`, `assets:precompile`, then `rails s` — convention over configuration.
 
 Required variables: `SECRET_KEY_BASE`, `ADMIN_PASSWORD`, `APP_NAME`, `COMPOSE_PROJECT_NAME`, `IMAGE_TAG_BACKEND`, `BE_SUBDOMAIN`, `FE_SUBDOMAIN`, `BASE_DOMAIN`.
 

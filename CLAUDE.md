@@ -68,7 +68,7 @@ thecore_devcontainer/
 └── README.md
 ```
 
-_Seed and asset precompilation always run on every start (convention over configuration)._
+_All entrypoint steps (seed, asset clobber, asset precompile) run unconditionally on every start — convention over configuration._
 
 ## Versioning Scheme
 
@@ -157,7 +157,7 @@ Pre-build hooks live in `bin/hooks/`. Currently: `bin/hooks/package-vscode-exten
 Four services form the production stack:
 - **db**: PostgreSQL 15, data persisted at `/root/persistence/$COMPOSE_PROJECT_NAME/db`
 - **cache**: KeyDB (Redis-compatible), no persistence
-- **backend**: Rails app — entrypoint runs `db:create`, `db:migrate`, `thecore:db:seed`, `assets:precompile`, then `rails s`
+- **backend**: Rails app — entrypoint runs `db:create`, `db:migrate`, `thecore:db:seed`, `assets:clobber`, `assets:precompile`, then `rails s` (all steps unconditional — convention over configuration)
 - **worker**: Sidekiq, waits for backend health before starting
 
 Key environment variables required at runtime:
@@ -190,7 +190,7 @@ This script handles multi-customer, multi-provider deployments:
 
 ## Submodules
 
-The VS Code extension lives in `submodules/thecore_code_extension/` on branch `release/3`.
+The VS Code extension lives in `submodules/thecore_code_extension/` on branch `release/3` (currently at 3.1.7). The extension's `templates/setupDevContainer/devcontainer.json` includes devcontainer features for Node.js LTS, GitHub CLI, and Git LFS.
 
 When cloning this repository, use:
 ```bash
