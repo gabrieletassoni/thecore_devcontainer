@@ -2,6 +2,17 @@
 
 This file provides guidance for AI assistants working in this repository.
 
+## Mandatory Workflow for Features and Codebase Changes
+
+**IMPORTANT**: When asked to implement a new feature or make changes to the codebase, do NOT write code directly. Instead, run the following skills in sequence:
+
+1. `/grill-with-docs` — Gather requirements and clarify ambiguities by asking questions informed by documentation
+2. `/to-prd` — Convert the gathered requirements into a Product Requirements Document
+3. `/to-issues` — Break the PRD down into discrete, actionable issues
+4. `/tdd` — Implement each issue using Test-Driven Development
+
+Only after completing this sequence should any code be written.
+
 ## Project Overview
 
 This repository builds and publishes Docker images that provide a standardized development and deployment environment for **Thecore**-based Ruby on Rails applications. It does **not** contain a Rails application itself — it is infrastructure/tooling.
