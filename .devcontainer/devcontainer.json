@@ -6,7 +6,7 @@
 
 	"initializeCommand": "mkdir -p ~/.docker && touch ~/.docker/config.json",
 	"postAttachCommand": "sudo chown -R vscode:vscode ~",
-	
+
 	"customizations": {
 		// Configure properties specific to VS Code.
 		"vscode": {
@@ -24,6 +24,20 @@
 			],
 		}
 	},
-	
+
+	"features": {
+		// Add the claude cli feature to the devcontainer. This feature installs the claude cli tool and sets up the necessary environment variables for authentication.
+		"ghcr.io/devcontainers-extra/features/claude-code:2": {}
+	},
+
+	// Refresh this project's agent skills (see skills-lock.json) on every rebuild.
+	"postCreateCommand": "npx skills update --project --yes",
+
+	// Persist host-side Claude Code auth so it doesn't need re-authentication after every container rebuild.
+	"mounts": [
+		"source=${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind",
+		"source=${localEnv:HOME}/.claude.json,target=/home/vscode/.claude.json,type=bind"
+	],
+
 	"remoteUser": "vscode"
 }

@@ -13,6 +13,7 @@ for d in submodules/*/; do
             yarn install --frozen-lockfile
             vsce package
             mv ./*.vsix ../../build/thecore.vsix
+            node -p "require('./package.json').version" > ../../build/thecore-version.txt
         )
         echo "Packaged ${d} -> build/thecore.vsix"
     fi

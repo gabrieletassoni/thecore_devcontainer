@@ -7,8 +7,8 @@ This file provides guidance for AI assistants working in this repository.
 **IMPORTANT**: When asked to implement a new feature or make changes to the codebase, do NOT write code directly. Instead, run the following skills in sequence:
 
 1. `/grill-with-docs` — Gather requirements and clarify ambiguities by asking questions informed by documentation
-2. `/to-prd` — Convert the gathered requirements into a Product Requirements Document
-3. `/to-issues` — Break the PRD down into discrete, actionable issues
+2. `/to-spec` — Convert the gathered requirements into a Product Requirements Document
+3. `/to-tickets` — Break the PRD down into discrete, actionable issues
 4. `/tdd` — Implement each issue using Test-Driven Development
 
 Only after completing this sequence should any code be written.
@@ -35,7 +35,7 @@ thecore_devcontainer/
 │   ├── build-for-dev       # Delegates to build-image (dev image + VS Code extension hook)
 │   ├── build-for-deploy    # Delegates to build-image (thecore deploy image)
 │   ├── hooks/
-│   │   └── package-vscode-extension.sh  # Pre-build hook: vsce package → build/thecore.vsix
+│   │   └── package-vscode-extension.sh  # Pre-build hook: vsce package → build/thecore.vsix + build/thecore-version.txt
 │   ├── version.sh          # Exports versioning variables (sourced only by build-image)
 │   └── docker-push.sh      # Pushes built images to Docker Hub (sourced only by build-image)
 ├── docker/                 # Production runtime configs
@@ -49,7 +49,9 @@ thecore_devcontainer/
 │   ├── app-compile.sh      # Builds application Docker image
 │   ├── docker-build.sh     # Docker build wrapper
 │   ├── docker-deploy.sh    # Deploys to remote Docker hosts via SSH (DRY_RUN=1 supported)
-│   └── gem-compile.sh      # Builds and pushes Ruby gems
+│   ├── gem-compile.sh      # Builds and pushes Ruby gems
+│   ├── prune-deleted-skills.sh  # Removes AI skills deleted upstream (git clone-based, no GitHub token needed); run from postCreateCommand
+│   └── thecore-motd.sh     # Warns on shell login if the project's .devcontainer predates this image's extension version; called from ~/.bashrc (Dockerfile.dev)
 ├── os/                     # APT/dpkg config copied into images
 │   ├── 02nocache           # Disables APT caching
 │   └── 01_nodoc            # Skips doc installation via dpkg
@@ -177,6 +179,8 @@ The dev image runs as user `vscode` with passwordless sudo and Docker group memb
 - Gems installed into `vendor/bundle` inside the workspace
 
 The working directory inside the container is `/workspaces/project`.
+
+`.bashrc` also runs `thecore-motd.sh` on every new shell. It compares `/etc/thecore/thecore-version.txt` (the Thecore extension version baked into this image at build time, written alongside `build/thecore.vsix` by `bin/hooks/package-vscode-extension.sh`) against `/workspaces/project/.devcontainer/.thecore-template-version` (stamped with the extension version by the "Thecore 3: Setup Devcontainer" command when it scaffolds `.devcontainer/`). If the scaffold predates the image, it prints a warning suggesting the user regenerate `.devcontainer/`. Silent no-op if either file is missing (legacy scaffolds, non-dev images, or projects not using this generator).
 
 ### Deployment Script (`scripts/docker-deploy.sh`)
 

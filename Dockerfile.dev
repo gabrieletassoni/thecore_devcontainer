@@ -52,8 +52,10 @@ RUN echo 'export PS1="\e[32m\u\e[0m ► \e[96m\W\e[0m [\e[31m\$(git rev-parse --
     && echo "mkdir -p /workspaces/project/backend/.bundle && touch /workspaces/project/backend/.bundle/config" >> ~/.bashrc \
     && echo 'sudo chown -R vscode:vscode ~' >> ~/.bashrc \
     && echo 'sudo chown -R vscode:vscode /workspaces/project/backend' >> ~/.bashrc \
+    && echo 'thecore-motd.sh' >> ~/.bashrc \
     && bundle config set path /workspaces/project/backend/vendor/bundle
 
 WORKDIR /workspaces/project
 
 COPY build/thecore.vsix /etc/thecore/
+COPY build/thecore-version.txt /etc/thecore/
