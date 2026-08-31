@@ -21,6 +21,7 @@ RUN apt -y install --no-install-recommends \
     software-properties-common \
     build-essential \
     freetds-dev \
+    libcap-dev \
     libcups2-dev \
     apt \
     git \
