@@ -12,7 +12,12 @@ RUN mkdir -p /app/vendor/bundle
 WORKDIR /app
 
 # Install Rails dependecies
-RUN gem install bundler \
+#
+# Pin explicitly rather than letting `gem install bundler` float — it
+# currently resolves to the same version, but pinning keeps this
+# deterministic and matches Dockerfile.dev's own pin (see its comment for
+# why an unpinned Bundler/RubyGems resolution is a real footgun here).
+RUN gem install bundler -v 4.0.20 \
     && export BUNDLE_APP_CONFIG=/app/vendor/bundle \
     && bundle config set path /app/vendor/bundle \
     && bundle config set without development test \

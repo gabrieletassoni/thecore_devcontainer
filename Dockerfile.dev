@@ -25,7 +25,17 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* 
 
 # Add at least a version of rails to work with
-RUN gem update --system \
+#
+# `gem update --system` with no version resolves via the rubygems-update gem,
+# which (unlike a plain `gem install`) does not exclude prereleases — it picks
+# up whatever the newest published version is, beta or not. That silently
+# installs a prerelease Bundler alongside RubyGems' own stable default gem,
+# and downstream `bundle` invocations then "take over" to the mismatched
+# version, loading a second copy of RubyGems' vendored URI library and
+# producing a wall of "already initialized constant Gem::URI::*" warnings on
+# every `bundle` command in images built from this one. Pin to the current
+# stable release explicitly and bump it deliberately when upgrading.
+RUN gem update --system 4.0.20 \
     && gem update rake \
     && gem install rails:'~> 7.2' foreman rufo rubocop ruby-lsp
 
