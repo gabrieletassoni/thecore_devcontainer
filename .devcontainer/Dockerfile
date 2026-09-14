@@ -24,7 +24,14 @@ RUN apt-get update \
     # Clean up
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts/
 
-# Setting the ENTRYPOINT to docker-init.sh will configure non-root access to 
+# Pre-create ~/.docker owned by the non-root user. docker-compose.yml bind-mounts a single
+# host file into /home/${USERNAME}/.docker/config.json; if this directory doesn't already
+# exist with the right owner, the Docker daemon auto-creates it as root when the bind mount
+# is set up, and every later `docker buildx` invocation (e.g. bin/build) fails with
+# "mkdir /home/vscode/.docker/buildx: permission denied".
+RUN mkdir -p /home/${USERNAME}/.docker && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.docker
+
+# Setting the ENTRYPOINT to docker-init.sh will configure non-root access to
 # the Docker socket if "overrideCommand": false is set in devcontainer.json. 
 # The script will also execute CMD if you need to alter startup behaviors.
 ENTRYPOINT [ "/usr/local/share/docker-init.sh" ]
