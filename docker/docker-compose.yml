@@ -81,6 +81,10 @@ services:
     entrypoint: /bin/thecore_container/entrypoint.sh
     environment:
       <<: *vars
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 1048576
     volumes:
       - /root/persistence/${COMPOSE_PROJECT_NAME}/storage:/app/storage
       - /root/persistence/${COMPOSE_PROJECT_NAME}/imports:/app/tmp/imports
@@ -109,6 +113,10 @@ services:
     entrypoint: /bin/thecore_container/entrypoint-sidekiq.sh
     environment:
       <<: *vars
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 1048576
     volumes:
       - /root/persistence/${COMPOSE_PROJECT_NAME}/storage:/app/storage
       - /root/persistence/${COMPOSE_PROJECT_NAME}/imports:/app/tmp/imports

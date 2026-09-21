@@ -162,6 +162,8 @@ Four services form the production stack:
 - **backend**: Rails app — entrypoint runs `db:create`, `db:migrate`, `thecore:db:seed`, `assets:clobber`, `assets:precompile`, then `rails s` (all steps unconditional — convention over configuration)
 - **worker**: Sidekiq, waits for backend health before starting
 
+`backend` and `worker` both set `ulimits: nofile: {soft: 65536, hard: 1048576}` — Docker's bare default (1024 soft) is otherwise silently in effect for every container in this stack, which is easy to hit over long uptimes (see `docs/adr/0001-container-nofile-ulimits.md`). A `Dockerfile` `RUN ulimit` would **not** work here — that only affects the build-time layer, not the running container — so this must live in the compose file, which propagates to installations via the same `docker-deploy.sh` rsync-on-redeploy path as every other change here (not retroactively, to containers already running).
+
 Key environment variables required at runtime:
 - `SECRET_KEY_BASE` — Rails secret key
 - `ADMIN_PASSWORD` — Initial admin password
