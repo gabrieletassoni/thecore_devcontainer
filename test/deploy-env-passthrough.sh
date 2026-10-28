@@ -65,6 +65,17 @@ cp "$CUSTOMER_ENV" "$DEPLOY_DIR/vendor/deploytargets/provider/customer.env"
 deploy_out=$(cd "$DEPLOY_DIR" && DRY_RUN=1 CI_REGISTRY_IMAGE=registry/app bash "$OLDPWD/scripts/docker-deploy.sh" 2>&1)
 assert_contains "$deploy_out" "export CUSTOMER_ENV_FILE=provider/customer.env" "compose up runs with CUSTOMER_ENV_FILE set"
 assert_contains "$deploy_out" "--env-file provider/customer.env" "compose interpolation still reads the same file"
+assert_contains "$deploy_out" "docker/installation-secrets.sh" "the secrets script is copied to the host"
+assert_contains "$deploy_out" 'SECRETS_FILE=$(bash installation-secrets.sh provider/customer.env) || exit 3' "the host's secrets file is prepared before compose up"
+assert_contains "$deploy_out" 'set -a; . "$SECRETS_FILE"; set +a' "its keys are exported, so they win over the env file's"
+
+echo "compose: the previous SECRET_KEY_BASE reaches backend and worker"
+for service in backend worker; do
+  env_out=$(CUSTOMER_ENV_FILE="$CUSTOMER_ENV" IMAGE_TAG_BACKEND=img SECRET_KEY_BASE_PREVIOUS=old \
+    SECRET_KEY_BASE_PREVIOUS_EXPIRES_AT=2026-10-28T12:00:00Z service_env "$service")
+  assert_contains "$env_out" "SECRET_KEY_BASE_PREVIOUS=old" "$service gets SECRET_KEY_BASE_PREVIOUS"
+  assert_contains "$env_out" "SECRET_KEY_BASE_PREVIOUS_EXPIRES_AT=2026-10-28T12:00:00Z" "$service gets its expiry"
+done
 
 echo ""
 echo "Results: $PASS passed, $FAIL failed"

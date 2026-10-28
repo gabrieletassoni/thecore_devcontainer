@@ -129,7 +129,7 @@ Multi-customer, multi-provider deployment via SSH:
 - Each provider directory contains a `docker_host` file (production) or `docker_${TARGETENV}_host` (staging, etc.).
 - Each `*.env` file in a provider dir = one customer deployment.
 - Optionally reads `vendor/deploytargets/PROVIDER/image` to build a custom `IMAGE_TAG_BACKEND`.
-- Connects via SSH, rsyncs `docker-compose.yml` + `docker-compose.net.yml`, runs `docker compose up -d`.
+- Connects via SSH, rsyncs `docker-compose.yml` + `docker-compose.net.yml` + `installation-secrets.sh`, exports the host's `secrets.env` (ADR 0004), runs `docker compose up -d`.
 - Set `$TARGETENV` to target non-production environments.
 - Set `DRY_RUN=1` to print all SSH and rsync commands without executing them (useful for verifying deploy logic in CI preview or locally).
 
@@ -190,11 +190,13 @@ Four services:
 
 | Variable | Purpose |
 |---|---|
-| `SECRET_KEY_BASE` | Rails secret key |
+| `SECRET_KEY_BASE` | Rails secret key, from the Docker host's `secrets.env` (ADR 0004) |
 | `APP_NAME` | Application name |
 | `COMPOSE_PROJECT_NAME` | Volume namespacing |
 | `BE_SUBDOMAIN`, `FE_SUBDOMAIN`, `BASE_DOMAIN` | Domain config |
 | `IMAGE_TAG_BACKEND` | Docker image to deploy |
+
+`SECRET_KEY_BASE` does not belong in the installation's `.env` file: `docker-deploy.sh` takes it from the Docker host's `/root/persistence/${COMPOSE_PROJECT_NAME}/secrets.env`, which `installation-secrets.sh` creates on the first deploy by adopting the key in use (the env file's, else the running backend's, else a new one). Set `SECRET_KEY_BASE_ROTATION=<token>` in the `.env` file to rotate it: the old key stays valid for JWTs as `SECRET_KEY_BASE_PREVIOUS` for 60 minutes (model_driven_api >= 3.13.0). See `docs/adr/0004-secret-key-base-lives-on-the-docker-host.md`.
 
 Optional: `ADMIN_PASSWORD`, the first admin's password. If `ADMIN_PASSWORD` is unset or empty, the seed (thecore_auth_commons >= 3.6.2) creates the first admin, `admin@BASE_DOMAIN`, with a random password written to `/root/persistence/${COMPOSE_PROJECT_NAME}/storage/admin_initial_password` on the Docker host (mode `0600`, never logged; or `docker compose exec backend cat storage/admin_initial_password`). Change it after the first login and delete the file. The admin is created only on a database without one, so setting or changing `ADMIN_PASSWORD` later has no effect. Older backends fall back to the fixed `Change#1`, so keep setting it for them.
 

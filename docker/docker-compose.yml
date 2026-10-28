@@ -17,7 +17,11 @@ x-vars: &vars
   RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-5}
   SESSION_TIMEOUT_IN_MINUTES: ${SESSION_TIMEOUT_IN_MINUTES:-31}
   # Derived
+  # SECRET_KEY_BASE comes from the Docker host's secrets.env, which docker-deploy.sh exports, never from git
+  # (docs/adr/0004). The previous key is only set for a short window after a rotation.
   SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+  SECRET_KEY_BASE_PREVIOUS: ${SECRET_KEY_BASE_PREVIOUS:-}
+  SECRET_KEY_BASE_PREVIOUS_EXPIRES_AT: ${SECRET_KEY_BASE_PREVIOUS_EXPIRES_AT:-}
   ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
   APP_NAME: ${APP_NAME}
   COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}

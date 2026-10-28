@@ -81,6 +81,7 @@ do
         remote_rsync "$DOCKER_HOST_PORT" \
             /etc/thecore/docker/docker-compose.yml \
             /etc/thecore/docker/docker-compose.net.yml \
+            /etc/thecore/docker/installation-secrets.sh \
             "$PROVIDER" \
             "${DOCKER_HOST_DOMAIN}:$TARGET_DIR"
         for CUSTOMER in "$PROVIDER"/*.env
@@ -97,6 +98,8 @@ do
                 export IMAGE_TAG_BACKEND=$IMAGE_TAG_BACKEND
                 export CUSTOMER_ENV_FILE=$CUSTOMER
                 cd $TARGET_DIR
+                SECRETS_FILE=\$(bash installation-secrets.sh $CUSTOMER) || exit 3
+                set -a; . \"\$SECRETS_FILE\"; set +a
                 docker compose -f docker-compose.yml -f docker-compose.net.yml --env-file $CUSTOMER up -d --remove-orphans --no-build || exit 2
                 docker system prune -f
                 docker logout $CI_REGISTRY
