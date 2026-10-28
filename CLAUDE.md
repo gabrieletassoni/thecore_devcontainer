@@ -61,6 +61,8 @@ thecore_devcontainer/
 │   ├── Dockerfile          # Docker-in-Docker setup for VS Code
 │   ├── devcontainer.json
 │   └── library-scripts/
+├── docs/adr/               # Architecture decision records (0001 nofile ulimits, 0002 customer .env, 0003 Ruby/Rails versions)
+├── test/                   # Shell test suites, no docker daemon needed (see Testing)
 ├── .github/workflows/main.yml  # CI: push to release/3, weekly, or manual trigger
 ├── Dockerfile.common       # Base image definition
 ├── Dockerfile.dev          # Dev image definition
@@ -125,10 +127,24 @@ No additional configuration is needed beyond the secrets.
 
 ### Shell Scripts
 
-- All scripts use `#!/bin/bash -e` (exit on first error)
+- All scripts use `#!/bin/bash -e` (exit on first error); the test suites under `test/` use `#!/bin/bash` + `set -euo pipefail` instead
 - `bin/build-image` is the **only** caller of `bin/version.sh` and `bin/docker-push.sh`; individual build scripts no longer source these directly
 - Shellcheck annotations (`# shellcheck source=...`) are used for static analysis
 - Scripts are designed to be run from the repository root
+
+### Testing
+
+Each file under `test/` is a standalone bash suite; none needs a docker daemon, and CI doesn't run them, so run them by hand before pushing:
+
+```bash
+bash test/build-image.sh            # bin/build-image tagging, build-arg, push, hooks (docker mocked)
+bash test/deploy-env-passthrough.sh # customer .env reaches backend/worker (needs the docker compose CLI)
+bash test/version-pins.sh           # Ruby patch pinned in Dockerfile.common, Rails >= 7.2.4 in Dockerfile.dev
+```
+
+### Ruby and Rails versions
+
+`Dockerfile.common` starts from `ruby:<full patch>-bookworm`, kept equal to the host apps' `.ruby-version`; `Dockerfile.dev` installs `rails:'~> 7.2.4'`, a minimum 7.2 patch. When an app moves its `.ruby-version`, or a new Rails 7.2 security release comes out, raise them here and push `release/3`, so CI publishes images that carry it (`docs/adr/0003-ruby-and-rails-versions-pinned.md`).
 
 ### Build Pipeline
 

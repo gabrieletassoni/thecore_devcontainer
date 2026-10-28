@@ -60,6 +60,8 @@ thecore_devcontainer/
 ├── Dockerfile.common
 ├── Dockerfile.dev
 ├── Dockerfile.deploy
+├── docs/adr/                  # Architecture decision records
+├── test/                      # Shell test suites (bash test/<name>.sh)
 ├── version                    # Single line: current major version (e.g. "3")
 └── README.md
 ```
@@ -97,7 +99,7 @@ Each image is tagged `:latest`, `:MAJOR`, and `:MAJOR.YEAR.MONTH.DAY`.
 
 ### Conventions
 
-- All build scripts use `#!/bin/bash -e` (exit on first error).
+- All build scripts use `#!/bin/bash -e` (exit on first error); the tests under `test/` use `#!/bin/bash` + `set -euo pipefail`.
 - `bin/build-image` is the only caller of `bin/version.sh` and `bin/docker-push.sh`; individual build scripts no longer source these directly.
 - Pre-build hooks live in `bin/hooks/`. Currently: `bin/hooks/package-vscode-extension.sh` (discovers VS Code extensions in `submodules/*/`, runs `vsce package`, outputs `build/thecore.vsix`).
 - All `docker build` commands pass `--build-arg THECORE_VERSION="${MAJOR}"` (enforced inside `bin/build-image`).
@@ -152,7 +154,7 @@ Builds and pushes a Ruby gem:
 - From `gabrieletassoni/thecore-common:${THECORE_VERSION}`
 - Installs Docker CE + Compose plugin (from official Docker APT repo)
 - Installs: `git-flow`, `graphviz`, `python3-pip`
-- Installs Ruby gems: `rails ~> 7.2`, `foreman`, `rufo`, `rubocop`, `ruby-lsp`
+- Installs Ruby gems: `rails ~> 7.2.4` (minimum 7.2 patch, never 7.3; `docs/adr/0003-ruby-and-rails-versions-pinned.md`), `foreman`, `rufo`, `rubocop`, `ruby-lsp`
 - Creates user `vscode` with passwordless sudo and docker group membership
 - Configures `~/.bashrc` for the `vscode` user:
   - `APPBIN=/workspaces/project/backend/bin`

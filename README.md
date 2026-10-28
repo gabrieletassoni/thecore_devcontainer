@@ -42,6 +42,20 @@ The entrypoint always runs `db:create`, `db:migrate`, `thecore:db:seed`, `assets
 
 Required variables: `SECRET_KEY_BASE`, `ADMIN_PASSWORD`, `APP_NAME`, `COMPOSE_PROJECT_NAME`, `IMAGE_TAG_BACKEND`, `BE_SUBDOMAIN`, `FE_SUBDOMAIN`, `BASE_DOMAIN`.
 
+## Ruby and Rails versions
+
+The images don't float to whatever is current at build time: `Dockerfile.common` names the full Ruby patch (`FROM ruby:3.3.13-bookworm`, equal to the apps' `.ruby-version`) and `Dockerfile.dev` installs `rails:'~> 7.2.4'` (7.2.4 or a later 7.2.x, never 7.3). Raise them by hand when the apps move. See `docs/adr/0003-ruby-and-rails-versions-pinned.md`.
+
+## Tests
+
+```bash
+bash test/build-image.sh
+bash test/deploy-env-passthrough.sh
+bash test/version-pins.sh
+```
+
+No docker daemon needed. CI doesn't run them: run them before pushing.
+
 ## Creating a New Major Version
 
 1. Merge the current release branch into `main` (expect merge conflicts)
