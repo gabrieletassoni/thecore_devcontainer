@@ -35,9 +35,13 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 # producing a wall of "already initialized constant Gem::URI::*" warnings on
 # every `bundle` command in images built from this one. Pin to the current
 # stable release explicitly and bump it deliberately when upgrading.
+#
+# Rails gets a minimum 7.2 patch (`~> 7.2.4`: 7.2.4 or a later 7.2.x, never
+# 7.3), so an image never ships a Rails older than 7.2.4, whatever day it is
+# built. Raise it with each Rails security release (docs/adr/0003-ruby-and-rails-versions-pinned.md).
 RUN gem update --system 4.0.20 \
     && gem update rake \
-    && gem install rails:'~> 7.2' foreman rufo rubocop ruby-lsp
+    && gem install rails:'~> 7.2.4' foreman rufo rubocop ruby-lsp
 
 RUN mkdir -p /usr/local/bundle \
     && chmod -R 1777 /usr/local/bundle

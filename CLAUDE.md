@@ -20,7 +20,7 @@ This repository builds and publishes Docker images that provide a standardized d
 Three images are produced:
 | Image | Docker Hub Tag | Purpose |
 |---|---|---|
-| `Dockerfile.common` | `gabrieletassoni/thecore-common` | Base image: Ruby 3.3, system libraries |
+| `Dockerfile.common` | `gabrieletassoni/thecore-common` | Base image: Ruby 3.3 (patch pinned), system libraries |
 | `Dockerfile.dev` | `gabrieletassoni/vscode-devcontainers-thecore` | Full dev environment with Docker, Rails tools, VS Code extension |
 | `Dockerfile.deploy` | `gabrieletassoni/thecore` | Minimal production-ready image |
 
@@ -153,6 +153,7 @@ Pre-build hooks live in `bin/hooks/`. Currently: `bin/hooks/package-vscode-exten
 - `Dockerfile.deploy` also builds on top of `thecore-common`
 - The `scripts/` directory is copied into images at `/usr/bin/` (making scripts globally available)
 - The `docker/` directory is copied into images at `/etc/thecore/docker/`
+- Ruby and Rails never float to whatever is current at build time: `Dockerfile.common`'s `FROM` names the full Ruby patch, equal to the host apps' `.ruby-version`, and `Dockerfile.dev` installs Rails with a minimum 7.2 patch (`~> 7.2.4`: that release or a later 7.2.x). Bump both by hand together with the apps (`docs/adr/0003-ruby-and-rails-versions-pinned.md`, `test/version-pins.sh`).
 
 ### Production Services (docker-compose.yml)
 

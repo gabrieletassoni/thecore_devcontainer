@@ -14,7 +14,7 @@ This repository builds and publishes three Docker images that form the standard 
 
 | Image | Docker Hub Tag | Base | Purpose |
 |---|---|---|---|
-| `Dockerfile.common` | `gabrieletassoni/thecore-common` | `ruby:3.3-bookworm` | Base system: Ruby 3.3, APT packages, shared scripts |
+| `Dockerfile.common` | `gabrieletassoni/thecore-common` | `ruby:3.3.<patch>-bookworm` | Base system: Ruby 3.3 (patch pinned), APT packages, shared scripts |
 | `Dockerfile.dev` | `gabrieletassoni/vscode-devcontainers-thecore` | `thecore-common` | Full dev environment: Docker-in-Docker, Rails tools, VS Code extension |
 | `Dockerfile.deploy` | `gabrieletassoni/thecore` | `thecore-common` | Minimal production image: Rails server + Sidekiq |
 
@@ -142,7 +142,7 @@ Builds and pushes a Ruby gem:
 ## Dockerfile Details
 
 ### `Dockerfile.common` (Base)
-- From `ruby:3.3-bookworm`
+- From `ruby:3.3.<patch>-bookworm`, the patch pinned to the apps' `.ruby-version` (`docs/adr/0003-ruby-and-rails-versions-pinned.md`)
 - Copies `os/` config files, `scripts/` → `/usr/bin/`, `docker/` → `/etc/thecore/docker/`
 - Installs a large set of APT packages (see Dockerfile for full list): build tools, image processing (libvips, imagemagick), network tools, Git, SSH, etc.
 - Sets `LC_ALL`, `LANG`, `LANGUAGE` to `en_US.UTF-8`

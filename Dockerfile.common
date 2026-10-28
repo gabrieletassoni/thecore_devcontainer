@@ -1,5 +1,5 @@
 # ARG THECORE_VERSION
-FROM ruby:3.3-bookworm
+FROM ruby:3.3.13-bookworm
 
 COPY os/02nocache /etc/apt/apt.conf.d/02nocache
 COPY os/01_nodoc /etc/dpkg/dpkg.cfg.d/01_nodoc

@@ -6,7 +6,7 @@ Builds and publishes Docker images that provide a standardized development and d
 
 | Image | Docker Hub Tag | Purpose |
 |---|---|---|
-| `Dockerfile.common` | [`gabrieletassoni/thecore-common`](https://hub.docker.com/repository/docker/gabrieletassoni/thecore-common) | Base: Ruby 3.3, system libraries, shared scripts |
+| `Dockerfile.common` | [`gabrieletassoni/thecore-common`](https://hub.docker.com/repository/docker/gabrieletassoni/thecore-common) | Base: Ruby 3.3 (patch pinned), system libraries, shared scripts |
 | `Dockerfile.dev` | [`gabrieletassoni/vscode-devcontainers-thecore`](https://hub.docker.com/repository/docker/gabrieletassoni/vscode-devcontainers-thecore) | Full dev environment: Docker-in-Docker, Rails tools, VS Code extension |
 | `Dockerfile.deploy` | [`gabrieletassoni/thecore`](https://hub.docker.com/repository/docker/gabrieletassoni/thecore) | Minimal production image: Rails server + Sidekiq |
 
