@@ -95,6 +95,7 @@ do
             export IMAGE_TAG_BACKEND
             remote_exec "$DOCKER_HOST_DOMAIN" "$DOCKER_HOST_PORT" "
                 export IMAGE_TAG_BACKEND=$IMAGE_TAG_BACKEND
+                export CUSTOMER_ENV_FILE=$CUSTOMER
                 cd $TARGET_DIR
                 docker compose -f docker-compose.yml -f docker-compose.net.yml --env-file $CUSTOMER up -d --remove-orphans --no-build || exit 2
                 docker system prune -f

@@ -2,7 +2,8 @@ version: "3.9"
 
 # These come from exported environment variables
 # probably set in the shell script which handles 
-# the up of the application.
+# the up of the application. Any other variable an app needs goes in the installation's
+# .env file, which backend and worker also load as env_file (docs/adr/0002).
 x-vars: &vars
   # Hardcoded
   RACK_ENV: production
@@ -79,6 +80,9 @@ services:
       cache:
         condition: service_healthy
     entrypoint: /bin/thecore_container/entrypoint.sh
+    # The installation's own .env (set by docker-deploy.sh), so an app can read variables of its
+    # own without adding them to x-vars; environment: below still wins (docs/adr/0002).
+    env_file: ${CUSTOMER_ENV_FILE:-/dev/null}
     environment:
       <<: *vars
     ulimits:
@@ -111,6 +115,9 @@ services:
       backend:
         condition: service_healthy
     entrypoint: /bin/thecore_container/entrypoint-sidekiq.sh
+    # The installation's own .env (set by docker-deploy.sh), so an app can read variables of its
+    # own without adding them to x-vars; environment: below still wins (docs/adr/0002).
+    env_file: ${CUSTOMER_ENV_FILE:-/dev/null}
     environment:
       <<: *vars
     ulimits:

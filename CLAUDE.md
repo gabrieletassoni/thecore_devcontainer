@@ -172,6 +172,8 @@ Key environment variables required at runtime:
 - `BE_SUBDOMAIN`, `FE_SUBDOMAIN`, `BASE_DOMAIN` — Domain configuration
 - `IMAGE_TAG_BACKEND` — Docker image to deploy
 
+`backend` and `worker` also load the installation's own `.env` file as `env_file: ${CUSTOMER_ENV_FILE:-/dev/null}` (`docker-deploy.sh` exports `CUSTOMER_ENV_FILE`), so an app can read a variable of its own, set per installation in `vendor/deploytargets/<provider>/<customer>.env`, without adding it to `x-vars`. `x-vars` still wins on any name both define. See `docs/adr/0002-customer-env-file-reaches-containers.md`, tested by `test/deploy-env-passthrough.sh`.
+
 ### Dev Container (vscode-devcontainers-thecore)
 
 The dev image runs as user `vscode` with passwordless sudo and Docker group membership. The `.bashrc` configuration sets:
@@ -190,7 +192,7 @@ This script handles multi-customer, multi-provider deployments:
 - Reads deploy targets from `vendor/deploytargets/PROVIDER/`
 - Each provider directory can have `docker_host` (production) or `docker_TARGETENV_host` (staging, etc.)
 - Each `*.env` file in a provider directory represents one customer deployment
-- Connects via SSH (`remote_exec`) and rsyncs (`remote_rsync`) compose files, then runs `docker compose up -d`
+- Connects via SSH (`remote_exec`) and rsyncs (`remote_rsync`) compose files, then runs `docker compose up -d` with `CUSTOMER_ENV_FILE` set to that customer's `.env` (passed to the containers, see Production Services)
 - Set `TARGETENV` environment variable to target non-production environments
 - Set `DRY_RUN=1` to print all SSH and rsync commands without executing (useful for CI previews or local verification)
 
