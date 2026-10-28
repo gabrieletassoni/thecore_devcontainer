@@ -42,3 +42,7 @@ There are no `SEED_ON_START` or `RECOMPILE_ASSETS` env var guards — the entryp
 
 ### Test Harness
 `test/build-image.sh` tests `bin/build-image`. It mocks `docker` and `bin/docker-push.sh` using a temp `$PATH` override. Run with `bash test/build-image.sh` from the repo root.
+
+## Security scanning and agent skills
+
+See the "Security scanning" and "Agent skills" sections of `CLAUDE.md`. Issues live in this repository's GitHub Issues (`docs/agents/issue-tracker.md`), and the skills come from the `mattpocock-skills` plugin on the host, never vendored here.

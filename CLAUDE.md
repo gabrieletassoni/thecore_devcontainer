@@ -51,7 +51,6 @@ thecore_devcontainer/
 │   ├── docker-build.sh     # Docker build wrapper
 │   ├── docker-deploy.sh    # Deploys to remote Docker hosts via SSH (DRY_RUN=1 supported)
 │   ├── gem-compile.sh      # Builds and pushes Ruby gems
-│   ├── prune-deleted-skills.sh  # Removes AI skills deleted upstream (git clone-based, no GitHub token needed); run from postCreateCommand
 │   └── thecore-motd.sh     # Warns on shell login if the project's .devcontainer predates this image's extension version; called from ~/.bashrc (Dockerfile.dev)
 ├── os/                     # APT/dpkg config copied into images
 │   ├── 02nocache           # Disables APT caching
@@ -61,10 +60,13 @@ thecore_devcontainer/
 ├── .devcontainer/          # VS Code devcontainer configuration
 │   ├── Dockerfile          # Docker-in-Docker setup for VS Code
 │   ├── devcontainer.json
+│   ├── link-host-home.sh   # postCreateCommand: /home/<host-user> -> $HOME, so the host's Claude Code plugin paths resolve
+│   ├── check-plugins.sh    # postCreateCommand: warns if the mattpocock-skills plugin isn't installed on the host
 │   └── library-scripts/
 ├── docs/adr/               # Architecture decision records (0001 nofile ulimits, 0002 customer .env, 0003 Ruby/Rails versions, 0004 SECRET_KEY_BASE on the host)
 ├── test/                   # Shell test suites, no docker daemon needed (see Testing)
 ├── .github/workflows/main.yml  # CI: push to release/3, weekly, or manual trigger
+├── .github/workflows/trivy.yml # Trivy scan of the published images (see Security scanning)
 ├── Dockerfile.common       # Base image definition
 ├── Dockerfile.dev          # Dev image definition
 ├── Dockerfile.deploy       # Deploy image definition
@@ -123,6 +125,8 @@ GitHub Actions (`.github/workflows/main.yml`) runs:
 - **Steps**: Docker login → checkout with submodules → Node.js 22 + `vsce` setup → `./bin/build` → GitHub Release creation
 
 No additional configuration is needed beyond the secrets.
+
+`.github/workflows/trivy.yml` scans the published images after every successful build and nightly; see Security scanning.
 
 ## Key Conventions
 
@@ -220,7 +224,7 @@ This script handles multi-customer, multi-provider deployments:
 
 ## Submodules
 
-The VS Code extension lives in `submodules/thecore_code_extension/` on branch `release/3` (currently at 3.1.8). The extension's `templates/setupDevContainer/devcontainer.json` includes devcontainer features for Node.js LTS, GitHub CLI, Git LFS, Python, and Graphviz (via `apt-packages`).
+The VS Code extension lives in `submodules/thecore_code_extension/` on branch `release/3` (currently at 3.10.0). The extension's `templates/setupDevContainer/devcontainer.json` includes devcontainer features for Node.js LTS, GitHub CLI, Git LFS, Python, and Graphviz (via `apt-packages`).
 
 When cloning this repository, use:
 ```bash
@@ -248,3 +252,57 @@ git submodule update --remote submodules/thecore_code_extension
 - Feature branches should be created from the active release branch
 
 When working on this repository as an AI assistant, develop on the designated feature branch and push when complete.
+
+## Security scanning
+
+Configured in the GitHub repository settings, plus one workflow:
+
+- **CodeQL** default setup on the Actions workflows: on every push to `release/3`, on pull requests
+  and weekly. Findings: Security → Code scanning.
+- **Secret scanning with push protection**: a push containing a recognised secret is rejected. It
+  is the only check that blocks anything. If it fires on a real secret, remove it from the commit and
+  rotate the secret; never bypass it.
+- **Dependabot alerts and security updates**, but no `dependabot.yml`: a version-update config would
+  open pull requests raising `Dockerfile.common`'s `FROM ruby:…`, which must stay equal to the host
+  apps' `.ruby-version` (ADR 0003).
+- **Trivy** (`.github/workflows/trivy.yml`) scans the three published images, tag `:3`, for fixable
+  HIGH/CRITICAL vulnerabilities after every successful "Build and Push Docker Images" run and every
+  night at 03:00 UTC, and uploads the results to code scanning (one category per image). After a
+  build it only reports; the nightly run also fails when something is found, so the owner gets
+  GitHub's "workflow failed" mail. Most findings are fixed by rebuilding (the weekly build already
+  picks up patched Debian packages) or by raising the pinned Ruby patch. Its actions are pinned to
+  commit SHAs, since the `aquasecurity` action tags were hijacked in March 2026: bump them by SHA.
+- Findings never block a release: GitHub notifies the owner. When one needs work, open a GitHub
+  issue (see Agent skills).
+
+## Agent skills
+
+### Issue tracker
+
+Tasks, issues, bugs, tickets and specs for this repository live **only** in its GitHub Issues
+(`gabrieletassoni/thecore_devcontainer`), handled with the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+**Mandatory rule.** Whenever a skill or development work creates, reads, updates, comments on,
+assigns, blocks or closes a task, issue, bug, ticket or spec (for example /to-tickets, /to-spec,
+/triage, /wayfinder, /implement, /diagnosing-bugs, /code-review, closing a piece of work, a bug found
+during a session), do it in this repository's GitHub Issues following `docs/agents/issue-tracker.md`.
+Never use Odoo, `.scratch/` or local Markdown files as a tracker: Odoo is only for the repositories
+on Bancolini's GitLab. `#123` means a GitHub issue number of this repository. If `gh` doesn't work,
+stop and say so instead of falling back to another tracker.
+
+### Triage labels
+
+The five canonical triage roles map to GitHub labels with the same name (`needs-triage`,
+`needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `GLOSSARY.md` and `docs/adr/` at the repo root, created lazily when the first
+term or decision is resolved. See `docs/agents/domain.md`.
+
+### Skills
+
+Matt Pocock's skills come from the `mattpocock-skills` Claude Code plugin installed on the
+developer's **host** (`claude plugins install mattpocock-skills`, official marketplace), never
+vendored here: no `.agents/skills/`, `.claude/commands/` or `skills-lock.json`. Its `ask-matt` skill
+maps how the skills connect.

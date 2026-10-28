@@ -1,6 +1,6 @@
-# CONTEXT.md — Thecore Backend DevContainer
+# GLOSSARY.md — Thecore Backend DevContainer
 
-Comprehensive project context for AI agent skills (grill-with-docs, to-prd, to-issues, tdd).
+Comprehensive project context for AI agent skills (grill-with-docs, to-spec, to-tickets, tdd).
 
 ---
 
@@ -55,7 +55,6 @@ thecore_devcontainer/
 │   ├── Dockerfile             # Docker-in-Docker setup
 │   ├── devcontainer.json
 │   └── library-scripts/
-├── .agents/skills/            # Custom Claude Code agent skills
 ├── .github/workflows/main.yml # CI: push to release/3, weekly, or manual trigger
 ├── Dockerfile.common
 ├── Dockerfile.dev
@@ -234,25 +233,9 @@ Optional: `ADMIN_PASSWORD`, the first admin's password. If `ADMIN_PASSWORD` is u
 
 ---
 
-## Agent Skills Available (`.agents/skills/`)
+## Agent Skills
 
-Custom skills installed for Claude Code workflows in this repo:
-
-- `grill-with-docs` — Clarify requirements using project documentation
-- `to-prd` — Convert requirements to a PRD
-- `to-issues` — Break PRD into actionable issues
-- `tdd` — Implement issues via Test-Driven Development
-- `prototype` — Rapid prototype generation
-- `improve-codebase-architecture` — Architecture review and improvement
-- `diagnose` — Diagnose problems in the codebase
-- `triage` — Prioritize issues
-- `teach` — Educational explanations
-- `zoom-out` — High-level perspective on the codebase
-- `handoff` — Generate handoff documentation
-- `caveman` — Simplify to first principles
-- `write-a-skill` — Create new agent skills
-- `setup-matt-pocock-skills` — Bootstrap skill setup
-- `grill-me` — Interactive requirement gathering
+Not vendored in this repo. Matt Pocock's skills come from the `mattpocock-skills` Claude Code plugin installed on the developer's **host** (`claude plugins install mattpocock-skills`), exposed in the devcontainer by the `~/.claude` bind mount; `.devcontainer/link-host-home.sh` and `.devcontainer/check-plugins.sh` run from `postCreateCommand`. `ask-matt` maps how the skills connect.
 
 ---
 

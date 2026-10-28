@@ -30,8 +30,8 @@
 		"ghcr.io/devcontainers-extra/features/claude-code:2": {}
 	},
 
-	// Refresh this project's agent skills (see skills-lock.json) on every rebuild.
-	"postCreateCommand": "npx skills update --project --yes",
+	// Claude Code skills come from the host's mattpocock-skills plugin (bind-mounted ~/.claude), never vendored here.
+	"postCreateCommand": "bash .devcontainer/link-host-home.sh '${localEnv:USER}' && bash .devcontainer/check-plugins.sh",
 
 	// Persist host-side Claude Code auth so it doesn't need re-authentication after every container rebuild.
 	"mounts": [
