@@ -52,7 +52,7 @@ secret() { sed -n "s/^$1=//p" "$PERSISTENCE_ROOT/app$case_n/secrets.env"; }
 
 echo "first deploy adopts the key already in use"
 new_case "SECRET_KEY_BASE=from-env-file"
-RUNNING_KEY=from-container
+export RUNNING_KEY=from-container
 path=$(run)
 assert_eq "$path" "$PERSISTENCE_ROOT/app$case_n/secrets.env" "prints the secrets file's path"
 assert_eq "$(secret SECRET_KEY_BASE)" "from-env-file" "takes the env file's key, as the deploy did before"
@@ -96,6 +96,26 @@ run > /dev/null
 assert_eq "$(secret SECRET_KEY_BASE_PREVIOUS)" "" "previous key removed"
 assert_eq "$(secret SECRET_KEY_BASE_PREVIOUS_EXPIRES_AT)" "" "its expiry removed"
 assert_eq "$(secret SECRET_KEY_BASE)" "$rotated" "current key kept"
+
+echo "finds the running backend under compose's lowercase project label"
+new_case
+sed -i 's/^COMPOSE_PROJECT_NAME=.*/COMPOSE_PROJECT_NAME=MyApp/' "$ENV_FILE"
+cat > "$MOCK_DIR/bin/docker" <<'SH'
+#!/bin/bash
+case "$1" in
+  ps) [[ "$*" == *"com.docker.compose.project=myapp "* ]] && echo "c0ffee" ;;
+  inspect) echo "SECRET_KEY_BASE=lowercase-label" ;;
+esac
+exit 0
+SH
+run > /dev/null
+assert_eq "$(sed -n 's/^SECRET_KEY_BASE=//p' "$PERSISTENCE_ROOT/MyApp/secrets.env")" "lowercase-label" "adopts the key of project myapp"
+
+echo "refuses values the deploy could not source safely"
+new_case 'SECRET_KEY_BASE_ROTATION=2026 10 28'
+if run > /dev/null; then fail "a rotation token with spaces fails the deploy"; else ok "a rotation token with spaces fails the deploy"; fi
+new_case 'SECRET_KEY_BASE=abc$(touch pwned)'
+if run > /dev/null; then fail "a key with shell syntax fails the deploy"; else ok "a key with shell syntax fails the deploy"; fi
 
 echo "refuses an env file without COMPOSE_PROJECT_NAME"
 new_case

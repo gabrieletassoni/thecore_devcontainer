@@ -27,6 +27,7 @@ MOCK_DIR=$(mktemp -d)
 trap 'rm -rf "$MOCK_DIR"' EXIT
 
 CUSTOMER_ENV="$MOCK_DIR/customer.env"
+export SECRET_KEY_BASE=test-key
 cat > "$CUSTOMER_ENV" <<'ENV'
 COMPOSE_PROJECT_NAME=passthrough-test
 BE_SUBDOMAIN=be
@@ -54,6 +55,14 @@ if env_out=$(env -u CUSTOMER_ENV_FILE IMAGE_TAG_BACKEND=img bash -c "$(declare -
   assert_not_contains "$env_out" "APP_SPECIFIC_SWITCH" "no customer variable leaks in"
 else
   fail "config fails without CUSTOMER_ENV_FILE"
+fi
+
+echo "compose: refuses to start without SECRET_KEY_BASE"
+if env -u SECRET_KEY_BASE CUSTOMER_ENV_FILE="$CUSTOMER_ENV" IMAGE_TAG_BACKEND=img \
+    docker compose -f docker/docker-compose.yml config > /dev/null 2>&1; then
+  fail "config fails without SECRET_KEY_BASE"
+else
+  ok "config fails without SECRET_KEY_BASE"
 fi
 
 echo "docker-deploy.sh: passes each customer env file to compose"

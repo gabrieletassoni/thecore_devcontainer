@@ -14,6 +14,10 @@ Every installation's `SECRET_KEY_BASE` was a line of its `vendor/deploytargets/<
 
 - After the first deploy, `SECRET_KEY_BASE` must be removed from the env file. It is ignored from then on, and the deploy log warns while it's still there.
 - The previous key is meant for apps that accept it only until its expiry: model_driven_api >= 3.13.0 does so for JWTs, so app users stay logged in (their token is renewed with the new key on their next request). With an older model_driven_api, a rotation logs everyone out once. Cookies are never rotated: admins of the web UI log in again.
+- A rotation also invalidates everything else signed with the old key: ActiveStorage URLs a client already fetched (it gets new ones with the record) and any Devise token. Only JWTs get the window.
+- The rotation is applied to `secrets.env` before `docker compose up`. If the deploy fails and is retried after the window, the old key is gone: everyone logs in once more.
+- `docker-compose.yml` declares `${SECRET_KEY_BASE:?}`: without a key the deploy fails instead of starting a backend with an empty one (for example an app whose `.env` no longer has the key, deployed with an image older than this script).
+- Keys and the rotation token may only contain `[A-Za-z0-9._-]`, since the deploy's shell sources the file. Anything else fails the deploy.
 - The key exists only on the host. Losing `/root/persistence/<COMPOSE_PROJECT_NAME>` loses the database too; a lost `secrets.env` alone means a new key and one more login for everyone.
 - Hand-written compose files (deployed without this script) are untouched and keep their own `SECRET_KEY_BASE`.
 - Covered by `test/installation-secrets.sh` and `test/deploy-env-passthrough.sh`.

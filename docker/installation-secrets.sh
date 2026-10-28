@@ -11,6 +11,11 @@
 # - SECRET_KEY_BASE_ROTATION=<token> in the env file, different from the one last applied: a new key,
 #   the old one kept as SECRET_KEY_BASE_PREVIOUS for SECRET_KEY_BASE_PREVIOUS_WINDOW_MINUTES (60).
 # - An expired previous key is dropped.
+#
+# Keys and the rotation token must match [A-Za-z0-9._-]+: the file is sourced by the deploy's shell.
+
+# The deploy runs `bash installation-secrets.sh`, which ignores the shebang's -e
+set -e
 
 ENV_FILE="$1"
 ROOT="${PERSISTENCE_ROOT:-/root/persistence}"
@@ -20,13 +25,22 @@ value_of() {
     sed -n "s/^$1=//p" "$2" | tail -n 1 | tr -d '\r' | sed -e 's/^"\(.*\)"$/\1/' -e "s/^'\(.*\)'$/\1/"
 }
 
+# safe <name> <value>: refuses a value the deploy's shell could not source as plain text
+safe() {
+    if [[ -n "$2" && ! "$2" =~ ^[A-Za-z0-9._-]+$ ]]; then
+        echo "ERROR! $1 may only contain letters, digits, '.', '_' and '-'" >&2
+        exit 1
+    fi
+}
+
 new_key() {
     od -An -tx1 -N64 /dev/urandom | tr -d ' \n'
 }
 
 running_key() {
     local id
-    id=$(docker ps -q --filter "label=com.docker.compose.project=$PROJECT" \
+    # Compose labels containers with the project name in lowercase
+    id=$(docker ps -q --filter "label=com.docker.compose.project=${PROJECT,,}" \
         --filter "label=com.docker.compose.service=backend" 2>/dev/null | head -n 1)
     [[ -n "$id" ]] || return 0
     docker inspect --format '{{range .Config.Env}}{{println .}}{{end}}' "$id" | sed -n 's/^SECRET_KEY_BASE=//p' | head -n 1
@@ -54,6 +68,7 @@ umask 077
 mkdir -p "$ROOT/$PROJECT"
 SECRETS="$ROOT/$PROJECT/secrets.env"
 ENV_KEY=$(value_of SECRET_KEY_BASE "$ENV_FILE")
+safe SECRET_KEY_BASE "$ENV_KEY"
 
 if [[ ! -f "$SECRETS" ]]; then
     ROTATION_DONE=""
@@ -62,6 +77,7 @@ if [[ ! -f "$SECRETS" ]]; then
         KEY="$ENV_KEY"
     else
         KEY=$(running_key)
+        safe "the running backend's SECRET_KEY_BASE" "$KEY"
         if [[ -n "$KEY" ]]; then
             echo "secrets: adopting the running backend's SECRET_KEY_BASE into $SECRETS" >&2
         else
@@ -79,6 +95,7 @@ PREVIOUS=$(value_of SECRET_KEY_BASE_PREVIOUS "$SECRETS")
 EXPIRES_AT=$(value_of SECRET_KEY_BASE_PREVIOUS_EXPIRES_AT "$SECRETS")
 ROTATION_DONE=$(value_of SECRET_KEY_BASE_ROTATION "$SECRETS")
 ROTATION_REQUESTED=$(value_of SECRET_KEY_BASE_ROTATION "$ENV_FILE")
+safe SECRET_KEY_BASE_ROTATION "$ROTATION_REQUESTED"
 
 if [[ -n "$ROTATION_REQUESTED" && "$ROTATION_REQUESTED" != "$ROTATION_DONE" ]]; then
     echo "secrets: rotating SECRET_KEY_BASE ($ROTATION_REQUESTED), previous key accepted for $WINDOW_MINUTES minutes" >&2

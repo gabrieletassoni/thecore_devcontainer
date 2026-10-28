@@ -19,7 +19,7 @@ x-vars: &vars
   # Derived
   # SECRET_KEY_BASE comes from the Docker host's secrets.env, which docker-deploy.sh exports, never from git
   # (docs/adr/0004). The previous key is only set for a short window after a rotation.
-  SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+  SECRET_KEY_BASE: "${SECRET_KEY_BASE:?missing, deploy with docker-deploy.sh, which reads it from the host (docs/adr/0004)}"
   SECRET_KEY_BASE_PREVIOUS: ${SECRET_KEY_BASE_PREVIOUS:-}
   SECRET_KEY_BASE_PREVIOUS_EXPIRES_AT: ${SECRET_KEY_BASE_PREVIOUS_EXPIRES_AT:-}
   ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
