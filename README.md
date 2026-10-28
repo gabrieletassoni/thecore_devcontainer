@@ -40,7 +40,9 @@ Format: `MAJOR.YEAR.MONTH.DAY` (e.g. `3.2026.6.9`). The `MAJOR` component is rea
 
 The entrypoint always runs `db:create`, `db:migrate`, `thecore:db:seed`, `assets:clobber`, `assets:precompile`, then `rails s` — convention over configuration.
 
-Required variables: `SECRET_KEY_BASE`, `ADMIN_PASSWORD`, `APP_NAME`, `COMPOSE_PROJECT_NAME`, `IMAGE_TAG_BACKEND`, `BE_SUBDOMAIN`, `FE_SUBDOMAIN`, `BASE_DOMAIN`.
+Required variables: `SECRET_KEY_BASE`, `APP_NAME`, `COMPOSE_PROJECT_NAME`, `IMAGE_TAG_BACKEND`, `BE_SUBDOMAIN`, `FE_SUBDOMAIN`, `BASE_DOMAIN`.
+
+Optional: `ADMIN_PASSWORD`, the first admin's password. If `ADMIN_PASSWORD` is unset or empty, the seed (thecore_auth_commons >= 3.6.2) creates the first admin, `admin@BASE_DOMAIN`, with a random password written to `/root/persistence/${COMPOSE_PROJECT_NAME}/storage/admin_initial_password` on the Docker host (mode `0600`, never logged; or `docker compose exec backend cat storage/admin_initial_password`). Change it after the first login and delete the file. The admin is created only on a database without one, so setting or changing `ADMIN_PASSWORD` later has no effect. Older backends fall back to the fixed `Change#1`, so keep setting it for them.
 
 ## Ruby and Rails versions
 
