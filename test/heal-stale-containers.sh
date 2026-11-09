@@ -7,7 +7,7 @@
 # TEST_IMAGE overrides the image (default: redis:7-bookworm, already pulled
 # by every devcontainer of the stack, so the test needs no network).
 
-set -uo pipefail
+set -euo pipefail
 cd "$(dirname "$0")/.."
 
 SCRIPT="$PWD/.devcontainer/heal-stale-containers.sh"
@@ -21,6 +21,8 @@ WORK=$(mktemp -d)
 # Every project is named heal-test-<case>-$$: cleanup finds them by that suffix
 # (make_project runs in a $(...) subshell, so it can't record them in a variable).
 cleanup() {
+  # Best effort: a grep matching nothing must not stop the rest of the cleanup.
+  set +e
   local p
   for p in $(docker ps -a --format '{{.Label "com.docker.compose.project"}}' | grep -E "^heal-test-.*-$$\$" | sort -u); do
     docker rm -f $(docker ps -aq --filter "label=com.docker.compose.project=$p") >/dev/null 2>&1
@@ -67,6 +69,10 @@ container_count() { docker ps -aq --filter "label=com.docker.compose.project=$1"
 
 volume_exists() { docker volume inspect "${1}_data" >/dev/null 2>&1; }
 
+# Runs the script on a workspace folder; prints nothing, returns its exit code
+# (callers use `|| rc=$?` or `|| true`, so set -e never stops the suite on it).
+heal() { bash "$SCRIPT" "$1" >/dev/null 2>&1; }
+
 echo "heal-stale-containers.sh"
 
 # ── stale network ─────────────────────────────────────────────────────────────
@@ -74,8 +80,7 @@ P="heal-test-stale-$$"
 WS=$(make_project "$P")
 stop_project "$P"
 delete_network "$P"
-bash "$SCRIPT" "$WS" >/dev/null 2>&1
-rc=$?
+rc=0; heal "$WS" || rc=$?
 [ "$rc" -eq 0 ] && ok "exits 0 after healing" || fail "exits 0 after healing (got $rc)"
 [ "$(container_count "$P")" -eq 0 ] && ok "removes every container of a project whose network is gone" \
   || fail "removes every container of a project whose network is gone ($(container_count "$P") left)"
@@ -85,14 +90,14 @@ volume_exists "$P" && ok "keeps the project's volumes" || fail "keeps the projec
 P="heal-test-stopped-$$"
 WS=$(make_project "$P")
 stop_project "$P"
-bash "$SCRIPT" "$WS" >/dev/null 2>&1
+heal "$WS" || true
 [ "$(container_count "$P")" -eq 2 ] && ok "leaves a stopped project whose network exists alone" \
   || fail "leaves a stopped project whose network exists alone ($(container_count "$P") left)"
 
 # ── running project (a second VS Code window on the same folder) ──────────────
 P="heal-test-running-$$"
 WS=$(make_project "$P")
-bash "$SCRIPT" "$WS" >/dev/null 2>&1
+heal "$WS" || true
 [ "$(docker ps -q --filter "label=com.docker.compose.project=$P" | wc -l)" -eq 2 ] \
   && ok "leaves a running project alone" || fail "leaves a running project alone"
 
@@ -102,25 +107,23 @@ make_project "$P" >/dev/null
 stop_project "$P"
 delete_network "$P"
 mkdir -p "$WORK/unrelated"
-bash "$SCRIPT" "$WORK/unrelated" >/dev/null 2>&1
+heal "$WORK/unrelated" || true
 [ "$(container_count "$P")" -eq 2 ] && ok "never touches another folder's project" \
   || fail "never touches another folder's project ($(container_count "$P") left)"
 
 # ── nothing to do ─────────────────────────────────────────────────────────────
-bash "$SCRIPT" "$WORK/unrelated" >/dev/null 2>&1
-rc=$?
+rc=0; heal "$WORK/unrelated" || rc=$?
 [ "$rc" -eq 0 ] && ok "exits 0 when the folder has no containers" \
   || fail "exits 0 when the folder has no containers (got $rc)"
 
-DOCKER_HOST=unix:///nonexistent.sock bash "$SCRIPT" "$WORK/unrelated" >/dev/null 2>&1
-rc=$?
+rc=0; DOCKER_HOST=unix:///nonexistent.sock heal "$WORK/unrelated" || rc=$?
 [ "$rc" -eq 0 ] && ok "exits 0 when the docker daemon is unreachable, so VS Code reports the real error" \
   || fail "exits 0 when the docker daemon is unreachable (got $rc)"
 
 # ── wiring ────────────────────────────────────────────────────────────────────
 # VS Code runs initializeCommand on the host with the workspace folder as cwd,
 # before `docker compose up`: the only hook early enough to heal.
-init=$(grep '"initializeCommand"' .devcontainer/devcontainer.json)
+init=$(grep '"initializeCommand"' .devcontainer/devcontainer.json || true)
 [[ "$init" == *"bash .devcontainer/heal-stale-containers.sh '\${localWorkspaceFolder}'"* ]] \
   && ok "devcontainer.json's initializeCommand runs it on the workspace folder" \
   || fail "devcontainer.json's initializeCommand runs it on the workspace folder (got: $init)"

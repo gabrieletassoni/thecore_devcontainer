@@ -3,7 +3,7 @@
 # Usage: bash test/gem-compile.sh
 # Mocks gem, so nothing is built or published.
 
-set -uo pipefail
+set -euo pipefail
 cd "$(dirname "$0")/.."
 SCRIPT="$PWD/scripts/gem-compile.sh"
 
@@ -24,18 +24,19 @@ chmod +x "$WORK/bin/gem"
 touch "$WORK/atom/my_atom.gemspec"
 export GEM_LOG="$WORK/gem.log"
 
-run() { (cd "$WORK/atom" && rm -f ./*.gem && : > "$GEM_LOG" && PATH="$WORK/bin:$PATH" bash "$SCRIPT" >/dev/null 2>&1); }
+# Under set -e a failing run must not stop the suite: it shows up as a missing push below.
+run() { (cd "$WORK/atom" && rm -f ./*.gem && : > "$GEM_LOG" && PATH="$WORK/bin:$PATH" bash "$SCRIPT" >/dev/null 2>&1) || true; }
 
 echo "gem-compile.sh"
 
 unset GITLAB_GEM_REPO_TARGET
 run
-push=$(grep '^push' "$GEM_LOG")
+push=$(grep '^push' "$GEM_LOG" || true)
 [ "$push" = "push my_atom-3.0.0.gem" ] && ok "without GITLAB_GEM_REPO_TARGET pushes the built gem to rubygems.org" \
   || fail "without GITLAB_GEM_REPO_TARGET pushes the built gem to rubygems.org (got: $push)"
 
 GITLAB_GEM_REPO_TARGET=https://gems.example.com/ run
-push=$(grep '^push' "$GEM_LOG")
+push=$(grep '^push' "$GEM_LOG" || true)
 [ "$push" = "push --host https://gems.example.com/ my_atom-3.0.0.gem" ] && ok "with GITLAB_GEM_REPO_TARGET pushes the built gem to that host" \
   || fail "with GITLAB_GEM_REPO_TARGET pushes the built gem to that host (got: $push)"
 
