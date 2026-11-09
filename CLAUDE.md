@@ -62,9 +62,10 @@ thecore_devcontainer/
 │   ├── devcontainer.json
 │   ├── link-host-home.sh   # postCreateCommand: /home/<host-user> -> $HOME, so the host's Claude Code plugin paths resolve
 │   ├── check-plugins.sh    # postCreateCommand: warns if the mattpocock-skills plugin isn't installed on the host
+│   ├── heal-stale-containers.sh  # initializeCommand, on the host: removes the project's containers left on a deleted network (ADR 0005); canonical copy of the one every Thecore app carries
 │   └── library-scripts/
-├── docs/adr/               # Architecture decision records (0001 nofile ulimits, 0002 customer .env, 0003 Ruby/Rails versions, 0004 SECRET_KEY_BASE on the host)
-├── test/                   # Shell test suites, no docker daemon needed (see Testing)
+├── docs/adr/               # Architecture decision records (0001 nofile ulimits, 0002 customer .env, 0003 Ruby/Rails versions, 0004 SECRET_KEY_BASE on the host, 0005 heal containers left on a deleted network)
+├── test/                   # Shell test suites (see Testing)
 ├── .github/workflows/main.yml  # CI: push to release/3, weekly, or manual trigger
 ├── .github/workflows/trivy.yml # Trivy scan of the published images (see Security scanning)
 ├── Dockerfile.common       # Base image definition
@@ -139,13 +140,14 @@ No additional configuration is needed beyond the secrets.
 
 ### Testing
 
-Each file under `test/` is a standalone bash suite; none needs a docker daemon, and CI doesn't run them, so run them by hand before pushing:
+Each file under `test/` is a standalone bash suite; CI doesn't run them, so run them by hand before pushing. Only `heal-stale-containers.sh` needs a running docker daemon:
 
 ```bash
 bash test/build-image.sh            # bin/build-image tagging, build-arg, push, hooks (docker mocked)
 bash test/deploy-env-passthrough.sh # customer .env reaches backend/worker (needs the docker compose CLI)
 bash test/installation-secrets.sh   # host secrets.env: adopt, rotate, expire (docker mocked)
 bash test/version-pins.sh           # Ruby patch pinned in Dockerfile.common, Rails >= 7.2.4 in Dockerfile.dev
+bash test/heal-stale-containers.sh  # .devcontainer/heal-stale-containers.sh against real compose projects named heal-test-* (needs docker, ~5s)
 ```
 
 ### Ruby and Rails versions
@@ -199,6 +201,10 @@ Key environment variables required at runtime:
 Optional: `ADMIN_PASSWORD` — the first admin's password. If `ADMIN_PASSWORD` is unset or empty, the seed (thecore_auth_commons >= 3.6.2) creates the first admin, `admin@BASE_DOMAIN`, with a random password written to `/root/persistence/${COMPOSE_PROJECT_NAME}/storage/admin_initial_password` on the Docker host (mode `0600`, never logged; or `docker compose exec backend cat storage/admin_initial_password`). Change it after the first login and delete the file. The admin is created only on a database without one, so setting or changing `ADMIN_PASSWORD` later has no effect. Older backends fall back to the fixed `Change#1`, so keep setting it for them. `docker-compose.yml` passes it as `${ADMIN_PASSWORD:-}`, so an unset value is no compose warning.
 
 `backend` and `worker` also load the installation's own `.env` file as `env_file: ${CUSTOMER_ENV_FILE:-/dev/null}` (`docker-deploy.sh` exports `CUSTOMER_ENV_FILE`), so an app can read a variable of its own, set per installation in `vendor/deploytargets/<provider>/<customer>.env`, without adding it to `x-vars`. `x-vars` still wins on any name both define. See `docs/adr/0002-customer-env-file-reaches-containers.md`, tested by `test/deploy-env-passthrough.sh`.
+
+### Heal containers left on a deleted network
+
+VS Code starts a compose devcontainer with `docker compose up --no-recreate`, so containers stopped while their network was deleted (a `docker network prune`, a Docker upgrade) failed every start with `network <id> not found`, reboots included. `.devcontainer/heal-stale-containers.sh`, run by `initializeCommand` on the host, removes that project's containers so compose recreates them; volumes are kept, and healthy, running or other folders' projects are left alone (`docs/adr/0005-heal-containers-left-on-a-deleted-network.md`). This is the canonical copy: every Thecore app carries the same file, as do `thecore_code_extension`'s `templates/setupDevContainer/` and `thecore`'s `samples/devcontainer/` (fetched by `thecore_generators`'s App template). Change it here, run `test/heal-stale-containers.sh`, then copy it to all of them.
 
 ### Dev Container (vscode-devcontainers-thecore)
 
