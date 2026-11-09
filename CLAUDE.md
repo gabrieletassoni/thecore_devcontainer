@@ -51,6 +51,7 @@ thecore_devcontainer/
 │   ├── docker-build.sh     # Docker build wrapper
 │   ├── docker-deploy.sh    # Deploys to remote Docker hosts via SSH (DRY_RUN=1 supported)
 │   ├── gem-compile.sh      # Builds and pushes Ruby gems
+│   ├── thecore-app-dir.sh  # Prints the mounted app's folder (/workspaces/app or /workspaces/project/backend); used by ~/.bashrc (Dockerfile.dev)
 │   └── thecore-motd.sh     # Warns on shell login if the project's .devcontainer predates this image's extension version; called from ~/.bashrc (Dockerfile.dev)
 ├── os/                     # APT/dpkg config copied into images
 │   ├── 02nocache           # Disables APT caching
@@ -133,7 +134,7 @@ No additional configuration is needed beyond the secrets.
 
 ### Shell Scripts
 
-- All scripts use `#!/bin/bash -e` (exit on first error); the test suites under `test/` use `#!/bin/bash` + `set -euo pipefail` instead
+- All scripts use `#!/bin/bash -e` (exit on first error); the test suites under `test/` use `#!/bin/bash` + `set -euo pipefail` instead, and run every command whose failure is an assertion's outcome behind `|| rc=$?`/`|| true`, so a failing case is counted and the suite goes on
 - `bin/build-image` is the **only** caller of `bin/version.sh` and `bin/docker-push.sh`; individual build scripts no longer source these directly
 - Shellcheck annotations (`# shellcheck source=...`) are used for static analysis
 - Scripts are designed to be run from the repository root
@@ -147,6 +148,7 @@ bash test/build-image.sh            # bin/build-image tagging, build-arg, push, 
 bash test/deploy-env-passthrough.sh # customer .env reaches backend/worker (needs the docker compose CLI)
 bash test/installation-secrets.sh   # host secrets.env: adopt, rotate, expire (docker mocked)
 bash test/version-pins.sh           # Ruby patch pinned in Dockerfile.common, Rails >= 7.2.4 in Dockerfile.dev
+bash test/thecore-app-dir.sh        # scripts/thecore-app-dir.sh finds the app under /workspaces/app or /workspaces/project/backend; .bashrc hardcodes neither
 bash test/thecore-motd.sh           # scripts/thecore-motd.sh finds the scaffold marker under /workspaces/app and /workspaces/project/backend
 bash test/gem-compile.sh            # scripts/gem-compile.sh pushes the built gem to rubygems.org or to GITLAB_GEM_REPO_TARGET (gem mocked)
 bash test/heal-stale-containers.sh  # .devcontainer/heal-stale-containers.sh against real compose projects named heal-test-* (needs docker, ~5s)
@@ -210,10 +212,11 @@ VS Code starts a compose devcontainer with `docker compose up --no-recreate`, so
 
 ### Dev Container (vscode-devcontainers-thecore)
 
-The dev image runs as user `vscode` with passwordless sudo and Docker group membership. The `.bashrc` configuration sets:
-- `APPBIN=/workspaces/project/backend/bin`
+The dev image runs as user `vscode` with passwordless sudo and Docker group membership. The `.bashrc` configuration sets `THECORE_APP_DIR` to the mounted app's folder, printed by `thecore-app-dir.sh`: the first folder with a `Gemfile` under `/workspaces/*/`, then `/workspaces/*/*/` (the same order `thecore-motd.sh` uses), so `/workspaces/app` for apps created from the thecore samples and `/workspaces/project/backend` for the extension's scaffold, falling back to the latter when none is mounted. Then:
+- `APPBIN=$THECORE_APP_DIR/bin`
 - `COMPOSE_PROJECT_NAME=thecore_test`
-- `BUNDLE_APP_CONFIG=/workspaces/project/backend/.bundle`
+- `BUNDLE_APP_CONFIG=$THECORE_APP_DIR/.bundle`
+- the prompt's version read from `$THECORE_APP_DIR/version`
 - Gems installed into `vendor/bundle` inside the workspace
 
 The working directory inside the container is `/workspaces/project`.

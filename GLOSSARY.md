@@ -156,9 +156,10 @@ Builds and pushes a Ruby gem:
 - Installs Ruby gems: `rails ~> 7.2.4` (minimum 7.2 patch, never 7.3; `docs/adr/0003-ruby-and-rails-versions-pinned.md`), `foreman`, `rufo`, `rubocop`, `ruby-lsp`
 - Creates user `vscode` with passwordless sudo and docker group membership
 - Configures `~/.bashrc` for the `vscode` user:
-  - `APPBIN=/workspaces/project/backend/bin`
+  - `THECORE_APP_DIR`, the mounted app's folder (`thecore-app-dir.sh`: `/workspaces/app` or `/workspaces/project/backend`)
+  - `APPBIN=$THECORE_APP_DIR/bin`
   - `COMPOSE_PROJECT_NAME=thecore_test`
-  - `BUNDLE_APP_CONFIG=/workspaces/project/backend/.bundle`
+  - `BUNDLE_APP_CONFIG=$THECORE_APP_DIR/.bundle`
   - Gems installed to `vendor/bundle` inside workspace
   - Prompt shows git branch + app version
 - `WORKDIR /workspaces/project`
