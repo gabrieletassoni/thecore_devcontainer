@@ -147,6 +147,7 @@ bash test/build-image.sh            # bin/build-image tagging, build-arg, push, 
 bash test/deploy-env-passthrough.sh # customer .env reaches backend/worker (needs the docker compose CLI)
 bash test/installation-secrets.sh   # host secrets.env: adopt, rotate, expire (docker mocked)
 bash test/version-pins.sh           # Ruby patch pinned in Dockerfile.common, Rails >= 7.2.4 in Dockerfile.dev
+bash test/thecore-motd.sh           # scripts/thecore-motd.sh finds the scaffold marker under /workspaces/app and /workspaces/project/backend
 bash test/heal-stale-containers.sh  # .devcontainer/heal-stale-containers.sh against real compose projects named heal-test-* (needs docker, ~5s)
 ```
 
@@ -216,7 +217,7 @@ The dev image runs as user `vscode` with passwordless sudo and Docker group memb
 
 The working directory inside the container is `/workspaces/project`.
 
-`.bashrc` also runs `thecore-motd.sh` on every new shell. It compares `/etc/thecore/thecore-version.txt` (the Thecore extension version baked into this image at build time, written alongside `build/thecore.vsix` by `bin/hooks/package-vscode-extension.sh`) against `/workspaces/project/.devcontainer/.thecore-template-version` (stamped with the extension version by the "Thecore 3: Setup Devcontainer" command when it scaffolds `.devcontainer/`). If the scaffold predates the image, it prints a warning suggesting the user regenerate `.devcontainer/`. Silent no-op if either file is missing (legacy scaffolds, non-dev images, or projects not using this generator).
+`.bashrc` also runs `thecore-motd.sh` on every new shell. It compares `/etc/thecore/thecore-version.txt` (the Thecore extension version baked into this image at build time, written alongside `build/thecore.vsix` by `bin/hooks/package-vscode-extension.sh`) against the `.devcontainer/.thecore-template-version` of the app mounted under `/workspaces/*/` or `/workspaces/*/*/` (so both `/workspaces/app`, the thecore samples' layout, and `/workspaces/project/backend`, the extension's, are found whatever the shell's cwd; stamped with the extension version by the "Thecore 3: Setup Devcontainer" command when it scaffolds `.devcontainer/`). If the scaffold predates the image, it prints a warning suggesting the user regenerate `.devcontainer/`. Silent no-op if either file is missing (legacy scaffolds, non-dev images, or projects not using this generator). Tested by `test/thecore-motd.sh`.
 
 ### Deployment Script (`scripts/docker-deploy.sh`)
 
