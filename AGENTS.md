@@ -15,7 +15,7 @@ Only after completing this sequence should any code be written.
 
 ## General Context
 
-See [CLAUDE.md](CLAUDE.md) for full project overview, repository structure, versioning scheme, build workflows, and conventions.
+See [CLAUDE.md](CLAUDE.md) for the project overview and conventions; topic detail (repository structure, versioning scheme, build workflows, production stack, deployment, testing, security scanning) lives in the `docs/agents/` files its "Read before working on…" table points to.
 
 ## Key Architecture Facts for Agents
 
@@ -45,4 +45,4 @@ There are no `SEED_ON_START` or `RECOMPILE_ASSETS` env var guards — the entryp
 
 ## Security scanning and agent skills
 
-See the "Security scanning" and "Agent skills" sections of `CLAUDE.md`. Issues live in this repository's GitHub Issues (`docs/agents/issue-tracker.md`), and the skills come from the `mattpocock-skills` plugin on the host, never vendored here.
+See `docs/agents/security-scanning.md` and the "Agent skills" section of `CLAUDE.md`. Issues live in this repository's GitHub Issues (`docs/agents/issue-tracker.md`), and the skills come from the `mattpocock-skills` plugin on the host, never vendored here.

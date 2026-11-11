@@ -3,7 +3,7 @@ name: "Scan Docker Images"
 # Scans the three published images (tag :3, the one host apps pull) with Trivy for
 # fixable HIGH/CRITICAL vulnerabilities. Results go to the Security tab (code scanning).
 # After each build it only reports; the nightly run fails when something is found, so the
-# owner gets GitHub's "workflow failed" mail. See CLAUDE.md "Security scanning".
+# owner gets GitHub's "workflow failed" mail. See docs/agents/security-scanning.md.
 on:
   workflow_run:
     workflows: ["Build and Push Docker Images"]
