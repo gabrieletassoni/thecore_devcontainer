@@ -23,7 +23,7 @@ This repository builds and publishes the three Docker images (`gabrieletassoni/t
 - `Dockerfile.common` / `Dockerfile.dev` / `Dockerfile.deploy` — the three images (dev and deploy build on top of common)
 - `docker/` — production compose files, entrypoints, `installation-secrets.sh` (copied into images at `/etc/thecore/docker/`)
 - `scripts/` — utility scripts copied into images at `/usr/bin/` (`docker-deploy.sh`, `gem-compile.sh`, …)
-- `.devcontainer/` — this repo's own devcontainer, incl. the canonical `heal-stale-containers.sh`
+- `.devcontainer/` — this repo's own devcontainer, incl. the canonical `heal-stale-containers.sh` and `docker-socket-gid.sh`
 - `submodules/thecore_code_extension/` — VS Code extension (branch `release/3`)
 - `test/` — standalone bash suites; `docs/adr/` — decisions; `version` — the major version
 
@@ -59,7 +59,7 @@ Each file under `test/` is a standalone bash suite; CI doesn't run them, so run 
 - Ruby and Rails never float: `Dockerfile.common`'s `FROM` names the full Ruby patch, equal to the host apps' `.ruby-version`, and `Dockerfile.dev` installs Rails `~> 7.2.4`; bump both by hand together with the apps (ADR 0003, `test/version-pins.sh`).
 - `SECRET_KEY_BASE` never goes in an installation's `.env` file: it lives in the Docker host's `secrets.env` (ADR 0004).
 - `ulimits: nofile` must live in the compose file, never a `Dockerfile` `RUN ulimit` (ADR 0001).
-- `.devcontainer/heal-stale-containers.sh` is the canonical copy: change it here, run `test/heal-stale-containers.sh`, then copy it everywhere (ADR 0005).
+- `.devcontainer/heal-stale-containers.sh` is the canonical copy: change it here, run `test/heal-stale-containers.sh`, then copy it everywhere (ADR 0005). Same for `.devcontainer/docker-socket-gid.sh` with `test/docker-socket-gid.sh` (ADR 0006).
 - Never use a `dependabot.yml` version-update config; pin Trivy's actions by commit SHA; never bypass secret push protection — remove and rotate the secret.
 - All entrypoint steps (seed, asset clobber, asset precompile) run unconditionally on every start — seed tasks must be idempotent.
 

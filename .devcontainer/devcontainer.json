@@ -4,7 +4,7 @@
 	"service": "app",
 	"workspaceFolder": "/workspaces/thecore_devcontainer/",
 
-	"initializeCommand": "mkdir -p ~/.docker && touch ~/.docker/config.json && bash .devcontainer/heal-stale-containers.sh '${localWorkspaceFolder}'",
+	"initializeCommand": "mkdir -p ~/.docker && touch ~/.docker/config.json && bash .devcontainer/heal-stale-containers.sh '${localWorkspaceFolder}'; bash .devcontainer/docker-socket-gid.sh",
 	"postAttachCommand": "sudo chown -R vscode:vscode ~",
 
 	"customizations": {

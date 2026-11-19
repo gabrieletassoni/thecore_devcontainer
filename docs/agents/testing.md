@@ -15,4 +15,5 @@ bash test/thecore-app-dir.sh        # scripts/thecore-app-dir.sh finds the app u
 bash test/thecore-motd.sh           # scripts/thecore-motd.sh finds the scaffold marker under /workspaces/app and /workspaces/project/backend
 bash test/gem-compile.sh            # scripts/gem-compile.sh pushes the built gem to rubygems.org or to GITLAB_GEM_REPO_TARGET (gem mocked)
 bash test/heal-stale-containers.sh  # .devcontainer/heal-stale-containers.sh against real compose projects named heal-test-* (needs docker, ~5s)
+bash test/docker-socket-gid.sh      # .devcontainer/docker-socket-gid.sh writes the socket's gid to .env, compose's group_add picks it up or falls back to 996 (needs the docker compose CLI)
 ```
