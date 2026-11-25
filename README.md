@@ -48,7 +48,7 @@ Optional: `ADMIN_PASSWORD`, the first admin's password. If `ADMIN_PASSWORD` is u
 
 ## Ruby and Rails versions
 
-The images don't float to whatever is current at build time: `Dockerfile.common` names the full Ruby patch (`FROM ruby:3.3.13-bookworm`, equal to the apps' `.ruby-version`) and `Dockerfile.dev` installs `rails:'~> 7.2.4'` (7.2.4 or a later 7.2.x, never 7.3). Raise them by hand when the apps move. See `docs/adr/0003-ruby-and-rails-versions-pinned.md`.
+The images don't float to whatever is current at build time: `Dockerfile.common` names the full Ruby patch (`FROM ruby:3.3.14-bookworm`, equal to the apps' `.ruby-version`) and `Dockerfile.dev` installs `rails:'~> 7.2.4'` (7.2.4 or a later 7.2.x, never 7.3). Raise them by hand when the apps move. See `docs/adr/0003-ruby-and-rails-versions-pinned.md`.
 
 ## Tests
 
