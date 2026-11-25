@@ -12,3 +12,7 @@
 - A new Ruby patch no longer arrives on its own with the weekly rebuild: bump the `FROM` tag when the apps' `.ruby-version` moves. Debian security updates still do, since Docker rebuilds the `ruby:3.3.13-bookworm` tag on Debian updates and the image runs `apt-get dist-upgrade`.
 - The Rails gem in the dev image only serves `rails new` and the like; an app's own Rails comes from its `Gemfile.lock`.
 - Covered by `test/version-pins.sh`.
+
+## Amendment (2026-11-25): Ruby 3.3.14
+
+The pin moved to `ruby:3.3.14-bookworm`, with the apps' `.ruby-version` at `ruby-3.3.14`: 3.3.13 carries an RCE, CVE-2026-132825 (Odoo #6261 on Bancolini's GitLab). The `3.3.13` above is the patch this decision started from; the rule, the full patch equal to the apps' `.ruby-version`, is unchanged.
