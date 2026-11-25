@@ -180,7 +180,7 @@ Four services:
 | Service | Image | Role |
 |---|---|---|
 | `db` | `postgres:15` | PostgreSQL, data at `/root/persistence/$COMPOSE_PROJECT_NAME/db` |
-| `cache` | `redis:7-bookworm` | Redis 7 for Sidekiq and Action Cable, no persistence |
+| `cache` | `redis:7-bookworm` | Redis 7 for Sidekiq and Action Cable, RDB snapshots on an anonymous `/data` volume |
 | `backend` | `$IMAGE_TAG_BACKEND` | Rails app (entrypoint: migrate, seed, assets, `rails s`) |
 | `worker` | `$IMAGE_TAG_BACKEND` | Sidekiq (waits for backend health before starting) |
 

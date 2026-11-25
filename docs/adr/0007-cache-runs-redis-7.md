@@ -8,7 +8,7 @@ The `cache` service in `docker/docker-compose.yml` ran `eqalpha/keydb`, a Redis 
 
 ## Consequences
 
-- `cache` has no persistence, so there is nothing to migrate, but recreating the container drops whatever is still queued, as any restart of `cache` already did. Deploy this change with the Sidekiq queue empty: stop `backend`, let `worker` drain the queue, then deploy.
+- Nothing to migrate. `cache` declares no volume, but the `redis` image (like KeyDB's) has an anonymous `VOLUME /data` with RDB snapshots on, and `docker compose up -d` reuses it when it recreates the container: on Labs dev (2026-11-25) Redis 7.4 loaded KeyDB's last snapshot (RDB 6.3.4, 460 keys) and the queue survived. Draining the Sidekiq queue first (stop `backend`, let `worker` empty it) is still the safe order, because a write after the last snapshot is lost, and `down -v` or `up -V` drops the volume.
 - `redis:7-bookworm` resolves to 7.4, dual-licensed RSALv2/SSPLv1 (7.2 was the last BSD-3 release). Running it inside an app's own stack is allowed; offering Redis itself as a service is not. A customer whose policy needs an OSI licence pins `redis:7.2-bookworm` (end of life) or uses Valkey.
 - Installations whose compose is written by hand on the host (IMAS prod, already on Redis 7) don't receive this file and are changed by hand, if at all.
 - release/4 drops Redis altogether (Solid Queue and Solid Cable in the app's Postgres).

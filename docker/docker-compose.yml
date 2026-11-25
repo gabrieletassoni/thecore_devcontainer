@@ -54,8 +54,9 @@ services:
       test: "pg_isready -U postgres"
       timeout: 3s
 
-  # Redis 7, the same server the devcontainers run. No persistence: recreating it loses whatever is
-  # still queued, so deploy a change to it with the Sidekiq queue empty (GitHub #24).
+  # Redis 7, the same server the devcontainers run. The image's anonymous /data volume keeps the RDB
+  # snapshots, and `up -d` reuses it when it recreates the container, so the queue survives a deploy;
+  # only removing that volume (`down -v`, `up -V`) empties it (ADR 0007).
   cache:
     image: redis:7-bookworm
     command: redis-server
