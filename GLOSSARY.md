@@ -153,7 +153,7 @@ Builds and pushes a Ruby gem:
 - From `gabrieletassoni/thecore-common:${THECORE_VERSION}`
 - Installs Docker CE + Compose plugin (from official Docker APT repo)
 - Installs: `git-flow`, `graphviz`, `python3-pip`
-- Installs Ruby gems: `rails ~> 7.2.4` (minimum 7.2 patch, never 7.3; `docs/adr/0003-ruby-and-rails-versions-pinned.md`), `foreman`, `rufo`, `rubocop`, `ruby-lsp`
+- Installs Ruby gems: `rails ~> 8.1.4, >= 8.1.4.1` (minimum 8.1 patch, never 8.2; `docs/adr/0003-ruby-and-rails-versions-pinned.md`), `foreman`, `rufo`, `rubocop`, `ruby-lsp`
 - Creates user `vscode` with passwordless sudo and docker group membership
 - Configures `~/.bashrc` for the `vscode` user:
   - `THECORE_APP_DIR`, the mounted app's folder (`thecore-app-dir.sh`: `/workspaces/app` or `/workspaces/project/backend`)
@@ -180,7 +180,7 @@ Four services:
 | Service | Image | Role |
 |---|---|---|
 | `db` | `postgres:15` | PostgreSQL, data at `/root/persistence/$COMPOSE_PROJECT_NAME/db` |
-| `cache` | `eqalpha/keydb` | Redis-compatible cache, no persistence |
+| `cache` | `redis:7-bookworm` | Redis 7 for Sidekiq and Action Cable, no persistence |
 | `backend` | `$IMAGE_TAG_BACKEND` | Rails app (entrypoint: migrate, seed, assets, `rails s`) |
 | `worker` | `$IMAGE_TAG_BACKEND` | Sidekiq (waits for backend health before starting) |
 

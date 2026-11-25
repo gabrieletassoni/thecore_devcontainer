@@ -16,3 +16,7 @@
 ## Amendment (2026-11-25): Ruby 3.3.14
 
 The pin moved to `ruby:3.3.14-bookworm`, with the apps' `.ruby-version` at `ruby-3.3.14`: 3.3.13 carries an RCE, CVE-2026-132825 (Odoo #6261 on Bancolini's GitLab). The `3.3.13` above is the patch this decision started from; the rule, the full patch equal to the apps' `.ruby-version`, is unchanged.
+
+## Amendment (2026-11-25): Rails 8.1
+
+`Dockerfile.dev` installs `rails -v '~> 8.1.4' -v '>= 8.1.4.1'`: the 8.1.4.1 security release or a later 8.1.x, never 8.2. The apps moved to Rails 8.1 on release/3 (Odoo #6087/#6092 on Bancolini's GitLab) and `thecore_generators`' template now writes `rails ~> 8.1.4, >= 8.1.4.1`, so `rails new` in the container produces the same Rails the template asks for. Rails gets its own `gem install`, because RubyGems refuses `--version` together with several gem names. The rule, a minimum patch that never floats to the next minor, is unchanged.

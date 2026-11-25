@@ -10,7 +10,8 @@ Each file under `test/` is a standalone bash suite; CI doesn't run them, so run 
 bash test/build-image.sh            # bin/build-image tagging, build-arg, push, hooks (docker mocked)
 bash test/deploy-env-passthrough.sh # customer .env reaches backend/worker (needs the docker compose CLI)
 bash test/installation-secrets.sh   # host secrets.env: adopt, rotate, expire (docker mocked)
-bash test/version-pins.sh           # Ruby patch pinned in Dockerfile.common, Rails >= 7.2.4 in Dockerfile.dev
+bash test/version-pins.sh           # Ruby patch pinned in Dockerfile.common, Rails >= 8.1.4.1, < 8.2 in Dockerfile.dev
+bash test/cache-image.sh            # deploy compose's cache is redis:7-bookworm, no file names the old cache (ADR 0007)
 bash test/thecore-app-dir.sh        # scripts/thecore-app-dir.sh finds the app under /workspaces/app or /workspaces/project/backend; .bashrc hardcodes neither
 bash test/thecore-motd.sh           # scripts/thecore-motd.sh finds the scaffold marker under /workspaces/app and /workspaces/project/backend
 bash test/gem-compile.sh            # scripts/gem-compile.sh pushes the built gem to rubygems.org or to GITLAB_GEM_REPO_TARGET (gem mocked)

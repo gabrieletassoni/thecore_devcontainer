@@ -56,7 +56,7 @@ Each file under `test/` is a standalone bash suite; CI doesn't run them, so run 
 
 ### Rules that always apply
 
-- Ruby and Rails never float: `Dockerfile.common`'s `FROM` names the full Ruby patch, equal to the host apps' `.ruby-version`, and `Dockerfile.dev` installs Rails `~> 7.2.4`; bump both by hand together with the apps (ADR 0003, `test/version-pins.sh`).
+- Ruby and Rails never float: `Dockerfile.common`'s `FROM` names the full Ruby patch, equal to the host apps' `.ruby-version`, and `Dockerfile.dev` installs Rails `~> 8.1.4, >= 8.1.4.1`; bump both by hand together with the apps (ADR 0003, `test/version-pins.sh`).
 - `SECRET_KEY_BASE` never goes in an installation's `.env` file: it lives in the Docker host's `secrets.env` (ADR 0004).
 - `ulimits: nofile` must live in the compose file, never a `Dockerfile` `RUN ulimit` (ADR 0001).
 - `.devcontainer/heal-stale-containers.sh` is the canonical copy: change it here, run `test/heal-stale-containers.sh`, then copy it everywhere (ADR 0005). Same for `.devcontainer/docker-socket-gid.sh` with `test/docker-socket-gid.sh` (ADR 0006).

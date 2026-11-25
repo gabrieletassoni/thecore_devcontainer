@@ -36,12 +36,15 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 # every `bundle` command in images built from this one. Pin to the current
 # stable release explicitly and bump it deliberately when upgrading.
 #
-# Rails gets a minimum 7.2 patch (`~> 7.2.4`: 7.2.4 or a later 7.2.x, never
-# 7.3), so an image never ships a Rails older than 7.2.4, whatever day it is
-# built. Raise it with each Rails security release (docs/adr/0003-ruby-and-rails-versions-pinned.md).
+# Rails gets a minimum 8.1 patch (`~> 8.1.4` and `>= 8.1.4.1`: the 8.1.4.1
+# security release or a later 8.1.x, never 8.2), so an image never ships a Rails
+# older than 8.1.4.1, whatever day it is built. Raise it with each Rails security
+# release (docs/adr/0003-ruby-and-rails-versions-pinned.md). It gets its own
+# `gem install`: RubyGems refuses --version together with several gem names.
 RUN gem update --system 4.0.20 \
     && gem update rake \
-    && gem install rails:'~> 7.2.4' foreman rufo rubocop ruby-lsp
+    && gem install rails -v '~> 8.1.4' -v '>= 8.1.4.1' \
+    && gem install foreman rufo rubocop ruby-lsp
 
 RUN mkdir -p /usr/local/bundle \
     && chmod -R 1777 /usr/local/bundle

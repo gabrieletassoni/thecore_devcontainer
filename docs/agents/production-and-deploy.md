@@ -6,7 +6,7 @@
 
 Four services form the production stack:
 - **db**: PostgreSQL 15, data persisted at `/root/persistence/$COMPOSE_PROJECT_NAME/db`
-- **cache**: KeyDB (Redis-compatible), no persistence
+- **cache**: Redis 7 (`redis:7-bookworm`, the same server the devcontainers run), no persistence. Recreating it loses whatever is still queued, so deploy a change to `cache` with the Sidekiq queue empty: stop `backend`, let `worker` drain the queue, then deploy. `redis:7-bookworm` resolves to 7.4, dual-licensed RSALv2/SSPLv1: fine self-hosted inside an app's stack; a customer that needs an OSI licence pins `redis:7.2-bookworm` (end of life) or uses Valkey. Installations whose compose is written by hand on the host (e.g. IMAS prod) don't get this file and need the same change by hand (`docs/adr/0007-cache-runs-redis-7.md`).
 - **backend**: Rails app — entrypoint runs `db:create`, `db:migrate`, `thecore:db:seed`, `assets:clobber`, `assets:precompile`, then `rails s` (all steps unconditional — convention over configuration)
 - **worker**: Sidekiq, waits for backend health before starting
 

@@ -54,8 +54,11 @@ services:
       test: "pg_isready -U postgres"
       timeout: 3s
 
+  # Redis 7, the same server the devcontainers run. No persistence: recreating it loses whatever is
+  # still queued, so deploy a change to it with the Sidekiq queue empty (GitHub #24).
   cache:
-    image: eqalpha/keydb
+    image: redis:7-bookworm
+    command: redis-server
     logging:
       driver: "json-file"
       options:

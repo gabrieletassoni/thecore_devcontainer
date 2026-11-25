@@ -55,7 +55,7 @@ No additional configuration is needed beyond the secrets.
 
 ### Ruby and Rails versions
 
-`Dockerfile.common` starts from `ruby:<full patch>-bookworm`, kept equal to the host apps' `.ruby-version`; `Dockerfile.dev` installs `rails:'~> 7.2.4'`, a minimum 7.2 patch. When an app moves its `.ruby-version`, or a new Rails 7.2 security release comes out, raise them here and push `release/3`, so CI publishes images that carry it (`docs/adr/0003-ruby-and-rails-versions-pinned.md`).
+`Dockerfile.common` starts from `ruby:<full patch>-bookworm`, kept equal to the host apps' `.ruby-version`; `Dockerfile.dev` installs `rails -v '~> 8.1.4' -v '>= 8.1.4.1'`, a minimum 8.1 patch (its own `gem install`: RubyGems refuses `--version` with several gem names). When an app moves its `.ruby-version`, or a new Rails 8.1 security release comes out, raise them here and push `release/3`, so CI publishes images that carry it (`docs/adr/0003-ruby-and-rails-versions-pinned.md`).
 
 ### Build Pipeline
 
@@ -80,7 +80,7 @@ Pre-build hooks live in `bin/hooks/`. Currently: `bin/hooks/package-vscode-exten
 - `Dockerfile.deploy` also builds on top of `thecore-common`
 - The `scripts/` directory is copied into images at `/usr/bin/` (making scripts globally available)
 - The `docker/` directory is copied into images at `/etc/thecore/docker/`
-- Ruby and Rails never float to whatever is current at build time: `Dockerfile.common`'s `FROM` names the full Ruby patch, equal to the host apps' `.ruby-version`, and `Dockerfile.dev` installs Rails with a minimum 7.2 patch (`~> 7.2.4`: that release or a later 7.2.x). Bump both by hand together with the apps (`docs/adr/0003-ruby-and-rails-versions-pinned.md`, `test/version-pins.sh`).
+- Ruby and Rails never float to whatever is current at build time: `Dockerfile.common`'s `FROM` names the full Ruby patch, equal to the host apps' `.ruby-version`, and `Dockerfile.dev` installs Rails with a minimum 8.1 patch (`~> 8.1.4, >= 8.1.4.1`: that release or a later 8.1.x, never 8.2). Bump both by hand together with the apps (`docs/adr/0003-ruby-and-rails-versions-pinned.md`, `test/version-pins.sh`).
 
 ## Submodules
 
