@@ -55,8 +55,9 @@ thecore_devcontainer/
 │   └── library-scripts/
 ├── docs/adr/               # Architecture decision records (0001 nofile ulimits, 0002 customer .env, 0003 Ruby/Rails versions, 0004 SECRET_KEY_BASE on the host, 0005 heal containers left on a deleted network, 0006 docker socket gid from the host, 0007 cache runs Redis 7)
 ├── test/                   # Shell test suites (see `docs/agents/testing.md`)
-├── .github/workflows/main.yml  # CI: push to release/3, weekly, or manual trigger
+├── .github/workflows/main.yml  # CI: push to release/3, nightly, or manual trigger
 ├── .github/workflows/trivy.yml # Trivy scan of the published images (see `docs/agents/security-scanning.md`)
+├── .trivyignore.yaml       # CVEs the nightly Trivy fail gate accepts, each with an expiry
 ├── Dockerfile.common       # Base image definition
 ├── Dockerfile.dev          # Dev image definition
 ├── Dockerfile.deploy       # Deploy image definition

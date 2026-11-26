@@ -70,4 +70,4 @@ No docker daemon needed. CI doesn't run them: run them before pushing.
 
 ## CI/CD
 
-GitHub Actions (`.github/workflows/main.yml`) triggers on push to `release/3`, weekly (Sunday midnight UTC), or manually. Requires `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` secrets.
+GitHub Actions (`.github/workflows/main.yml`) triggers on push to `release/3`, nightly (02:00 UTC), or manually. Requires `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` secrets.

@@ -5,7 +5,8 @@ on:
     branches:
       - release/3
   schedule:
-    - cron: "0 0 * * SUN"
+    # Every night: picks up Debian security fixes before the Trivy fail gate scans (security-scanning.md).
+    - cron: "0 2 * * *"
   workflow_dispatch:
 
 concurrency:

@@ -1,0 +1,21 @@
+# Findings the nightly Trivy fail gate accepts (.github/workflows/trivy.yml). Only the gate reads
+# this file: the Security tab keeps showing them. Each entry is scoped to the binary that carries
+# it, expires within a quarter (test/security-scan.sh), and says why. When one expires, rebuild
+# first: if Docker has shipped the fix the finding disappears, otherwise extend it with a reason.
+# See docs/agents/security-scanning.md.
+vulnerabilities:
+  # vscode-devcontainers-thecore: Docker's own plugin, installed from download.docker.com. On
+  # 2026-11-26 buildx v0.39.1 (latest) and buildx master still pin moby/go-archive v0.2.0.
+  - id: CVE-2026-17106
+    paths:
+      - "usr/libexec/docker/cli-plugins/docker-buildx"
+    statement: "No buildx release with go-archive >= 0.3.0 yet; dev image only, never in the deploy image"
+    expired_at: 2026-12-31
+
+  # vscode-devcontainers-thecore: on 2026-11-26 compose v5.8.0 (latest) and compose main still pin
+  # golang.org/x/net v0.60.0.
+  - id: CVE-2026-78661
+    paths:
+      - "usr/libexec/docker/cli-plugins/docker-compose"
+    statement: "No compose release with x/net >= 0.62.0 yet; dev image only, never in the deploy image"
+    expired_at: 2026-12-31

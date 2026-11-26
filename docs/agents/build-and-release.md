@@ -45,13 +45,13 @@ All three entry points delegate to `bin/build-image IMAGE_NAME DOCKERFILE [PRE_B
 ### CI/CD
 
 GitHub Actions (`.github/workflows/main.yml`) runs:
-- **Trigger**: Push to `release/3`, every Sunday at midnight UTC, or manually via `workflow_dispatch`
+- **Trigger**: Push to `release/3`, every night at 02:00 UTC (so the Trivy gate scans images with the latest Debian security fixes), or manually via `workflow_dispatch`
 - **Required secrets**: `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`
 - **Steps**: Docker login → checkout with submodules → Node.js 22 + `vsce` setup → `./bin/build` → GitHub Release creation
 
 No additional configuration is needed beyond the secrets.
 
-`.github/workflows/trivy.yml` scans the published images after every successful build and nightly; see `docs/agents/security-scanning.md`.
+`.github/workflows/trivy.yml` scans the published images after every successful build and fails the nightly run on findings; see `docs/agents/security-scanning.md`.
 
 ### Ruby and Rails versions
 

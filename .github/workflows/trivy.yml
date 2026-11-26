@@ -2,14 +2,14 @@ name: "Scan Docker Images"
 
 # Scans the three published images (tag :3, the one host apps pull) with Trivy for
 # fixable HIGH/CRITICAL vulnerabilities. Results go to the Security tab (code scanning).
-# After each build it only reports; the nightly run fails when something is found, so the
-# owner gets GitHub's "workflow failed" mail. See docs/agents/security-scanning.md.
+# It runs after every successful build: after the nightly (scheduled) build it also fails
+# when something not accepted in .trivyignore.yaml is found, so the owner gets GitHub's
+# "workflow failed" mail. No cron of its own: it would scan an image older than the
+# Debian fixes the next build picks up. See docs/agents/security-scanning.md.
 on:
   workflow_run:
     workflows: ["Build and Push Docker Images"]
     types: [completed]
-  schedule:
-    - cron: "0 3 * * *"
   workflow_dispatch:
 
 permissions:
@@ -44,8 +44,17 @@ jobs:
           sarif_file: trivy-${{ matrix.image }}.sarif
           category: trivy-${{ matrix.image }}
 
+      # Only for the gate: the Security tab keeps showing the accepted CVEs.
+      - name: Check out the accepted findings
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.event == 'schedule'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .trivyignore.yaml
+          sparse-checkout-cone-mode: false
+
       - name: Fail the nightly run on findings
-        if: github.event_name == 'schedule'
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.event == 'schedule'
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           version: v0.75.0
@@ -54,4 +63,5 @@ jobs:
           ignore-unfixed: true
           format: table
           exit-code: "1"
+          trivyignores: .trivyignore.yaml
           skip-setup-trivy: true
